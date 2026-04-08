@@ -3,32 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDV Elite - Mesas Boteco 934</title>
+    <title>PDV Elite - Boteco 934</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #1a252f; color: #fff; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        body { font-family: 'Segoe UI', sans-serif; background: #1a252f; color: #333; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         #container { display: flex; width: 100%; padding: 10px; gap: 10px; box-sizing: border-box; }
         
-        .painel { background: #ecf0f1; color: #333; padding: 15px; border-radius: 8px; flex: 1; display: flex; flex-direction: column; }
+        .painel { background: #ecf0f1; padding: 15px; border-radius: 8px; flex: 1; display: flex; flex-direction: column; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         h2 { margin: 0 0 10px 0; border-bottom: 3px solid #27ae60; color: #2c3e50; font-size: 16px; text-transform: uppercase; }
 
-        /* GRID DE MESAS */
-        #mapa-mesas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 15px; }
-        .mesa { padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
-        .mesa-livre { background: #27ae60; } /* Verde */
-        .mesa-ocupada { background: #e74c3c; } /* Vermelho */
-        .mesa-selecionada { border: 4px solid #f1c40f; transform: scale(1.05); }
+        /* MAPA DE MESAS */
+        #mapa-mesas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
+        .mesa { padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 12px; transition: 0.2s; }
+        .mesa-livre { background: #27ae60; }
+        .mesa-ocupada { background: #e74c3c; }
+        .mesa-selecionada { border: 3px solid #f1c40f; transform: scale(1.05); }
 
         input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #bdc3c7; border-radius: 4px; box-sizing: border-box; text-transform: uppercase; }
         
-        .carrinho-area { flex-grow: 1; background: #fff; border: 1px solid #ddd; margin: 10px 0; padding: 5px; overflow-y: auto; border-radius: 4px; min-height: 150px; }
+        .carrinho-area { flex-grow: 1; background: #fff; border: 1px solid #ddd; margin: 10px 0; padding: 5px; overflow-y: auto; border-radius: 4px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { background: #dcdde1; padding: 8px; text-align: left; }
         td { padding: 8px; border-bottom: 1px solid #eee; }
         
         .total-destaque { font-size: 26px; font-weight: bold; background: #2c3e50; color: white; padding: 12px; text-align: center; border-radius: 4px; }
         .btn-finalizar { background: #27ae60; color: white; border: none; padding: 15px; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 4px; margin-top: 10px; width: 100%; }
+        .btn-finalizar:hover { background: #219150; }
         
-        #cupom-recibo { display: none; }
+        .btn-excluir { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 16px; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -36,11 +37,10 @@
 <div id="container">
     <div class="painel">
         <h2>📍 MAPA DE MESAS</h2>
-        <div id="mapa-mesas">
-            </div>
+        <div id="mapa-mesas"></div>
 
-        <h2 id="titulo-mesa">🛒 PRODUTOS (SELECIONE UMA MESA)</h2>
-        <input type="text" id="busca-prod" placeholder="🔍 BUSCAR BEBIDA..." oninput="filtrarProdutos()">
+        <h2 id="titulo-mesa">🛒 SELECIONE UMA MESA</h2>
+        <input type="text" id="busca-prod" placeholder="🔍 BUSCAR PRODUTO..." oninput="filtrarProdutos()">
         <select id="select-produtos" size="8" ondblclick="addCarrinho()"></select>
         
         <div class="carrinho-area">
@@ -52,176 +52,79 @@
         <div class="total-destaque" id="display-total">TOTAL: R$ 0,00</div>
     </div>
 
-    <div class="painel" style="max-width: 400px;">
-        <h2>👤 CLIENTE DA MESA</h2>
+    <div class="painel" style="max-width: 380px;">
+        <h2>👤 CLIENTE</h2>
         <input type="text" id="busca-cli" placeholder="🔍 BUSCAR CLIENTE..." oninput="filtrarClientes()">
         <select id="select-clientes" size="5"></select>
         
-        <div id="info-status" style="background: #d1d8e0; padding: 10px; border-radius: 4px; margin: 10px 0; font-weight: bold; text-align: center;">
-            STATUS: AGUARDANDO COMANDO
+        <div id="info-status" style="background: #d1d8e0; padding: 10px; border-radius: 4px; margin: 10px 0; font-weight: bold; text-align: center; font-size: 13px;">
+            AGUARDANDO...
         </div>
 
-        <h2 style="border-bottom-color: #2980b9;">💰 FECHAMENTO</h2>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+        <h2 style="border-bottom-color: #2980b9;">💰 PAGAMENTO</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
             <input type="number" id="pg-dinheiro" placeholder="💵 DINHEIRO" oninput="calcRestante()">
             <input type="number" id="pg-pix" placeholder="📱 PIX" oninput="calcRestante()">
             <input type="number" id="pg-cartao" placeholder="💳 CARTÃO" oninput="calcRestante()">
             <input type="number" id="pg-fiado" placeholder="📝 FIADO" oninput="calcRestante()">
         </div>
-        <div id="display-falta" style="text-align: center; font-weight: bold; margin-top: 10px; color: #e74c3c;">FALTA: R$ 0,00</div>
+        <div id="display-falta" style="text-align: center; font-weight: bold; margin-top: 10px; font-size: 18px; color: #e74c3c;">FALTA: R$ 0,00</div>
         
         <button class="btn-finalizar" onclick="fecharConta()">FINALIZAR CONTA / RECIBO</button>
     </div>
 </div>
 
 <script>
-    // DADOS INICIAIS
     let produtos = [
-        { nome: "Cerveja Lata", preco: 6.00 },
-        { nome: "Cerveja 600ml", preco: 10.00 },
-        { nome: "Coca-Cola 2L", preco: 12.00 },
-        { nome: "Agua s/ Gas", preco: 3.00 }
+        { nome: "CERVEJA LATA", preco: 6.00 },
+        { nome: "CERVEJA 600ML", preco: 10.00 },
+        { nome: "COCA-COLA 2L", preco: 12.00 },
+        { nome: "AGUA S/ GAS", preco: 3.00 },
+        { nome: "PETISCO MISTO", preco: 25.00 }
     ];
 
-    let clientes = [
-        { nome: "ADRIANO SILVA" }, { nome: "BRUNO OLIVEIRA" }, { nome: "MARIA SOUZA" }, { nome: "ZECA PAGODINHO" }
-    ];
+    let clientes = [{ nome: "ADRIANO SILVA" }, { nome: "BRUNO OLIVEIRA" }, { nome: "MARIA SOUZA" }, { nome: "ZECA PAGODINHO" }];
 
-    // ESTADO DAS MESAS (SISTEMA MULTI-MESAS)
     let mesas = {};
-    for(let i=1; i<=8; i++) {
-        mesas[i] = { aberta: false, cliente: "", itens: [], total: 0 };
-    }
-    
+    for(let i=1; i<=12; i++) { mesas[i] = { aberta: false, cliente: "", itens: [], total: 0 }; }
     let mesaSelecionada = null;
 
-    function iniciar() {
-        gerarMesas();
-        filtrarProdutos();
-        filtrarClientes();
-    }
+    function iniciar() { gerarMesas(); filtrarProdutos(); filtrarClientes(); }
 
     function gerarMesas() {
         const div = document.getElementById('mapa-mesas');
         div.innerHTML = "";
-        for(let i=1; i<=8; i++) {
+        for(let i=1; i<=12; i++) {
             let btn = document.createElement('button');
-            btn.className = `mesa ${mesas[i].aberta ? 'mesa-ocupada' : 'mesa-livre'}`;
-            if(mesaSelecionada == i) btn.classList.add('mesa-selecionada');
-            btn.innerText = `MESA ${i < 10 ? '0'+i : i}`;
+            btn.className = `mesa ${mesas[i].aberta ? 'mesa-ocupada' : 'mesa-livre'} ${mesaSelecionada == i ? 'mesa-selecionada' : ''}`;
+            btn.innerText = `MESA ${i.toString().padStart(2, '0')}`;
             btn.onclick = () => selecionarMesa(i);
             div.appendChild(btn);
         }
     }
 
     function selecionarMesa(id) {
-        mesaSelecionada = id;
-        const mesa = mesas[id];
-
-        if (!mesa.aberta) {
+        if (!mesas[id].aberta) {
             const cli = document.getElementById('select-clientes').value;
-            if (!cli) {
-                alert("⚠️ PRIMEIRO SELECIONE UM CLIENTE NA LISTA PARA ABRIR A MESA " + id);
-                mesaSelecionada = null;
-                return;
-            }
-            mesa.aberta = true;
-            mesa.cliente = cli;
+            if (!cli) { alert("⚠️ SELECIONE O CLIENTE ANTES DE ABRIR A MESA " + id); return; }
+            mesas[id].aberta = true;
+            mesas[id].cliente = cli;
         }
-
-        document.getElementById('titulo-mesa').innerText = `🛒 MESA ${id} - CLIENTE: ${mesa.cliente}`;
-        document.getElementById('info-status').innerText = `MESA ${id} ATIVA PARA ${mesa.cliente}`;
-        
+        mesaSelecionada = id;
+        document.getElementById('titulo-mesa').innerText = `🛒 MESA ${id} - ${mesas[id].cliente}`;
+        document.getElementById('info-status').innerText = `MESA ${id} ATIVA: ${mesas[id].cliente}`;
         gerarMesas();
         atualizarTelaCarrinho();
     }
 
     function addCarrinho() {
         if (!mesaSelecionada) return;
-        const select = document.getElementById('select-produtos');
-        const nome = select.options[select.selectedIndex].getAttribute('data-nome');
-        const preco = parseFloat(select.value);
-        
-        let mesa = mesas[mesaSelecionada];
-        let item = mesa.itens.find(i => i.nome === nome);
-        
-        if (item) { item.qtd += 1; } 
-        else { mesa.itens.push({ nome, preco, qtd: 1 }); }
-        
+        const s = document.getElementById('select-produtos');
+        const nome = s.options[s.selectedIndex].getAttribute('data-nome');
+        const preco = parseFloat(s.value);
+        let item = mesas[mesaSelecionada].itens.find(i => i.nome === nome);
+        if (item) item.qtd++; else mesas[mesaSelecionada].itens.push({ nome, preco, qtd: 1 });
         atualizarTelaCarrinho();
     }
 
-    function atualizarTelaCarrinho() {
-        const corpo = document.querySelector('#tabela-itens tbody');
-        corpo.innerHTML = "";
-        let total = 0;
-
-        if(mesaSelecionada && mesas[mesaSelecionada].itens) {
-            mesas[mesaSelecionada].itens.forEach((item, index) => {
-                let sub = item.preco * item.qtd;
-                total += sub;
-                corpo.innerHTML += `<tr><td>${item.qtd}x</td><td>${item.nome}</td><td>R$ ${sub.toFixed(2)}</td><td><button onclick="removerItem(${index})" style="border:none; background:none; cursor:pointer;">❌</button></td></tr>`;
-            });
-        }
-        
-        if(mesaSelecionada) mesas[mesaSelecionada].total = total;
-        document.getElementById('display-total').innerText = "TOTAL: R$ " + total.toFixed(2);
-        calcRestante();
-    }
-
-    function removerItem(idx) {
-        mesas[mesaSelecionada].itens.splice(idx, 1);
-        atualizarTelaCarrinho();
-    }
-
-    function calcRestante() {
-        if(!mesaSelecionada) return;
-        const pago = (parseFloat(document.getElementById('pg-dinheiro').value) || 0) + (parseFloat(document.getElementById('pg-pix').value) || 0) + (parseFloat(document.getElementById('pg-cartao').value) || 0) + (parseFloat(document.getElementById('pg-fiado').value) || 0);
-        let falta = mesas[mesaSelecionada].total - pago;
-        const d = document.getElementById('display-falta');
-        d.innerText = falta <= 0.01 ? "VALOR OK / TROCO: R$ " + Math.abs(falta).toFixed(2) : "FALTA: R$ " + falta.toFixed(2);
-        d.style.color = falta <= 0.01 ? "#27ae60" : "#e74c3c";
-    }
-
-    function fecharConta() {
-        if(!mesaSelecionada) return;
-        window.print(); // Simula o recibo
-        // Reset da Mesa
-        mesas[mesaSelecionada] = { aberta: false, cliente: "", itens: [], total: 0 };
-        mesaSelecionada = null;
-        location.reload();
-    }
-
-    function filtrarProdutos() {
-        const busca = document.getElementById('busca-prod').value.toUpperCase();
-        const select = document.getElementById('select-produtos');
-        select.innerHTML = "";
-        produtos.sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p => {
-            if(p.nome.toUpperCase().includes(busca)) {
-                let opt = document.createElement('option');
-                opt.text = `${p.nome.toUpperCase()} - R$ ${p.preco.toFixed(2)}`;
-                opt.value = p.preco;
-                opt.setAttribute('data-nome', p.nome.toUpperCase());
-                select.add(opt);
-            }
-        });
-    }
-
-    function filtrarClientes() {
-        const busca = document.getElementById('busca-cli').value.toUpperCase();
-        const select = document.getElementById('select-clientes');
-        select.innerHTML = "";
-        clientes.sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(c => {
-            if(c.nome.toUpperCase().includes(busca)) {
-                let opt = document.createElement('option');
-                opt.text = c.nome.toUpperCase();
-                opt.value = c.nome.toUpperCase();
-                select.add(opt);
-            }
-        });
-    }
-
-    window.onload = iniciar;
-</script>
-</body>
-</html>
+    function
