@@ -9,10 +9,12 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
         body { background-color: #f4f7f6; color: #333; font-family: sans-serif; }
-        .sidebar { width: 240px; background: #1a252f; color: white; height: 100vh; position: fixed; }
+        .sidebar { width: 240px; background: #1a252f; color: white; height: 100vh; position: fixed; z-index: 50; }
         .main-content { margin-left: 240px; width: calc(100% - 240px); }
         .section { display: none; }
         .section.active { display: block; animation: fadeIn 0.3s; }
+        .mesa-card { transition: all 0.3s; cursor: pointer; }
+        .mesa-ocupada { border-left: 5px solid #ef4444; background: #fff1f2; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @media (max-width: 768px) {
             .sidebar { width: 60px; }
@@ -24,42 +26,48 @@
 <body>
 
     <div class="sidebar p-4">
-        <h2 class="text-xl font-bold mb-8 text-center menu-text">Boteco 934</h2>
+        <h2 class="text-xl font-bold mb-8 text-center menu-text border-b border-gray-700 pb-2 text-yellow-500">Boteco 934</h2>
         <nav class="space-y-2">
-            <button onclick="mudar('bar')" class="w-full p-3 rounded hover:bg-blue-600 flex items-center"><span>🍺</span><span class="ml-3 menu-text text-sm">Vendas</span></button>
-            <button onclick="mudar('fiado')" class="w-full p-3 rounded hover:bg-red-600 flex items-center"><span>📝</span><span class="ml-3 menu-text text-sm">Fiado</span></button>
-            <button onclick="mudar('boticario')" class="w-full p-3 rounded hover:bg-pink-600 flex items-center"><span>✨</span><span class="ml-3 menu-text text-sm">Boticário</span></button>
-            <button onclick="mudar('relatorio')" class="w-full p-3 rounded hover:bg-gray-700 flex items-center"><span>📊</span><span class="ml-3 menu-text text-sm">Relatório</span></button>
+            <button onclick="mudar('mesas')" class="w-full p-3 rounded hover:bg-orange-600 flex items-center bg-orange-500"><span>🪑</span><span class="ml-3 menu-text text-sm font-bold">MESAS</span></button>
+            <button onclick="mudar('bar')" class="w-full p-3 rounded hover:bg-blue-600 flex items-center"><span>🍺</span><span class="ml-3 menu-text text-sm">VENDAS</span></button>
+            <button onclick="mudar('fiado')" class="w-full p-3 rounded hover:bg-red-600 flex items-center"><span>📝</span><span class="ml-3 menu-text text-sm text-red-300">FIADO</span></button>
+            <button onclick="mudar('relatorio')" class="w-full p-3 rounded hover:bg-gray-700 flex items-center"><span>📊</span><span class="ml-3 menu-text text-sm">CAIXA</span></button>
         </nav>
     </div>
 
-    <main class="main-content p-6">
-        <div id="bar" class="section active">
-            <h1 class="text-2xl font-bold mb-4">Vendas Rápidas</h1>
+    <main class="main-content p-4">
+        
+        <div id="mesas" class="section active">
+            <h1 class="text-2xl font-bold mb-4 text-gray-800">Mapa de Mesas</h1>
+            <div id="grid-mesas" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+        </div>
+
+        <div id="bar" class="section">
+            <h1 id="titulo-venda" class="text-2xl font-bold mb-4">Lançar Item</h1>
+            <p id="mesa-selecionada" class="mb-4 text-orange-600 font-bold bg-orange-100 p-2 rounded inline-block hidden">
+                MESA <span id="num-mesa">0</span> - <span id="cliente-mesa-atual">AVULSO</span>
+            </p>
             <div class="grid grid-cols-2 gap-4">
-                <button onclick="vender('Cerveja Lata', 6.00, 'bar')" class="bg-white p-6 rounded-xl shadow border">🍺 Cerveja R$6</button>
-                <button onclick="vender('Dose Cana', 3.00, 'bar')" class="bg-white p-6 rounded-xl shadow border">🥃 Cana R$3</button>
+                <button onclick="registrarConsumo('Cerveja Lata', 6.00)" class="bg-white p-6 rounded-xl shadow border font-bold">🍺 Cerveja R$6</button>
+                <button onclick="registrarConsumo('Dose Cana', 3.00)" class="bg-white p-6 rounded-xl shadow border font-bold">🥃 Cana R$3</button>
+                <button onclick="registrarConsumo('Espetinho', 8.00)" class="bg-white p-6 rounded-xl shadow border font-bold">🍢 Espetinho R$8</button>
+                <button onclick="mudar('mesas')" class="bg-gray-200 p-6 rounded-xl shadow border font-bold text-gray-600">⬅ VOLTAR</button>
             </div>
         </div>
 
         <div id="fiado" class="section">
-            <h1 class="text-2xl font-bold mb-4 text-red-600">Controle de Fiado</h1>
+            <h1 class="text-2xl font-bold mb-4 text-red-600">Controle de Pendura</h1>
             <div class="bg-white p-4 rounded-xl shadow mb-6">
-                <input id="cliente-nome" type="text" placeholder="Nome do Cliente" class="w-full p-2 mb-2 border rounded uppercase">
-                <input id="cliente-valor" type="number" placeholder="Valor R$" class="w-full p-2 mb-2 border rounded">
-                <button onclick="lancarFiado()" class="w-full bg-red-600 text-white p-2 rounded font-bold">LANÇAR NO PENDURA</button>
+                <input id="cliente-nome" type="text" placeholder="NOME DO CLIENTE" class="w-full p-2 mb-2 border rounded uppercase">
+                <input id="cliente-valor" type="number" placeholder="VALOR R$" class="w-full p-2 mb-2 border rounded">
+                <button onclick="lancarFiado()" class="w-full bg-red-600 text-white p-2 rounded font-bold">LANÇAR NO FIADO</button>
             </div>
-            <div id="lista-fiado" class="space-y-3"></div>
-        </div>
-
-        <div id="boticario" class="section">
-            <h1 class="text-2xl font-bold mb-4 text-pink-600 text-sm">Boticário</h1>
-            <button onclick="vender('Perfume Malbec', 180.00, 'boticario')" class="w-full bg-white p-6 rounded-xl shadow border mb-2 text-left">🎁 Malbec - R$180,00</button>
+            <div id="lista-fiado" class="space-y-2"></div>
         </div>
 
         <div id="relatorio" class="section">
-            <h1 class="text-2xl font-bold mb-4">Vendas Totais</h1>
-            <div id="total-geral" class="text-3xl font-bold text-green-600 mb-4 font-mono">R$ 0,00</div>
+            <h1 class="text-2xl font-bold mb-4">Caixa Geral</h1>
+            <div id="total-geral" class="text-4xl font-bold text-green-600 mb-6 bg-white p-4 rounded shadow inline-block">R$ 0,00</div>
             <div id="historico-vendas" class="bg-white p-4 rounded shadow space-y-2 max-h-96 overflow-y-auto"></div>
         </div>
     </main>
@@ -77,77 +85,116 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        let mesaAtual = 0;
+        let clienteAtual = "";
+
         function mudar(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        function vender(item, valor, tipo) {
-            db.ref('vendas_gerais').push({ item, valor, tipo, data: new Date().toLocaleString() });
-            alert('Venda registrada!');
+        function abrirMesa(num, clienteExistente) {
+            mesaAtual = num;
+            if (clienteExistente) {
+                clienteAtual = clienteExistente;
+            } else {
+                clienteAtual = prompt("Nome do Cliente para a Mesa " + num + ":") || "CLIENTE";
+                db.ref('mesas_ativas/' + num + '/cliente').set(clienteAtual);
+            }
+            document.getElementById('num-mesa').innerText = num;
+            document.getElementById('cliente-mesa-atual').innerText = clienteAtual.toUpperCase();
+            document.getElementById('mesa-selecionada').classList.remove('hidden');
+            mudar('bar');
         }
 
+        function registrarConsumo(item, valor) {
+            const data = new Date().toLocaleString();
+            if(mesaAtual > 0) {
+                db.ref('mesas_ativas/' + mesaAtual + '/consumo').push({ item, valor, data });
+                mudar('mesas');
+            } else {
+                db.ref('vendas_gerais').push({ item, valor, data, tipo: 'direta' });
+                alert('Venda registrada!');
+            }
+        }
+
+        function fecharMesa(num, total, nome) {
+            if(confirm("Fechar conta " + nome + " (Mesa " + num + ") - Total: R$ " + total.toFixed(2) + "?")) {
+                db.ref('vendas_gerais').push({ item: 'MESA ' + num + ' (' + nome + ')', valor: total, data: new Date().toLocaleString() });
+                db.ref('mesas_ativas/' + num).remove();
+            }
+        }
+
+        // ATUALIZAÇÃO MAPA DE MESAS
+        db.ref('mesas_ativas').on('value', (snapshot) => {
+            const grid = document.getElementById('grid-mesas');
+            grid.innerHTML = '';
+            const dadosSist = snapshot.val() || {};
+
+            for(let i=1; i<=12; i++) {
+                const mesa = dadosSist[i];
+                let totalMesa = 0;
+                let nomeCliente = "";
+                
+                if(mesa) {
+                    nomeCliente = mesa.cliente || "OCUPADA";
+                    if(mesa.consumo) {
+                        Object.values(mesa.consumo).forEach(v => totalMesa += v.valor);
+                    }
+                }
+
+                const card = document.createElement('div');
+                card.className = `mesa-card p-4 rounded-xl shadow border ${mesa ? 'mesa-ocupada' : 'bg-white'}`;
+                card.innerHTML = `
+                    <div class="text-xs font-bold text-gray-500 uppercase">Mesa ${i}</div>
+                    <div class="font-bold text-lg truncate">${nomeCliente}</div>
+                    <div class="text-sm font-bold text-red-600">R$ ${totalMesa.toFixed(2)}</div>
+                    <div class="mt-2 flex gap-1">
+                        <button onclick="abrirMesa(${i}, '${nomeCliente}')" class="flex-1 bg-blue-500 text-white py-1 rounded text-[10px] font-bold">ADD</button>
+                        ${mesa ? `<button onclick="fecharMesa(${i}, ${totalMesa}, '${nomeCliente}')" class="flex-1 bg-green-500 text-white py-1 rounded text-[10px] font-bold">PAGAR</button>` : ''}
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+        });
+
+        // (Relatório e Fiado seguem a mesma lógica anterior para manter os dados salvos)
+        db.ref('vendas_gerais').on('value', (s) => {
+            let t = 0;
+            const h = document.getElementById('historico-vendas');
+            h.innerHTML = '';
+            s.forEach(v => {
+                t += v.val().valor;
+                const d = document.createElement('div');
+                d.className = "text-xs border-b py-1 flex justify-between";
+                d.innerHTML = `<span>${v.val().item}</span><span class="font-bold">R$ ${v.val().valor.toFixed(2)}</span>`;
+                h.prepend(d);
+            });
+            document.getElementById('total-geral').innerText = 'R$ ' + t.toFixed(2);
+        });
+
         function lancarFiado() {
-            const nome = document.getElementById('cliente-nome').value.trim().toUpperCase();
-            const valor = parseFloat(document.getElementById('cliente-valor').value);
-            if(nome && valor) {
-                db.ref('fiado/' + nome).transaction((atual) => (atual || 0) + valor);
+            const n = document.getElementById('cliente-nome').value.trim().toUpperCase();
+            const v = parseFloat(document.getElementById('cliente-valor').value);
+            if(n && v) {
+                db.ref('fiado/' + n).transaction(a => (a || 0) + v);
                 document.getElementById('cliente-nome').value = '';
                 document.getElementById('cliente-valor').value = '';
             }
         }
 
-        function pagarFiado(nome) {
-            const valor = parseFloat(prompt("Quanto " + nome + " está pagando?"));
-            if(valor) {
-                db.ref('fiado/' + nome).transaction((atual) => (atual || 0) - valor);
-            }
-        }
-
-        function enviarCobranca(nome, saldo) {
-            const msg = `Olá ${nome}! Passando para informar que seu saldo atual no Boteco 934 é de R$ ${saldo.toFixed(2)}. Quando puder, dá uma passada aqui! 🍻`;
-            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
-            window.open(url, '_blank');
-        }
-
-        // ATUALIZAÇÃO EM TEMPO REAL FIADO
-        db.ref('fiado').on('value', (snapshot) => {
-            const lista = document.getElementById('lista-fiado');
-            lista.innerHTML = '';
-            snapshot.forEach((p) => {
+        db.ref('fiado').on('value', (s) => {
+            const l = document.getElementById('lista-fiado');
+            l.innerHTML = '';
+            s.forEach(p => {
                 if(p.val() > 0) {
-                    const div = document.createElement('div');
-                    div.className = "bg-white p-4 rounded-xl shadow border-l-4 border-red-500 flex flex-col space-y-2";
-                    div.innerHTML = `
-                        <div class="flex justify-between">
-                            <span class="font-bold">${p.key}</span>
-                            <span class="text-red-600 font-bold">R$ ${p.val().toFixed(2)}</span>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="pagarFiado('${p.key}')" class="flex-1 bg-green-100 text-green-700 py-1 rounded text-xs font-bold border border-green-200">BAIXAR PGTO</button>
-                            <button onclick="enviarCobranca('${p.key}', ${p.val()})" class="flex-1 bg-green-500 text-white py-1 rounded text-xs font-bold flex items-center justify-center">
-                                📱 WHATSAPP
-                            </button>
-                        </div>
-                    `;
-                    lista.appendChild(div);
+                    const d = document.createElement('div');
+                    d.className = "bg-white p-2 rounded shadow flex justify-between items-center text-sm border-l-4 border-red-500";
+                    d.innerHTML = `<span><b>${p.key}</b>: R$ ${p.val().toFixed(2)}</span>
+                                   <button onclick="window.open('https://api.whatsapp.com/send?text=Olá ${p.key}! Seu saldo no Boteco 934 é R$ ${p.val().toFixed(2)}')" class="bg-green-500 text-white px-2 py-1 rounded text-[10px]">📱 COBRAR</button>`;
+                    l.appendChild(d);
                 }
             });
-        });
-
-        // ATUALIZAÇÃO RELATÓRIO
-        db.ref('vendas_gerais').on('value', (snapshot) => {
-            let total = 0;
-            const hist = document.getElementById('historico-vendas');
-            hist.innerHTML = '';
-            snapshot.forEach(v => {
-                total += v.val().valor;
-                const d = document.createElement('div');
-                d.className = "text-sm border-b pb-1";
-                d.innerHTML = `<b>${v.val().item}</b> - R$ ${v.val().valor.toFixed(2)} <br><small>${v.val().data}</small>`;
-                hist.prepend(d);
-            });
-            document.getElementById('total-geral').innerText = 'R$ ' + total.toFixed(2);
         });
     </script>
 </body>
