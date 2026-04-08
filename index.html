@@ -1,93 +1,223 @@
-<div id="recibo-container" style="display:none; width: 300px; font-family: 'Courier New', Courier, monospace; border: 1px solid #000; padding: 10px; background: #fff;">
-    
-    <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 10px;">
-        <h2 style="margin: 0;">BOTECO 934</h2>
-        <p style="font-size: 12px; margin: 5px 0;">Distribuidora de Bebidas e Bar<br>
-        Petrolina - PE</p>
-        <p id="recibo-data" style="font-size: 12px;"></p>
-    </div>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDV Elite - Boteco 934</title>
+    <style>
+        /* ESTILIZAÇÃO DO SISTEMA */
+        body { font-family: Arial, sans-serif; background: #2c3e50; color: #fff; margin: 0; display: flex; height: 100vh; }
+        #container { display: flex; width: 100%; padding: 10px; gap: 10px; }
+        
+        .painel { background: #ecf0f1; color: #333; padding: 15px; border-radius: 8px; flex: 1; display: flex; flex-direction: column; }
+        h2 { margin-top: 0; border-bottom: 2px solid #27ae60; padding-bottom: 5px; color: #2c3e50; }
 
-    <table style="width: 100%; font-size: 12px; margin-top: 10px; border-bottom: 1px dashed #000;">
-        <thead>
-            <tr style="text-align: left;">
-                <th>QTD</th>
-                <th>PRODUTO</th>
-                <th>VALOR</th>
-            </tr>
-        </thead>
-        <tbody id="recibo-itens">
-            </tbody>
-    </table>
+        input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #bdc3c7; border-radius: 4px; box-sizing: border-box; font-size: 14px; text-transform: uppercase; }
+        
+        .carrinho-area { flex-grow: 1; background: #fff; border: 1px solid #ddd; margin: 10px 0; padding: 10px; overflow-y: auto; }
+        .total-destaque { font-size: 24px; font-weight: bold; background: #27ae60; color: white; padding: 10px; text-align: center; border-radius: 4px; }
+        
+        .grid-pagamento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .campo-pg { background: #fff; padding: 5px; border-radius: 4px; border: 1px solid #ccc; }
+        
+        .btn-finalizar { background: #2980b9; color: white; border: none; padding: 15px; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 4px; margin-top: 10px; }
+        .btn-finalizar:hover { background: #3498db; }
 
-    <div style="font-size: 12px; margin-top: 10px;">
-        <div style="display: flex; justify-content: space-between; font-weight: bold;">
-            <span>TOTAL GERAL:</span>
-            <span id="recibo-total">R$ 0,00</span>
+        /* ESTILO DO RECIBO (ESCONDIDO NA TELA) */
+        #cupom-recibo { display: none; width: 300px; color: #000; padding: 10px; font-family: 'Courier New', monospace; }
+    </style>
+</head>
+<body>
+
+<div id="container">
+    <div class="painel">
+        <h2>📦 MERCADORIAS</h2>
+        <input type="text" id="busca-prod" placeholder="PESQUISAR PRODUTO..." oninput="filtrarProdutos()">
+        <select id="select-produtos" size="8" ondblclick="addCarrinho()"></select>
+        
+        <div class="carrinho-area" id="lista-carrinho">
+            <table width="100%" id="tabela-itens">
+                <thead align="left"><tr><th>QTD</th><th>ITEM</th><th>TOTAL</th></tr></thead>
+                <tbody></tbody>
+            </table>
         </div>
-        <div id="recibo-divisao-pagamento" style="margin-top: 5px; border-top: 1px solid #eee;">
-            </div>
+        <div class="total-destaque" id="display-total">TOTAL: R$ 0,00</div>
     </div>
 
-    <div style="text-align: center; margin-top: 20px; border-top: 1px dashed #000; padding-top: 10px;">
-        <p id="recibo-cliente" style="font-size: 12px; font-weight: bold;"></p>
-        <p style="font-size: 11px;">OBRIGADO PELA PREFERÊNCIA!</p>
-        <p style="font-size: 10px;">PDV Elite - Sistema de Gestão</p>
+    <div class="painel">
+        <h2>👤 CLIENTE & PAGAMENTO</h2>
+        <input type="text" id="busca-cli" placeholder="PESQUISAR CLIENTE..." oninput="filtrarClientes()">
+        <select id="select-clientes" size="4" onchange="mostrarContato()"></select>
+        <div id="info-contato" style="font-weight: bold; color: #2980b9; margin-bottom: 5px;">CONTATO: ---</div>
+
+        <div class="grid-pagamento">
+            <div class="campo-pg">💵 DINHEIRO: <input type="number" id="pg-dinheiro" oninput="calcRestante()" step="0.01"></div>
+            <div class="campo-pg">📱 PIX: <input type="number" id="pg-pix" oninput="calcRestante()" step="0.01"></div>
+            <div class="campo-pg">💳 CARTÃO: <input type="number" id="pg-cartao" oninput="calcRestante()" step="0.01"></div>
+            <div class="campo-pg">📝 FIADO: <input type="number" id="pg-fiado" oninput="calcRestante()" step="0.01"></div>
+        </div>
+
+        <div id="display-falta" style="text-align: center; font-weight: bold; margin-top: 10px; color: #e74c3c;">FALTA: R$ 0,00</div>
+        <button class="btn-finalizar" onclick="fecharConta()">FINALIZAR E GERAR RECIBO</button>
     </div>
 </div>
 
+<div id="cupom-recibo">
+    <center>
+        <strong>BOTECO 934</strong><br>
+        DISTRIBUIDORA DE BEBIDAS<br>
+        ----------------------------<br>
+        <strong>CUPOM DE VENDA</strong><br>
+        <span id="data-recibo"></span><br>
+        ----------------------------
+    </center>
+    <table width="100%" id="itens-recibo" style="font-size: 12px;"></table>
+    ----------------------------<br>
+    <div style="display: flex; justify-content: space-between;">
+        <strong>TOTAL:</strong> <strong id="total-recibo">R$ 0,00</strong>
+    </div>
+    <div id="pagamentos-recibo"></div>
+    ----------------------------<br>
+    <center>
+        <span id="cliente-recibo">CLIENTE: CONSUMIDOR</span><br><br>
+        OBRIGADO PELA PREFERENCIA!
+    </center>
+</div>
+
 <script>
-// FUNÇÃO PARA GERAR O RECIBO
-function gerarRecibo() {
-    const dataAtual = new Date().toLocaleString('pt-BR');
-    document.getElementById('recibo-data').innerText = dataAtual;
-
-    // 1. Pegar Itens do Carrinho (Exemplo de lógica)
-    const tabelaItens = document.getElementById('recibo-itens');
-    tabelaItens.innerHTML = ""; 
-    
-    // Supondo que você tenha um array 'carrinho' com {nome, qtd, preco}
-    carrinho.forEach(item => {
-        let linha = `<tr>
-            <td>${item.qtd}</td>
-            <td>${item.nome.toUpperCase()}</td>
-            <td>R$ ${(item.qtd * item.preco).toFixed(2)}</td>
-        </tr>`;
-        tabelaItens.innerHTML += linha;
-    });
-
-    // 2. Preencher Totais
-    document.getElementById('recibo-total').innerText = "R$ " + totalVenda.toFixed(2);
-
-    // 3. Mostrar Divisão de Pagamento no Rodapé
-    const divisao = document.getElementById('recibo-divisao-pagamento');
-    divisao.innerHTML = "";
-    
-    const pagamentos = [
-        { nome: "DINHEIRO", valor: parseFloat(document.getElementById('pg-dinheiro').value) },
-        { nome: "PIX", valor: parseFloat(document.getElementById('pg-pix').value) },
-        { nome: "CARTÃO", valor: parseFloat(document.getElementById('pg-credito').value) + parseFloat(document.getElementById('pg-debito').value) },
-        { nome: "FIADO", valor: parseFloat(document.getElementById('pg-fiado').value) }
+    // DADOS
+    let produtos = [
+        { nome: "Cerveja Lata", preco: 6.00 },
+        { nome: "Cerveja Garrafa", preco: 10.00 },
+        { nome: "Refrigerante 2L", preco: 12.00 },
+        { nome: "Agua s/ Gas", preco: 3.00 }
     ];
 
-    pagamentos.forEach(pg => {
-        if (pg.valor > 0) {
-            divisao.innerHTML += `<div style="display:flex; justify-content:space-between;">
-                <span>${pg.nome}:</span> <span>R$ ${pg.valor.toFixed(2)}</span>
-            </div>`;
+    let clientes = [
+        { nome: "Adriano Silva", tel: "87 99999-0001" },
+        { nome: "Bruno Oliveira", tel: "87 99999-0002" },
+        { nome: "Carlos Lima", tel: "87 99999-0003" }
+    ];
+
+    let carrinho = [];
+    let totalGeral = 0;
+
+    // INICIALIZAR
+    function iniciar() {
+        filtrarProdutos();
+        filtrarClientes();
+    }
+
+    function filtrarProdutos() {
+        const busca = document.getElementById('busca-prod').value.toUpperCase();
+        const select = document.getElementById('select-produtos');
+        select.innerHTML = "";
+        produtos.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(p => {
+            if(p.nome.toUpperCase().includes(busca)) {
+                let opt = document.createElement('option');
+                opt.text = `${p.nome.toUpperCase()} - R$ ${p.preco.toFixed(2)}`;
+                opt.value = p.preco;
+                opt.setAttribute('data-nome', p.nome.toUpperCase());
+                select.add(opt);
+            }
+        });
+    }
+
+    function filtrarClientes() {
+        const busca = document.getElementById('busca-cli').value.toUpperCase();
+        const select = document.getElementById('select-clientes');
+        select.innerHTML = "";
+        clientes.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(c => {
+            if(c.nome.toUpperCase().includes(busca)) {
+                let opt = document.createElement('option');
+                opt.text = c.nome.toUpperCase();
+                opt.setAttribute('data-tel', c.tel);
+                select.add(opt);
+            }
+        });
+    }
+
+    function mostrarContato() {
+        const select = document.getElementById('select-clientes');
+        const tel = select.options[select.selectedIndex].getAttribute('data-tel');
+        document.getElementById('info-contato').innerText = "CONTATO: " + tel;
+    }
+
+    function addCarrinho() {
+        const select = document.getElementById('select-produtos');
+        const nome = select.options[select.selectedIndex].getAttribute('data-nome');
+        const preco = parseFloat(select.value);
+        
+        carrinho.push({ nome, preco, qtd: 1 });
+        atualizarTelaCarrinho();
+    }
+
+    function atualizarTelaCarrinho() {
+        const corpo = document.querySelector('#tabela-itens tbody');
+        corpo.innerHTML = "";
+        totalGeral = 0;
+
+        carrinho.forEach(item => {
+            totalGeral += item.preco;
+            corpo.innerHTML += `<tr><td>1</td><td>${item.nome}</td><td>R$ ${item.preco.toFixed(2)}</td></tr>`;
+        });
+
+        document.getElementById('display-total').innerText = "TOTAL: R$ " + totalGeral.toFixed(2);
+        calcRestante();
+    }
+
+    function calcRestante() {
+        const p1 = parseFloat(document.getElementById('pg-dinheiro').value) || 0;
+        const p2 = parseFloat(document.getElementById('pg-pix').value) || 0;
+        const p3 = parseFloat(document.getElementById('pg-cartao').value) || 0;
+        const p4 = parseFloat(document.getElementById('pg-fiado').value) || 0;
+        
+        let falta = totalGeral - (p1 + p2 + p3 + p4);
+        const display = document.getElementById('display-falta');
+        
+        if(falta <= 0) {
+            display.innerText = "VALOR OK / TROCO: R$ " + Math.abs(falta).toFixed(2);
+            display.style.color = "#27ae60";
+        } else {
+            display.innerText = "FALTA: R$ " + falta.toFixed(2);
+            display.style.color = "#e74c3c";
         }
-    });
+    }
 
-    // 4. Nome do Cliente
-    const nomeCliente = document.getElementById('lista-clientes').value;
-    document.getElementById('recibo-cliente').innerText = nomeCliente ? "CLIENTE: " + nomeCliente : "CLIENTE: CONSUMIDOR";
+    function fecharConta() {
+        const fiado = parseFloat(document.getElementById('pg-fiado').value) || 0;
+        const cliente = document.getElementById('select-clientes').value;
 
-    // 5. Comando de Impressão
-    const conteudoRecibo = document.getElementById('recibo-container').innerHTML;
-    const janelaImpressao = window.open('', '', 'width=350,height=600');
-    janelaImpressao.document.write('<html><body style="margin:0;">');
-    janelaImpressao.document.write(conteudoRecibo);
-    janelaImpressao.document.write('</body></html>');
-    janelaImpressao.print();
-    janelaImpressao.close();
-}
+        if (fiado > 0 && !cliente) {
+            alert("ERRO: SELECIONE UM CLIENTE PARA O FIADO!");
+            return;
+        }
+
+        // Preencher Recibo
+        document.getElementById('data-recibo').innerText = new Date().toLocaleString();
+        document.getElementById('total-recibo').innerText = "R$ " + totalGeral.toFixed(2);
+        document.getElementById('cliente-recibo').innerText = "CLIENTE: " + (cliente || "CONSUMIDOR");
+        
+        const tabelaRecibo = document.getElementById('itens-recibo');
+        tabelaRecibo.innerHTML = "";
+        carrinho.forEach(i => {
+            tabelaRecibo.innerHTML += `<tr><td>${i.qtd}x</td><td>${i.nome}</td><td align="right">R$ ${i.preco.toFixed(2)}</td></tr>`;
+        });
+
+        // Imprimir
+        const conteudo = document.getElementById('cupom-recibo').innerHTML;
+        const win = window.open('', '', 'height=700,width=350');
+        win.document.write('<html><body style="margin:10px; font-family:monospace;">');
+        win.document.write(conteudo);
+        win.document.write('</body></html>');
+        win.print();
+        win.close();
+        
+        location.reload();
+    }
+
+    window.onload = iniciar;
 </script>
+
+</body>
+</html>
