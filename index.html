@@ -5,184 +5,166 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDV Elite - Boteco 934</title>
     <style>
-        /* ESTILO (CSS) */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f4; display: flex; height: 100vh; margin: 0; }
+        :root { --primary: #2c3e50; --success: #27ae60; --danger: #e74c3c; --gray: #ecf0f1; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #bdc3c7; margin: 0; padding: 20px; }
         
-        #lado-esquerdo { width: 40%; background: #fff; border-right: 2px solid #ddd; padding: 20px; display: flex; flex-direction: column; }
-        #lado-direito { width: 60%; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .pdv-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 1100px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        
+        h2 { text-transform: uppercase; color: var(--primary); border-bottom: 2px solid var(--primary); padding-bottom: 10px; margin-top: 0; }
+        
+        /* Listas laterais */
+        .box { background: var(--gray); padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        select { width: 100%; height: 120px; border: 1px solid #ccc; border-radius: 4px; padding: 5px; font-size: 14px; text-transform: uppercase; }
 
-        h2 { margin-top: 0; color: #333; border-bottom: 2px solid #27ae60; padding-bottom: 5px; }
-        
-        select, input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; text-transform: uppercase; }
-        
-        .caixa-lista { flex-grow: 1; overflow-y: auto; background: #fafafa; border: 1px solid #eee; padding: 10px; border-radius: 5px; }
-        
-        .grid-pagamento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        
-        .total-box { font-size: 28px; font-weight: bold; color: #27ae60; text-align: center; padding: 15px; background: #e8f5e9; border-radius: 8px; }
-        .restante-box { font-size: 20px; font-weight: bold; color: #e74c3c; text-align: center; }
+        /* Inputs de Pagamento */
+        .metodos-pgto { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .campo { display: flex; flex-direction: column; margin-bottom: 10px; }
+        label { font-size: 12px; font-weight: bold; color: #555; margin-bottom: 3px; }
+        input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        input:focus { border-color: var(--primary); outline: none; background: #fffde7; }
 
-        .btn-acao { cursor: pointer; padding: 15px; border: none; border-radius: 5px; font-weight: bold; font-size: 16px; transition: 0.3s; }
-        .btn-fechar { background: #27ae60; color: white; width: 100%; }
-        .btn-fechar:hover { background: #219150; }
-        
-        .contato-destaque { font-weight: bold; color: #2980b9; margin-bottom: 10px; }
+        /* Calculadora de Totais */
+        .painel-valores { background: var(--primary); color: white; padding: 20px; border-radius: 8px; text-align: center; }
+        .valor-grande { font-size: 32px; font-weight: bold; display: block; }
+        .restante-box { margin-top: 15px; padding: 10px; border-radius: 4px; font-weight: bold; }
+        .falta { background: var(--danger); }
+        .pago { background: var(--success); }
+
+        .btn-finalizar { width: 100%; padding: 20px; background: var(--success); color: white; border: none; border-radius: 8px; font-size: 20px; font-weight: bold; cursor: pointer; margin-top: 15px; text-transform: uppercase; transition: 0.3s; }
+        .btn-finalizar:hover { background: #219150; transform: scale(1.02); }
     </style>
 </head>
 <body>
 
-    <div id="lado-esquerdo">
-        <h2>📦 Mercadorias</h2>
-        <input type="text" id="busca-produto" placeholder="Buscar produto..." oninput="filtrarProdutos()">
-        <select id="lista-produtos" size="12" ondoubleclick="adicionarAoCarrinho()"></select>
+<div class="pdv-container">
+    
+    <div>
+        <h2>Itens e Pagamento</h2>
         
-        <h3>🛒 Itens da Venda</h3>
-        <div class="caixa-lista" id="carrinho">
+        <div class="box">
+            <label>LISTA DE MERCADORIAS NO CARRINHO</label>
+            <select id="lista-venda" size="5">
+                <option>1x CERVEJA LATA - R$ 6.00</option>
+                <option>2x REFRIGERANTE - R$ 10.00</option>
+                <option>1x PORÇÃO BATATA - R$ 35.00</option>
+            </select>
+        </div>
+
+        <div class="metodos-pgto">
+            <div class="campo">
+                <label>DINHEIRO</label>
+                <input type="number" class="pg" id="v-dinheiro" step="0.01" oninput="atualizarCalculos()">
             </div>
-        <div class="total-box" id="visor-total">Total: R$ 0,00</div>
+            <div class="campo">
+                <label>PIX</label>
+                <input type="number" class="pg" id="v-pix" step="0.01" oninput="atualizarCalculos()">
+            </div>
+            <div class="campo">
+                <label>C. CRÉDITO</label>
+                <input type="number" class="pg" id="v-credito" step="0.01" oninput="atualizarCalculos()">
+            </div>
+            <div class="campo">
+                <label>C. DÉBITO</label>
+                <input type="number" class="pg" id="v-debito" step="0.01" oninput="atualizarCalculos()">
+            </div>
+            <div class="campo" style="grid-column: span 2;">
+                <label>FIADO (PENDURA)</label>
+                <input type="number" class="pg" id="v-fiado" step="0.01" oninput="atualizarCalculos()" style="border: 2px solid var(--danger);">
+            </div>
+        </div>
     </div>
 
-    <div id="lado-direito">
-        <h2>👤 Cliente & Cobrança</h2>
+    <div>
+        <h2>Finalização</h2>
         
-        <input type="text" id="busca-cliente" placeholder="Buscar cliente..." oninput="filtrarClientes()">
-        <select id="lista-clientes" size="5" onchange="selecionarCliente()"></select>
-        <div id="contato-cliente" class="contato-destaque">Contato: ---</div>
+        <div class="box">
+            <label>SELECIONAR CLIENTE (OBRIGATÓRIO PARA FIADO)</label>
+            <select id="select-clientes">
+                <option value="">-- SELECIONE O CLIENTE --</option>
+            </select>
+        </div>
 
-        <div class="grid-pagamento">
-            <div>
-                <label>💵 Dinheiro:</label>
-                <input type="number" id="pg-dinheiro" class="pg-input" step="0.01" placeholder="0.00" oninput="calcularPagamento()">
-            </div>
-            <div>
-                <label>💳 Cartão Crédito:</label>
-                <input type="number" id="pg-credito" class="pg-input" step="0.01" placeholder="0.00" oninput="calcularPagamento()">
-            </div>
-            <div>
-                <label>💳 Cartão Débito:</label>
-                <input type="number" id="pg-debito" class="pg-input" step="0.01" placeholder="0.00" oninput="calcularPagamento()">
-            </div>
-            <div>
-                <label>📱 PIX:</label>
-                <input type="number" id="pg-pix" class="pg-input" step="0.01" placeholder="0.00" oninput="calcularPagamento()">
-            </div>
-            <div style="grid-column: span 2;">
-                <label>📝 FIADO (Pendura):</label>
-                <input type="number" id="pg-fiado" class="pg-input" step="0.01" placeholder="0.00" oninput="calcularPagamento()">
+        <div class="painel-valores">
+            <span>TOTAL A PAGAR</span>
+            <span class="valor-grande">R$ <span id="display-total">51.00</span></span>
+            
+            <div id="status-box" class="restante-box falta">
+                FALTA RECEBER: R$ <span id="display-restante">51.00</span>
             </div>
         </div>
 
-        <div class="restante-box" id="visor-restante">Falta: R$ 0,00</div>
-        
-        <button class="btn-acao btn-fechar" onclick="finalizarVenda()">FINALIZAR CONTA</button>
+        <button class="btn-finalizar" onclick="validarVenda()">Fechar Conta</button>
     </div>
+</div>
 
-    <script>
-        // DADOS DO SISTEMA
-        let produtosBD = [
-            { nome: "Cerveja Lata", preco: 6.50 },
-            { nome: "Coca-Cola 2L", preco: 12.00 },
-            { nome: "Petisco Misto", preco: 25.00 },
-            { nome: "Agua Mineral", preco: 3.50 }
-        ];
+<script>
+    // Configurações Iniciais
+    const valorTotalVenda = 51.00; // Aqui entraria a soma real do seu sistema
+    const clientesDB = ["Zeca Urubu", "Adriano Silva", "Bruno Souza", "Carlos Lima", "Aparecida"];
 
-        let clientesBD = [
-            { nome: "Adriano Santos", fone: "(87) 98888-1111" },
-            { nome: "Bruno Oliveira", fone: "(87) 98888-2222" },
-            { nome: "Zeca Pagodinho", fone: "(87) 98888-3333" },
-            { nome: "Carlos Lima", fone: "(87) 98888-4444" }
-        ];
+    // 1. Organizar Clientes (Ordem Alfabética e Maiúsculas)
+    function popularClientes() {
+        const select = document.getElementById('select-clientes');
+        clientesDB.sort((a, b) => a.localeCompare(b)); // Ordem Alfabética
 
-        let totalVenda = 0;
+        clientesDB.forEach(nome => {
+            const opt = document.createElement('option');
+            opt.value = nome.toUpperCase();
+            opt.textContent = nome.toUpperCase();
+            select.appendChild(opt);
+        });
+    }
 
-        // INICIALIZAÇÃO
-        function init() {
-            carregarProdutos();
-            carregarClientes();
+    // 2. Calculadora de Restante/Troco
+    function atualizarCalculos() {
+        const inputs = document.querySelectorAll('.pg');
+        let totalPago = 0;
+
+        inputs.forEach(input => {
+            totalPago += parseFloat(input.value) || 0;
+        });
+
+        const restante = valorTotalVenda - totalPago;
+        const statusBox = document.getElementById('status-box');
+        const displayRestante = document.getElementById('display-restante');
+
+        if (restante <= 0) {
+            statusBox.className = "restante-box pago";
+            statusBox.innerHTML = "TROCO: R$ " + Math.abs(restante).toFixed(2);
+        } else {
+            statusBox.className = "restante-box falta";
+            statusBox.innerHTML = "FALTA RECEBER: R$ " + restante.toFixed(2);
+        }
+    }
+
+    // 3. Validação Final
+    function validarVenda() {
+        const valorFiado = parseFloat(document.getElementById('v-fiado').value) || 0;
+        const cliente = document.getElementById('select-clientes').value;
+        const inputs = document.querySelectorAll('.pg');
+        let totalPago = 0;
+
+        inputs.forEach(input => totalPago += parseFloat(input.value) || 0);
+
+        // Regra 1: Se tem fiado, precisa de cliente
+        if (valorFiado > 0 && cliente === "") {
+            alert("⚠️ ATENÇÃO: Selecione um cliente para registrar o FIADO!");
+            return;
         }
 
-        function carregarProdutos() {
-            const select = document.getElementById('lista-produtos');
-            select.innerHTML = "";
-            produtosBD.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(p => {
-                let opt = document.createElement('option');
-                opt.text = `${p.nome.toUpperCase()} - R$ ${p.preco.toFixed(2)}`;
-                opt.value = p.preco;
-                select.add(opt);
-            });
+        // Regra 2: Valor total precisa bater (ou sobrar troco)
+        if (totalPago < valorTotalVenda) {
+            alert("⚠️ ERRO: O valor pago é menor que o total da conta!");
+            return;
         }
 
-        function carregarClientes() {
-            const select = document.getElementById('lista-clientes');
-            select.innerHTML = "";
-            clientesBD.sort((a,b) => a.nome.localeCompare(b.nome)).forEach(c => {
-                let opt = document.createElement('option');
-                opt.text = c.nome.toUpperCase();
-                opt.setAttribute('data-fone', c.fone);
-                select.add(opt);
-            });
-        }
+        alert("✅ CONTA FECHADA COM SUCESSO!\nImprimindo comprovante...");
+        location.reload(); // Reinicia para a próxima venda
+    }
 
-        function selecionarCliente() {
-            const select = document.getElementById('lista-clientes');
-            const fone = select.options[select.selectedIndex].getAttribute('data-fone');
-            document.getElementById('contato-cliente').innerText = "Contato: " + fone;
-        }
+    // Iniciar sistema
+    window.onload = popularClientes;
+</script>
 
-        function adicionarAoCarrinho() {
-            const select = document.getElementById('lista-produtos');
-            if (select.selectedIndex == -1) return;
-            
-            const preco = parseFloat(select.value);
-            const nome = select.options[select.selectedIndex].text;
-            
-            totalVenda += preco;
-            document.getElementById('visor-total').innerText = "Total: R$ " + totalVenda.toFixed(2);
-            
-            const item = document.createElement('div');
-            item.innerText = nome;
-            document.getElementById('carrinho').appendChild(item);
-            calcularPagamento();
-        }
-
-        function calcularPagamento() {
-            let pago = 0;
-            document.querySelectorAll('.pg-input').forEach(input => {
-                pago += parseFloat(input.value) || 0;
-            });
-
-            let falta = totalVenda - pago;
-            const visorFalta = document.getElementById('visor-restante');
-            
-            if(falta <= 0) {
-                visorFalta.innerText = "CONTA PAGA / TROCO: R$ " + Math.abs(falta).toFixed(2);
-                visorFalta.style.color = "#27ae60";
-            } else {
-                visorFalta.innerText = "Falta: R$ " + falta.toFixed(2);
-                visorFalta.style.color = "#e74c3c";
-            }
-        }
-
-        function finalizarVenda() {
-            const fiado = parseFloat(document.getElementById('pg-fiado').value) || 0;
-            const cliente = document.getElementById('lista-clientes').value;
-            const falta = totalVenda - Array.from(document.querySelectorAll('.pg-input')).reduce((acc, input) => acc + (parseFloat(input.value) || 0), 0);
-
-            if (fiado > 0 && !cliente) {
-                alert("❌ ERRO: Para FIADO, selecione um cliente!");
-                return;
-            }
-
-            if (falta > 0.01) {
-                alert("❌ ERRO: O valor pago é menor que o total!");
-                return;
-            }
-
-            alert("✅ VENDA FINALIZADA NO BOTECO 934!");
-            location.reload(); // Reseta para a próxima venda
-        }
-
-        window.onload = init;
-    </script>
 </body>
 </html>
