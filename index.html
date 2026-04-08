@@ -1,305 +1,103 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boteco 934 & Boticário - Versão Final Gold</title>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PDV Elite - Boteco 934</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
-        /* CSS ORGANIZADO */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { display: flex; background: #f4f7f6; min-height: 100vh; color: #333; }
-        
-        /* Sidebar */
-        .sidebar { width: 240px; background: #1a252f; color: white; padding: 20px; position: fixed; height: 100vh; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
-        .sidebar h2 { color: #2ecc71; text-align: center; margin-bottom: 30px; border-bottom: 1px solid #34495e; padding-bottom: 10px; }
-        .menu-item { padding: 12px; cursor: pointer; border-radius: 8px; list-style: none; margin-bottom: 8px; transition: 0.3s; display: flex; align-items: center; gap: 10px; }
-        .menu-item:hover, .active { background: #27ae60; }
-        
-        /* Conteúdo Principal */
-        .main-content { flex: 1; margin-left: 240px; padding: 30px; width: calc(100% - 240px); }
-        .secao { display: none; animation: fadeIn 0.3s; }
-        .secao.ativa { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        /* Cards e Grids */
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 20px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .stat-box { padding: 15px; border-radius: 10px; color: white; text-align: center; }
-        
-        /* Etiquetas Profissionais */
-        .grid-etiquetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
-        .etiqueta { width: 200px; border: 1px solid #000; background: white; padding: 8px; text-align: center; }
-        .etiqueta .price { font-size: 28px; font-weight: bold; margin: 5px 0; }
-
-        /* Tabelas */
-        table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
-        th { background: #ecf0f1; padding: 12px; font-size: 13px; color: #7f8c8d; }
-        td { padding: 12px; border-bottom: 1px solid #f1f1f1; text-align: center; font-size: 14px; }
-
-        /* Botões e Forms */
-        input, select { padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 10px; width: 100%; }
-        .btn { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; color: white; transition: 0.2s; }
-        .btn-success { background: #27ae60; }
-        .btn-primary { background: #2980b9; }
-        .btn-danger { background: #e74c3c; }
-
-        @media print {
-            .sidebar, .btn, .no-print { display: none !important; }
-            .main-content { margin-left: 0; padding: 0; }
-            .grid-etiquetas { grid-template-columns: repeat(3, 1fr); }
-        }
+        body { background-color: #000; color: #fff; font-family: sans-serif; }
+        .btn-pdv { transition: all 0.2s; border: 1px solid #333; }
+        .btn-pdv:active { transform: scale(0.95); background-color: #222; }
     </style>
 </head>
-<body>
+<body class="p-4">
 
-    <div class="sidebar">
-        <h2>Boteco 934</h2>
-        <ul>
-            <li class="menu-item active" onclick="mudarTela('tela-caixa')">🛒 Caixa / PDV</li>
-            <li class="menu-item" onclick="mudarTela('tela-estoque')">📦 Estoque & Mix</li>
-            <li class="menu-item" onclick="mudarTela('tela-boticario')">🌿 Boticário</li>
-            <li class="menu-item" onclick="mudarTela('tela-etiquetas')">🏷️ Etiquetas</li>
-            <li class="menu-item" onclick="mudarTela('tela-financeiro')">📊 Relatórios</li>
-        </ul>
-        <div style="position: absolute; bottom: 20px; width: 200px;">
-            <button class="btn btn-primary" style="width: 100%;" onclick="exportarDados()">💾 Salvar Backup</button>
+    <header class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+        <div>
+            <h1 class="text-2xl font-bold text-yellow-500">BOTECO 934</h1>
+            <p class="text-xs text-gray-400">SISTEMA EM NUVEM</p>
         </div>
+        <div id="status-conexao" class="h-3 w-3 rounded-full bg-red-500"></div>
+    </header>
+
+    <div class="grid grid-cols-2 gap-4 mb-8">
+        <button onclick="registrarVenda('Cerveja Lata', 6.00)" class="btn-pdv p-6 rounded-xl flex flex-col items-center">
+            <span class="text-3xl mb-2">🍺</span>
+            <span>Cerveja Lata</span>
+            <span class="text-yellow-500 font-bold">R$ 6,00</span>
+        </button>
+        <button onclick="registrarVenda('Dose Cana', 3.00)" class="btn-pdv p-6 rounded-xl flex flex-col items-center">
+            <span class="text-3xl mb-2">🥃</span>
+            <span>Dose Cana</span>
+            <span class="text-yellow-500 font-bold">R$ 3,00</span>
+        </button>
     </div>
 
-    <div class="main-content">
-        
-        <div id="tela-caixa" class="secao ativa">
-            <div class="stats-grid">
-                <div class="stat-box" style="background: #27ae60;"><h4>Vendas Hoje</h4><p id="vendas-dia">R$ 0,00</p></div>
-                <div class="stat-box" style="background: #e67e22;"><h4>Penduras</h4><p id="total-pendura">R$ 0,00</p></div>
+    <div class="bg-gray-900 p-4 rounded-xl border border-gray-800">
+        <h2 class="text-lg font-semibold mb-4 border-b border-gray-800 pb-2">Vendas Hoje (Nuvem)</h2>
+        <div id="lista-vendas" class="space-y-2 max-h-60 overflow-y-auto mb-4">
             </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 350px; gap: 20px;">
-                <div class="card">
-                    <input type="text" id="busca-pdv" placeholder="Bipar código ou digitar nome..." oninput="renderPDV()">
-                    <div id="lista-pdv" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 400px; overflow-y: auto;"></div>
-                </div>
-                <div class="card">
-                    <h3>Carrinho</h3>
-                    <div id="carrinho-itens" style="margin: 15px 0; min-height: 150px;"></div>
-                    <h2 id="total-carrinho" style="text-align: center; color: #27ae60; margin-bottom: 15px;">R$ 0,00</h2>
-                    <select id="metodo-pgto">
-                        <option>Dinheiro</option><option>PIX</option><option>Cartão</option><option>PENDURA</option>
-                    </select>
-                    <input type="text" id="cliente-nome" placeholder="Nome do Cliente (Obrigatório para Pendura)">
-                    <button class="btn btn-success" style="width: 100%; padding: 15px;" onclick="finalizarVenda()">Finalizar Venda</button>
-                </div>
-            </div>
+        <div class="flex justify-between text-xl font-bold text-green-500 pt-2 border-t border-gray-800">
+            <span>TOTAL:</span>
+            <span id="total-dia">R$ 0,00</span>
         </div>
-
-        <div id="tela-estoque" class="secao">
-            <div class="card">
-                <h3>Cadastrar Novo Produto</h3>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px;">
-                    <input type="text" id="cad-nome" placeholder="Produto">
-                    <input type="text" id="cad-ean" placeholder="Código EAN">
-                    <input type="number" id="cad-custo" placeholder="Custo R$">
-                    <input type="number" id="cad-venda" placeholder="Venda R$">
-                    <select id="cad-cat"><option>Cerveja</option><option>Dose</option><option>Petisco</option><option>Outros</option></select>
-                    <input type="number" id="cad-qtd" placeholder="Qtd">
-                    <button class="btn btn-success" style="grid-column: span 2;" onclick="salvarProduto()">Salvar no Sistema</button>
-                </div>
-            </div>
-            <table>
-                <thead><tr><th>EAN</th><th>Produto</th><th>Categoria</th><th>Custo</th><th>Venda</th><th>Margem</th><th>Estoque</th><th>Ações</th></tr></thead>
-                <tbody id="corpo-estoque"></tbody>
-            </table>
-        </div>
-
-        <div id="tela-boticario" class="secao">
-            <div class="card" style="border-left: 5px solid #006400;">
-                <h3>Nova Encomenda Boticário</h3>
-                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 10px; margin-top: 10px;">
-                    <input type="text" id="bot-cliente" placeholder="Cliente">
-                    <input type="text" id="bot-prod" placeholder="Produto">
-                    <input type="number" id="bot-venda" placeholder="Venda R$">
-                    <input type="number" id="bot-lucro" placeholder="Lucro R$">
-                    <button class="btn btn-success" onclick="salvarBoticario()">Lançar</button>
-                </div>
-            </div>
-            <table id="tab-boticario">
-                <thead><tr><th>Cliente</th><th>Produto</th><th>Valor</th><th>Lucro</th><th>Status</th><th>Ações</th></tr></thead>
-                <tbody id="corpo-boticario"></tbody>
-            </table>
-        </div>
-
-        <div id="tela-etiquetas" class="secao">
-            <div class="no-print">
-                <h2>Gerador de Etiquetas de Gôndola</h2>
-                <button class="btn btn-primary" style="margin: 20px 0;" onclick="window.print()">Imprimir Tudo</button>
-            </div>
-            <div class="grid-etiquetas" id="area-etiquetas"></div>
-        </div>
-
-        <div id="tela-financeiro" class="secao">
-            <div class="stats-grid" id="financeiro-dashboard"></div>
-            <div class="card">
-                <h3>Histórico de Vendas</h3>
-                <table id="tab-historico">
-                    <thead><tr><th>Data</th><th>Descrição</th><th>Valor</th><th>Lucro</th></tr></thead>
-                    <tbody id="corpo-historico"></tbody>
-                </table>
-            </div>
-        </div>
-
     </div>
 
     <script>
-        let db = JSON.parse(localStorage.getItem('b934_final')) || {
-            produtos: [], vendas: [], boticario: [], penduras: {}
+        // CONFIGURAÇÃO QUE VOCÊ ME MANDOU
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxjhzLPeqBqJ18S8m7lagxuvF9LX7OJks",
+            authDomain: "boteco934-afc3f.firebaseapp.com",
+            projectId: "boteco934-afc3f",
+            storageBucket: "boteco934-afc3f.firebasestorage.app",
+            messagingSenderId: "182023728304",
+            appId: "1:182023728304:web:040a13bb6f1c9fff35f75",
+            databaseURL: "https://boteco934-afc3f-default-rtdb.firebaseio.com/" 
         };
-        let carrinho = [];
 
-        function mudarTela(id) {
-            document.querySelectorAll('.secao').forEach(s => s.classList.remove('ativa'));
-            document.getElementById(id).classList.add('ativa');
-            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
-            if(id === 'tela-caixa') renderPDV();
-            if(id === 'tela-estoque') renderEstoque();
-            if(id === 'tela-boticario') renderBoticario();
-            if(id === 'tela-etiquetas') renderEtiquetas();
-            if(id === 'tela-financeiro') renderFinanceiro();
-        }
+        // INICIALIZAR FIREBASE
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
 
-        // --- LÓGICA DO CAIXA ---
-        function renderPDV() {
-            const busca = document.getElementById('busca-pdv').value.toLowerCase();
-            const lista = document.getElementById('lista-pdv');
-            lista.innerHTML = db.produtos.filter(p => p.nome.toLowerCase().includes(busca) || p.ean.includes(busca))
-                .map(p => `<div class="card" style="cursor:pointer; text-align:center" onclick='addCarrinho(${JSON.stringify(p)})'>
-                    <small>${p.categoria}</small><br><b>${p.nome}</b><br>R$ ${p.venda.toFixed(2)}
-                </div>`).join('');
+        // ELEMENTOS DA TELA
+        const statusConexao = document.getElementById('status-conexao');
+        const listaVendas = document.getElementById('lista-vendas');
+        const totalDiaLabel = document.getElementById('total-dia');
+
+        // FUNÇÃO PARA REGISTRAR VENDA
+        function registrarVenda(produto, valor) {
+            const novaVenda = {
+                item: produto,
+                preco: valor,
+                hora: new Date().toLocaleTimeString(),
+                data: new Date().toLocaleDateString()
+            };
             
-            let fia = Object.values(db.penduras).reduce((a,b) => a+b, 0);
-            document.getElementById('total-pendura').innerText = `R$ ${fia.toFixed(2)}`;
+            database.ref('vendas').push(novaVenda);
+            alert(produto + ' registrado na nuvem!');
         }
 
-        function addCarrinho(p) {
-            carrinho.push(p);
-            renderCarrinho();
-        }
-
-        function renderCarrinho() {
+        // ESCUTAR O BANCO DE DADOS (TEMPO REAL)
+        database.ref('vendas').on('value', (snapshot) => {
+            statusConexao.classList.replace('bg-red-500', 'bg-green-500');
+            listaVendas.innerHTML = '';
             let total = 0;
-            document.getElementById('carrinho-itens').innerHTML = carrinho.map((item, i) => {
-                total += item.venda;
-                return `<div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:5px;">
-                    <span>${item.nome}</span> <b>R$ ${item.venda.toFixed(2)}</b>
-                </div>`;
-            }).join('');
-            document.getElementById('total-carrinho').innerText = `R$ ${total.toFixed(2)}`;
-        }
 
-        function finalizarVenda() {
-            if(carrinho.length === 0) return;
-            let pgto = document.getElementById('metodo-pgto').value;
-            let cliente = document.getElementById('cliente-nome').value || "Avulso";
-            let total = carrinho.reduce((a,b) => a + b.venda, 0);
-            let lucro = carrinho.reduce((a,b) => a + (b.venda - b.custo), 0);
+            snapshot.forEach((item) => {
+                const venda = item.val();
+                total += venda.preco;
 
-            if(pgto === 'PENDURA') {
-                if(cliente === "Avulso") return alert("Dê nome ao cliente para o fiado!");
-                db.penduras[cliente] = (db.penduras[cliente] || 0) + total;
-            } else {
-                db.vendas.push({ data: new Date().toLocaleDateString(), desc: "Venda Bar", valor: total, lucro: lucro });
-            }
-
-            // Baixa no estoque
-            carrinho.forEach(item => {
-                let p = db.produtos.find(prod => prod.nome === item.nome);
-                if(p) p.qtd--;
+                const div = document.createElement('div');
+                div.className = "flex justify-between text-sm text-gray-300";
+                div.innerHTML = `<span>${venda.hora} - ${venda.item}</span><span>R$ ${venda.preco.toFixed(2)}</span>`;
+                listaVendas.prepend(div);
             });
 
-            carrinho = [];
-            salvar();
-            alert("Venda realizada!");
-            mudarTela('tela-caixa');
-        }
-
-        // --- ESTOQUE E BOTICÁRIO ---
-        function salvarProduto() {
-            db.produtos.push({
-                ean: document.getElementById('cad-ean').value || "0000",
-                nome: document.getElementById('cad-nome').value,
-                custo: parseFloat(document.getElementById('cad-custo').value),
-                venda: parseFloat(document.getElementById('cad-venda').value),
-                categoria: document.getElementById('cad-cat').value,
-                qtd: parseInt(document.getElementById('cad-qtd').value)
-            });
-            salvar(); renderEstoque();
-        }
-
-        function renderEstoque() {
-            document.getElementById('corpo-estoque').innerHTML = db.produtos.map((p, i) => `
-                <tr><td>${p.ean}</td><td>${p.nome}</td><td>${p.categoria}</td><td>R$ ${p.custo}</td><td>R$ ${p.venda}</td>
-                <td>${((p.venda-p.custo)/p.custo*100).toFixed(0)}%</td><td>${p.qtd}</td>
-                <td><button class="btn-danger" onclick="removerProd(${i})">X</button></td></tr>
-            `).join('');
-        }
-
-        function salvarBoticario() {
-            db.boticario.push({
-                cliente: document.getElementById('bot-cliente').value,
-                prod: document.getElementById('bot-prod').value,
-                valor: parseFloat(document.getElementById('bot-venda').value),
-                lucro: parseFloat(document.getElementById('bot-lucro').value),
-                status: "Pendente"
-            });
-            salvar(); renderBoticario();
-        }
-
-        function renderBoticario() {
-            document.getElementById('corpo-boticario').innerHTML = db.boticario.map((v, i) => `
-                <tr><td>${v.cliente}</td><td>${v.prod}</td><td>R$ ${v.valor}</td><td>R$ ${v.lucro}</td>
-                <td><b style="color:${v.status === 'Pendente' ? 'orange' : 'green'}">${v.status}</b></td>
-                <td><button class="btn-success" onclick="entregarBot(${i})">Entregar</button></td></tr>
-            `).join('');
-        }
-
-        function entregarBot(i) {
-            db.boticario[i].status = "Entregue";
-            db.vendas.push({ data: new Date().toLocaleDateString(), desc: "Boticário: " + db.boticario[i].cliente, valor: db.boticario[i].valor, lucro: db.boticario[i].lucro });
-            salvar(); renderBoticario();
-        }
-
-        // --- ETIQUETAS E FINAL ---
-        function renderEtiquetas() {
-            const area = document.getElementById('area-etiquetas');
-            area.innerHTML = db.produtos.map(p => `
-                <div class="etiqueta">
-                    <div style="font-size:10px">BOTECO 934</div>
-                    <div style="font-weight:bold; height:30px; overflow:hidden">${p.nome}</div>
-                    <div class="price">R$ ${p.venda.toFixed(2)}</div>
-                    <svg class="bc" jsbarcode-value="${p.ean}" jsbarcode-width="1.2" jsbarcode-height="25" jsbarcode-fontSize="10"></svg>
-                </div>
-            `).join('');
-            JsBarcode(".bc").init();
-        }
-
-        function renderFinanceiro() {
-            let totalBar = db.vendas.reduce((a,b) => a + b.valor, 0);
-            let lucroTotal = db.vendas.reduce((a,b) => a + b.lucro, 0);
-            document.getElementById('financeiro-dashboard').innerHTML = `
-                <div class="stat-box" style="background: #2980b9;"><h4>Bruto Total</h4><p>R$ ${totalBar.toFixed(2)}</p></div>
-                <div class="stat-box" style="background: #27ae60;"><h4>Lucro Limpo</h4><p>R$ ${lucroTotal.toFixed(2)}</p></div>
-            `;
-            document.getElementById('corpo-historico').innerHTML = db.vendas.slice().reverse().map(v => `
-                <tr><td>${v.data}</td><td>${v.desc}</td><td>R$ ${v.valor.toFixed(2)}</td><td>R$ ${v.lucro.toFixed(2)}</td></tr>
-            `).join('');
-        }
-
-        function removerProd(i) { db.produtos.splice(i,1); salvar(); renderEstoque(); }
-        function salvar() { localStorage.setItem('b934_final', JSON.stringify(db)); }
-        function exportarDados() {
-            const data = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-            const dl = document.createElement('a'); dl.setAttribute("href", data); dl.setAttribute("download", "backup_boteco934.json"); dl.click();
-        }
+            totalDiaLabel.innerText = 'R$ ' + total.toFixed(2);
+        });
     </script>
 </body>
 </html>
