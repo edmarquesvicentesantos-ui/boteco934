@@ -5,62 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDV Elite - Boteco 934</title>
     <style>
-        /* ESTILO GERAL */
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #2c3e50; color: #333; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         #container { display: flex; width: 100%; padding: 10px; gap: 10px; box-sizing: border-box; }
-        
         .painel { background: #ecf0f1; padding: 15px; border-radius: 8px; flex: 1; display: flex; flex-direction: column; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-        h2 { margin: 0 0 10px 0; border-bottom: 3px solid #27ae60; padding-bottom: 5px; color: #2c3e50; display: flex; align-items: center; gap: 10px; }
-
+        h2 { margin: 0 0 10px 0; border-bottom: 3px solid #27ae60; padding-bottom: 5px; color: #2c3e50; font-size: 18px; }
         input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #bdc3c7; border-radius: 4px; box-sizing: border-box; font-size: 14px; text-transform: uppercase; }
-        
-        /* ÁREA DO CARRINHO */
         .carrinho-area { flex-grow: 1; background: #fff; border: 1px solid #ddd; margin: 10px 0; padding: 5px; overflow-y: auto; border-radius: 4px; }
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
         th { background: #dcdde1; padding: 8px; text-align: left; }
         td { padding: 8px; border-bottom: 1px solid #eee; }
-        
         .total-destaque { font-size: 26px; font-weight: bold; background: #27ae60; color: white; padding: 12px; text-align: center; border-radius: 4px; }
-        
-        /* PAGAMENTOS */
         .grid-pagamento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .campo-pg { background: #fff; padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-weight: bold; font-size: 12px; }
-        .campo-pg input { margin-top: 5px; border: 1px solid #3498db; }
-        
-        .btn-finalizar { background: #2980b9; color: white; border: none; padding: 18px; font-size: 20px; font-weight: bold; cursor: pointer; border-radius: 4px; margin-top: 10px; transition: 0.2s; }
-        .btn-finalizar:hover { background: #3498db; transform: scale(1.01); }
-
+        .campo-pg { background: #fff; padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-weight: bold; font-size: 11px; }
+        .btn-finalizar { background: #2980b9; color: white; border: none; padding: 18px; font-size: 20px; font-weight: bold; cursor: pointer; border-radius: 4px; margin-top: 10px; }
         .btn-excluir { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 18px; font-weight: bold; }
-        .btn-excluir:hover { color: #c0392b; }
-
-        /* RECIBO OCULTO */
         #cupom-recibo { display: none; }
-
-        @media print {
-            body * { visibility: hidden; }
-            #cupom-recibo, #cupom-recibo * { visibility: visible; }
-            #cupom-recibo { position: absolute; left: 0; top: 0; width: 100%; }
-        }
+        @media print { body * { visibility: hidden; } #cupom-recibo, #cupom-recibo * { visibility: visible; } #cupom-recibo { position: absolute; left: 0; top: 0; width: 100%; } }
     </style>
 </head>
 <body>
 
 <div id="container">
     <div class="painel">
-        <h2>📦 MERCADORIAS</h2>
+        <h2 id="titulo-venda">🛒 AGUARDANDO CLIENTE...</h2>
         <input type="text" id="busca-prod" placeholder="🔍 PESQUISAR PRODUTO..." oninput="filtrarProdutos()">
-        <select id="select-produtos" size="8" ondblclick="addCarrinho()"></select>
-        
+        <select id="select-produtos" size="10" ondblclick="addCarrinho()"></select>
         <div class="carrinho-area">
             <table id="tabela-itens">
-                <thead>
-                    <tr>
-                        <th>QTD</th>
-                        <th>ITEM</th>
-                        <th>TOTAL</th>
-                        <th style="text-align:center">❌</th>
-                    </tr>
-                </thead>
+                <thead><tr><th>QTD</th><th>ITEM</th><th>TOTAL</th><th style="text-align:center">❌</th></tr></thead>
                 <tbody></tbody>
             </table>
         </div>
@@ -68,74 +40,53 @@
     </div>
 
     <div class="painel">
-        <h2>👤 CLIENTE & PAGAMENTO</h2>
+        <h2>👤 SELECIONAR CLIENTE</h2>
         <input type="text" id="busca-cli" placeholder="🔍 PESQUISAR CLIENTE..." oninput="filtrarClientes()">
-        <select id="select-clientes" size="4" onchange="mostrarContato()"></select>
-        <div id="info-contato" style="font-weight: bold; color: #2980b9; margin: 5px 0;">CONTATO: ---</div>
+        <select id="select-clientes" size="5" onchange="abrirMesa()"></select>
+        <div id="info-contato" style="font-weight: bold; color: #2980b9; margin: 5px 0; min-height: 40px;">CONTATO: ---</div>
 
         <div class="grid-pagamento">
-            <div class="campo-pg">💵 DINHEIRO: <input type="number" id="pg-dinheiro" oninput="calcRestante()" step="0.01" placeholder="0.00"></div>
-            <div class="campo-pg">📱 PIX: <input type="number" id="pg-pix" oninput="calcRestante()" step="0.01" placeholder="0.00"></div>
-            <div class="campo-pg">💳 CARTÃO: <input type="number" id="pg-cartao" oninput="calcRestante()" step="0.01" placeholder="0.00"></div>
-            <div class="campo-pg">📝 FIADO: <input type="number" id="pg-fiado" oninput="calcRestante()" step="0.01" placeholder="0.00"></div>
+            <div class="campo-pg">💵 DINHEIRO: <input type="number" id="pg-dinheiro" oninput="calcRestante()" step="0.01"></div>
+            <div class="campo-pg">📱 PIX: <input type="number" id="pg-pix" oninput="calcRestante()" step="0.01"></div>
+            <div class="campo-pg">💳 CARTÃO: <input type="number" id="pg-cartao" oninput="calcRestante()" step="0.01"></div>
+            <div class="campo-pg">📝 FIADO: <input type="number" id="pg-fiado" oninput="calcRestante()" step="0.01"></div>
         </div>
-
         <div id="display-falta" style="text-align: center; font-weight: bold; margin-top: 15px; font-size: 18px; color: #e74c3c;">FALTA: R$ 0,00</div>
-        <button class="btn-finalizar" onclick="fecharConta()">FINALIZAR E GERAR RECIBO</button>
+        <button class="btn-finalizar" onclick="fecharConta()">FINALIZAR CONTA</button>
     </div>
 </div>
 
 <div id="cupom-recibo">
-    <div style="width: 280px; padding: 10px; font-family: 'Courier New', monospace; color: #000;">
-        <center>
-            <strong style="font-size: 18px;">BOTECO 934</strong><br>
-            DISTRIBUIDORA DE BEBIDAS<br>
-            PETROLINA - PE<br>
-            --------------------------------<br>
-            <strong>CUPOM DE VENDA</strong><br>
-            <span id="data-recibo"></span><br>
-            --------------------------------
-        </center>
+    <div style="width: 280px; padding: 10px; font-family: 'Courier New', monospace;">
+        <center><strong>BOTECO 934</strong><br>DISTRIBUIDORA DE BEBIDAS<br>--------------------------------<br><strong>CUPOM DE VENDA</strong><br><span id="data-recibo"></span><br>--------------------------------</center>
         <table width="100%" id="itens-recibo" style="font-size: 12px; margin-top: 10px;"></table>
         --------------------------------<br>
-        <div style="display: flex; justify-content: space-between; font-weight: bold;">
-            <span>TOTAL:</span> <span id="total-recibo">R$ 0,00</span>
-        </div>
+        <div style="display: flex; justify-content: space-between; font-weight: bold;"><span>TOTAL:</span> <span id="total-recibo">R$ 0,00</span></div>
         <div id="pagamentos-recibo" style="font-size: 11px; margin-top: 5px;"></div>
         --------------------------------<br>
-        <center>
-            <span id="cliente-recibo" style="font-weight: bold;">CLIENTE: CONSUMIDOR</span><br><br>
-            OBRIGADO PELA PREFERENCIA!<br>
-            PDV ELITE - BOTECO 934
-        </center>
+        <center><span id="cliente-recibo" style="font-weight: bold;"></span><br><br>OBRIGADO PELA PREFERENCIA!</center>
     </div>
 </div>
 
 <script>
-    // BANCO DE DADOS LOCAL
     let produtos = [
         { nome: "Cerveja Lata 350ml", preco: 6.00 },
         { nome: "Cerveja Garrafa 600ml", preco: 10.00 },
         { nome: "Coca-Cola 2L", preco: 12.00 },
-        { nome: "Agua s/ Gas 500ml", preco: 3.00 },
-        { nome: "Petisco Caseiro", preco: 15.00 },
-        { nome: "Energético", preco: 14.00 }
+        { nome: "Agua s/ Gas 500ml", preco: 3.00 }
     ];
 
     let clientes = [
         { nome: "Adriano Silva", tel: "87 98888-1111" },
         { nome: "Bruno Oliveira", tel: "87 98888-2222" },
-        { nome: "Zeca Pagodinho", tel: "87 98888-3333" },
-        { nome: "Maria Silva", tel: "87 98888-4444" }
+        { nome: "Zeca Pagodinho", tel: "87 98888-3333" }
     ];
 
     let carrinho = [];
     let totalGeral = 0;
+    let clienteAtivo = "";
 
-    function iniciar() {
-        filtrarProdutos();
-        filtrarClientes();
-    }
+    function iniciar() { filtrarProdutos(); filtrarClientes(); }
 
     function filtrarProdutos() {
         const busca = document.getElementById('busca-prod').value.toUpperCase();
@@ -166,118 +117,48 @@
         });
     }
 
-    function mostrarContato() {
+    function abrirMesa() {
         const select = document.getElementById('select-clientes');
-        if (select.selectedIndex === -1) return;
+        clienteAtivo = select.options[select.selectedIndex].text;
         const tel = select.options[select.selectedIndex].getAttribute('data-tel');
-        document.getElementById('info-contato').innerText = "CONTATO: " + tel;
+        
+        document.getElementById('titulo-venda').innerText = "🛒 MESA: " + clienteAtivo;
+        document.getElementById('info-contato').innerHTML = "CONTATO: " + tel;
     }
 
     function addCarrinho() {
+        if (!clienteAtivo) { alert("⚠️ SELECIONE O CLIENTE ANTES DE ABRIR A MESA!"); return; }
         const select = document.getElementById('select-produtos');
-        if (select.selectedIndex === -1) return;
-        
         const nome = select.options[select.selectedIndex].getAttribute('data-nome');
         const preco = parseFloat(select.value);
         
-        let itemExistente = carrinho.find(i => i.nome === nome);
-        if (itemExistente) {
-            itemExistente.qtd += 1;
-        } else {
-            carrinho.push({ nome, preco, qtd: 1 });
-        }
+        let item = carrinho.find(i => i.nome === nome);
+        if (item) { item.qtd += 1; } else { carrinho.push({ nome, preco, qtd: 1 }); }
         atualizarTelaCarrinho();
     }
 
-    function removerItem(index) {
-        carrinho.splice(index, 1);
-        atualizarTelaCarrinho();
-    }
+    function removerItem(index) { carrinho.splice(index, 1); atualizarTelaCarrinho(); }
 
     function atualizarTelaCarrinho() {
         const corpo = document.querySelector('#tabela-itens tbody');
-        corpo.innerHTML = "";
-        totalGeral = 0;
-
+        corpo.innerHTML = ""; totalGeral = 0;
         carrinho.forEach((item, index) => {
-            let subtotal = item.preco * item.qtd;
-            totalGeral += subtotal;
-            corpo.innerHTML += `
-                <tr>
-                    <td>${item.qtd}x</td>
-                    <td>${item.nome}</td>
-                    <td>R$ ${subtotal.toFixed(2)}</td>
-                    <td align="center"><button class="btn-excluir" onclick="removerItem(${index})">❌</button></td>
-                </tr>`;
+            let sub = item.preco * item.qtd; totalGeral += sub;
+            corpo.innerHTML += `<tr><td>${item.qtd}x</td><td>${item.nome}</td><td>R$ ${sub.toFixed(2)}</td><td align="center"><button class="btn-excluir" onclick="removerItem(${index})">❌</button></td></tr>`;
         });
-
         document.getElementById('display-total').innerText = "TOTAL: R$ " + totalGeral.toFixed(2);
         calcRestante();
     }
 
     function calcRestante() {
-        const p1 = parseFloat(document.getElementById('pg-dinheiro').value) || 0;
-        const p2 = parseFloat(document.getElementById('pg-pix').value) || 0;
-        const p3 = parseFloat(document.getElementById('pg-cartao').value) || 0;
-        const p4 = parseFloat(document.getElementById('pg-fiado').value) || 0;
-        
-        let falta = totalGeral - (p1 + p2 + p3 + p4);
-        const display = document.getElementById('display-falta');
-        
-        if(falta <= 0.01) {
-            display.innerText = "VALOR OK / TROCO: R$ " + Math.abs(falta).toFixed(2);
-            display.style.color = "#27ae60";
-        } else {
-            display.innerText = "FALTA: R$ " + falta.toFixed(2);
-            display.style.color = "#e74c3c";
-        }
+        const soma = (parseFloat(document.getElementById('pg-dinheiro').value) || 0) + (parseFloat(document.getElementById('pg-pix').value) || 0) + (parseFloat(document.getElementById('pg-cartao').value) || 0) + (parseFloat(document.getElementById('pg-fiado').value) || 0);
+        let falta = totalGeral - soma;
+        const d = document.getElementById('display-falta');
+        d.innerText = falta <= 0.01 ? "VALOR OK / TROCO: R$ " + Math.abs(falta).toFixed(2) : "FALTA: R$ " + falta.toFixed(2);
+        d.style.color = falta <= 0.01 ? "#27ae60" : "#e74c3c";
     }
 
     function fecharConta() {
         const fiado = parseFloat(document.getElementById('pg-fiado').value) || 0;
-        const clienteSelect = document.getElementById('select-clientes');
-        const clienteNome = clienteSelect.options[clienteSelect.selectedIndex]?.text;
-
-        if (carrinho.length === 0) {
-            alert("CARRINHO VAZIO!");
-            return;
-        }
-
-        if (fiado > 0 && !clienteNome) {
-            alert("⚠️ SELECIONE UM CLIENTE PARA O FIADO!");
-            return;
-        }
-
-        // PREPARAR RECIBO
-        document.getElementById('data-recibo').innerText = new Date().toLocaleString();
-        document.getElementById('total-recibo').innerText = "R$ " + totalGeral.toFixed(2);
-        document.getElementById('cliente-recibo').innerText = "CLIENTE: " + (clienteNome || "CONSUMIDOR");
-        
-        const tabelaRecibo = document.getElementById('itens-recibo');
-        tabelaRecibo.innerHTML = "";
-        carrinho.forEach(i => {
-            tabelaRecibo.innerHTML += `<tr><td>${i.qtd}x</td><td>${i.nome}</td><td align="right">R$ ${(i.qtd*i.preco).toFixed(2)}</td></tr>`;
-        });
-
-        const pagRecibo = document.getElementById('pagamentos-recibo');
-        pagRecibo.innerHTML = "";
-        const mps = [
-            {n: "DINHEIRO", v: document.getElementById('pg-dinheiro').value},
-            {n: "PIX", v: document.getElementById('pg-pix').value},
-            {n: "CARTÃO", v: document.getElementById('pg-cartao').value},
-            {n: "FIADO", v: document.getElementById('pg-fiado').value}
-        ];
-        mps.forEach(m => {
-            if(m.v > 0) pagRecibo.innerHTML += `<div>${m.n}: R$ ${parseFloat(m.v).toFixed(2)}</div>`;
-        });
-
-        // IMPRIMIR E REINICIAR
-        window.print();
-        location.reload();
-    }
-
-    window.onload = iniciar;
-</script>
-
-</body>
-</html>
+        if (carrinho.length === 0) { alert("CARRINHO VAZIO!"); return; }
+        if (fiado > 0
