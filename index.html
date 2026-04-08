@@ -26,11 +26,12 @@
 <body>
 
     <div class="sidebar p-4">
-        <h2 class="text-xl font-bold mb-8 text-center menu-text border-b border-gray-700 pb-2 text-yellow-500">Boteco 934</h2>
+        <h2 class="text-xl font-bold mb-8 text-center menu-text border-b border-gray-700 pb-2 text-yellow-500 text-sm">Boteco 934</h2>
         <nav class="space-y-2">
             <button onclick="mudar('mesas')" class="w-full p-3 rounded hover:bg-orange-600 flex items-center bg-orange-500"><span>🪑</span><span class="ml-3 menu-text text-sm font-bold">MESAS</span></button>
             <button onclick="mudar('bar')" class="w-full p-3 rounded hover:bg-blue-600 flex items-center"><span>🍺</span><span class="ml-3 menu-text text-sm">VENDAS</span></button>
-            <button onclick="mudar('fiado')" class="w-full p-3 rounded hover:bg-red-600 flex items-center"><span>📝</span><span class="ml-3 menu-text text-sm text-red-300">FIADO</span></button>
+            <button onclick="mudar('fiado')" class="w-full p-3 rounded hover:bg-red-600 flex items-center"><span>📝</span><span class="ml-3 menu-text text-sm">FIADO</span></button>
+            <button onclick="mudar('calc')" class="w-full p-3 rounded hover:bg-green-600 flex items-center"><span>🧮</span><span class="ml-3 menu-text text-sm font-bold">CALCULADORA</span></button>
             <button onclick="mudar('relatorio')" class="w-full p-3 rounded hover:bg-gray-700 flex items-center"><span>📊</span><span class="ml-3 menu-text text-sm">CAIXA</span></button>
         </nav>
     </div>
@@ -38,37 +39,59 @@
     <main class="main-content p-4">
         
         <div id="mesas" class="section active">
-            <h1 class="text-2xl font-bold mb-4 text-gray-800">Mapa de Mesas</h1>
+            <h1 class="text-2xl font-bold mb-4 font-mono text-gray-700">Mapa de Mesas</h1>
             <div id="grid-mesas" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
         </div>
 
         <div id="bar" class="section">
-            <h1 id="titulo-venda" class="text-2xl font-bold mb-4">Lançar Item</h1>
-            <p id="mesa-selecionada" class="mb-4 text-orange-600 font-bold bg-orange-100 p-2 rounded inline-block hidden">
-                MESA <span id="num-mesa">0</span> - <span id="cliente-mesa-atual">AVULSO</span>
-            </p>
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="registrarConsumo('Cerveja Lata', 6.00)" class="bg-white p-6 rounded-xl shadow border font-bold">🍺 Cerveja R$6</button>
-                <button onclick="registrarConsumo('Dose Cana', 3.00)" class="bg-white p-6 rounded-xl shadow border font-bold">🥃 Cana R$3</button>
-                <button onclick="registrarConsumo('Espetinho', 8.00)" class="bg-white p-6 rounded-xl shadow border font-bold">🍢 Espetinho R$8</button>
-                <button onclick="mudar('mesas')" class="bg-gray-200 p-6 rounded-xl shadow border font-bold text-gray-600">⬅ VOLTAR</button>
+            <h1 id="titulo-venda" class="text-2xl font-bold mb-4 uppercase">Lançar Item</h1>
+            <div class="bg-white p-4 rounded-xl shadow border mb-4">
+                <input id="input-barcode" type="text" placeholder="Bipe o código de barras..." class="w-full p-3 border-2 border-blue-500 rounded-lg focus:outline-none">
+            </div>
+            <div id="lista-produtos" class="grid grid-cols-2 gap-4"></div>
+            <button onclick="mudar('mesas')" class="w-full mt-6 bg-gray-200 p-4 rounded-xl font-bold text-gray-600 uppercase italic">Voltar</button>
+        </div>
+
+        <div id="calc" class="section">
+            <h1 class="text-2xl font-bold mb-4 text-green-700">Calculadora de Compra e Dose</h1>
+            
+            <div class="bg-white p-4 rounded-xl shadow border mb-6">
+                <h2 class="font-bold mb-2 text-sm uppercase">Comparar Preço (Litro)</h2>
+                <div class="grid grid-cols-2 gap-2">
+                    <input id="mix-preco" type="number" placeholder="Preço R$" class="p-2 border rounded">
+                    <input id="mix-ml" type="number" placeholder="ML (Ex: 350)" class="p-2 border rounded">
+                </div>
+                <button onclick="calcularMix()" class="w-full mt-2 bg-green-600 text-white p-2 rounded font-bold">CALCULAR VALOR POR LITRO</button>
+                <div id="res-mix" class="mt-2 text-center font-bold text-green-700"></div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl shadow border">
+                <h2 class="font-bold mb-2 text-sm uppercase">Custo da Dose</h2>
+                <div class="space-y-2 text-sm">
+                    <input id="dose-garrafa-preco" type="number" placeholder="Preço da Garrafa R$" class="w-full p-2 border rounded">
+                    <input id="dose-garrafa-ml" type="number" placeholder="ML da Garrafa (Ex: 700)" class="w-full p-2 border rounded">
+                    <input id="dose-tamanho" type="number" placeholder="Tamanho da Dose ML (Ex: 50)" class="w-full p-2 border rounded">
+                    <button onclick="calcularDose()" class="w-full bg-blue-600 text-white p-2 rounded font-bold">CALCULAR CUSTO DA DOSE</button>
+                </div>
+                <div id="res-dose" class="mt-4 p-2 bg-blue-50 rounded text-center font-bold text-blue-800"></div>
             </div>
         </div>
 
         <div id="fiado" class="section">
-            <h1 class="text-2xl font-bold mb-4 text-red-600">Controle de Pendura</h1>
+            <h1 class="text-2xl font-bold mb-4 text-red-600 font-mono">Controle Pendura</h1>
             <div class="bg-white p-4 rounded-xl shadow mb-6">
-                <input id="cliente-nome" type="text" placeholder="NOME DO CLIENTE" class="w-full p-2 mb-2 border rounded uppercase">
-                <input id="cliente-valor" type="number" placeholder="VALOR R$" class="w-full p-2 mb-2 border rounded">
-                <button onclick="lancarFiado()" class="w-full bg-red-600 text-white p-2 rounded font-bold">LANÇAR NO FIADO</button>
+                <input id="cliente-nome" type="text" placeholder="Nome do Cliente" class="w-full p-2 mb-2 border rounded">
+                <input id="cliente-contato" type="tel" placeholder="WhatsApp (DDD + Número)" class="w-full p-2 mb-2 border rounded">
+                <input id="cliente-valor" type="number" placeholder="Valor R$" class="w-full p-2 mb-2 border rounded">
+                <button onclick="lancarFiado()" class="w-full bg-red-600 text-white p-2 rounded font-bold uppercase">Lançar no Fiado</button>
             </div>
             <div id="lista-fiado" class="space-y-2"></div>
         </div>
 
         <div id="relatorio" class="section">
-            <h1 class="text-2xl font-bold mb-4">Caixa Geral</h1>
-            <div id="total-geral" class="text-4xl font-bold text-green-600 mb-6 bg-white p-4 rounded shadow inline-block">R$ 0,00</div>
-            <div id="historico-vendas" class="bg-white p-4 rounded shadow space-y-2 max-h-96 overflow-y-auto"></div>
+            <h1 class="text-2xl font-bold mb-4">Relatório de Caixa</h1>
+            <div id="total-geral" class="text-4xl font-bold text-green-600 mb-6 bg-white p-4 rounded shadow border inline-block font-mono">R$ 0,00</div>
+            <div id="historico-vendas" class="bg-white p-4 rounded shadow space-y-2 max-h-96 overflow-y-auto text-sm"></div>
         </div>
     </main>
 
@@ -86,116 +109,150 @@
         const db = firebase.database();
 
         let mesaAtual = 0;
-        let clienteAtual = "";
+
+        // FUNÇÕES CALCULADORA
+        function calcularMix() {
+            const p = parseFloat(document.getElementById('mix-preco').value);
+            const ml = parseFloat(document.getElementById('mix-ml').value);
+            if(p && ml) {
+                const litro = (p / ml) * 1000;
+                document.getElementById('res-mix').innerText = "Sai a R$ " + litro.toFixed(2) + " por Litro";
+            }
+        }
+
+        function calcularDose() {
+            const p = parseFloat(document.getElementById('dose-garrafa-preco').value);
+            const mlG = parseFloat(document.getElementById('dose-garrafa-ml').value);
+            const mlD = parseFloat(document.getElementById('dose-tamanho').value);
+            if(p && mlG && mlD) {
+                const custo = (p / mlG) * mlD;
+                const totalDoses = Math.floor(mlG / mlD);
+                document.getElementById('res-dose').innerHTML = `Custo por Dose: R$ ${custo.toFixed(2)}<br>Rende ${totalDoses} doses por garrafa`;
+            }
+        }
+
+        // PADRONIZAÇÃO NOMES
+        function formatarNome(str) {
+            return str.toLowerCase().replace(/(^\w{1})|(\s+\w{1})/g, l => l.toUpperCase());
+        }
+
+        const mercadorias = [
+            { n: 'Cerveja Lata', p: 6.00, i: '🍺', barcode: '7891234567890' },
+            { n: 'Dose Cana', p: 3.00, i: '🥃', barcode: '' },
+            { n: 'Espetinho', p: 8.00, i: '🍢', barcode: '' },
+            { n: 'Refrigerante', p: 5.00, i: '🥤', barcode: '7891149200003' }
+        ].sort((a, b) => a.n.localeCompare(b.n));
+
+        function renderizarProdutos() {
+            document.getElementById('lista-produtos').innerHTML = mercadorias.map(m => `
+                <button onclick="registrarConsumo('${m.n}', ${m.p})" class="bg-white p-4 rounded-xl shadow border font-bold flex flex-col items-center">
+                    <span class="text-2xl">${m.i}</span>
+                    <span class="text-[10px] uppercase">${m.n}</span>
+                    <span class="text-blue-600 text-xs font-mono italic">R$ ${m.p.toFixed(2)}</span>
+                </button>
+            `).join('');
+        }
+        renderizarProdutos();
 
         function mudar(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        function abrirMesa(num, clienteExistente) {
+        function abrirMesa(num, cliente) {
             mesaAtual = num;
-            if (clienteExistente) {
-                clienteAtual = clienteExistente;
-            } else {
-                clienteAtual = prompt("Nome do Cliente para a Mesa " + num + ":") || "CLIENTE";
-                db.ref('mesas_ativas/' + num + '/cliente').set(clienteAtual);
-            }
+            let nome = cliente || formatarNome(prompt("Cliente da Mesa " + num + ":") || "CLIENTE");
+            if (!cliente) db.ref('mesas_ativas/' + num + '/cliente').set(nome);
             document.getElementById('num-mesa').innerText = num;
-            document.getElementById('cliente-mesa-atual').innerText = clienteAtual.toUpperCase();
+            document.getElementById('cliente-mesa-atual').innerText = nome;
             document.getElementById('mesa-selecionada').classList.remove('hidden');
             mudar('bar');
         }
 
         function registrarConsumo(item, valor) {
-            const data = new Date().toLocaleString();
+            const itemF = formatarNome(item);
             if(mesaAtual > 0) {
-                db.ref('mesas_ativas/' + mesaAtual + '/consumo').push({ item, valor, data });
+                db.ref('mesas_ativas/' + mesaAtual + '/consumo').push({ item: itemF, valor, data: new Date().toLocaleString() });
                 mudar('mesas');
             } else {
-                db.ref('vendas_gerais').push({ item, valor, data, tipo: 'direta' });
-                alert('Venda registrada!');
+                db.ref('vendas_gerais').push({ item: itemF, valor, data: new Date().toLocaleString() });
+                alert('OK!');
             }
         }
 
+        // FIREBASE SYNC
+        db.ref('mesas_ativas').on('value', snap => {
+            const grid = document.getElementById('grid-mesas');
+            grid.innerHTML = '';
+            for(let i=1; i<=12; i++) {
+                const mesa = (snap.val() || {})[i];
+                let total = 0;
+                if(mesa && mesa.consumo) Object.values(mesa.consumo).forEach(v => total += v.valor);
+                grid.innerHTML += `
+                    <div class="mesa-card p-4 rounded-xl shadow border ${mesa ? 'mesa-ocupada' : 'bg-white'}">
+                        <div class="text-[10px] font-bold text-gray-400">MESA ${i}</div>
+                        <div class="font-bold truncate text-sm">${mesa ? mesa.cliente : 'Livre'}</div>
+                        <div class="text-red-600 font-bold text-xs">R$ ${total.toFixed(2)}</div>
+                        <div class="mt-2 flex gap-1">
+                            <button onclick="abrirMesa(${i}, '${mesa ? mesa.cliente : ''}')" class="flex-1 bg-blue-500 text-white rounded py-1 text-[10px]">ADD</button>
+                            ${mesa ? `<button onclick="fecharMesa(${i}, ${total}, '${mesa.cliente}')" class="flex-1 bg-green-500 text-white rounded py-1 text-[10px]">FECHAR</button>` : ''}
+                        </div>
+                    </div>`;
+            }
+        });
+
         function fecharMesa(num, total, nome) {
-            if(confirm("Fechar conta " + nome + " (Mesa " + num + ") - Total: R$ " + total.toFixed(2) + "?")) {
-                db.ref('vendas_gerais').push({ item: 'MESA ' + num + ' (' + nome + ')', valor: total, data: new Date().toLocaleString() });
+            if(confirm(`Fechar ${nome}? R$ ${total.toFixed(2)}`)) {
+                db.ref('vendas_gerais').push({ item: `Mesa ${num} (${nome})`, valor: total, data: new Date().toLocaleString() });
                 db.ref('mesas_ativas/' + num).remove();
             }
         }
 
-        // ATUALIZAÇÃO MAPA DE MESAS
-        db.ref('mesas_ativas').on('value', (snapshot) => {
-            const grid = document.getElementById('grid-mesas');
-            grid.innerHTML = '';
-            const dadosSist = snapshot.val() || {};
-
-            for(let i=1; i<=12; i++) {
-                const mesa = dadosSist[i];
-                let totalMesa = 0;
-                let nomeCliente = "";
-                
-                if(mesa) {
-                    nomeCliente = mesa.cliente || "OCUPADA";
-                    if(mesa.consumo) {
-                        Object.values(mesa.consumo).forEach(v => totalMesa += v.valor);
-                    }
-                }
-
-                const card = document.createElement('div');
-                card.className = `mesa-card p-4 rounded-xl shadow border ${mesa ? 'mesa-ocupada' : 'bg-white'}`;
-                card.innerHTML = `
-                    <div class="text-xs font-bold text-gray-500 uppercase">Mesa ${i}</div>
-                    <div class="font-bold text-lg truncate">${nomeCliente}</div>
-                    <div class="text-sm font-bold text-red-600">R$ ${totalMesa.toFixed(2)}</div>
-                    <div class="mt-2 flex gap-1">
-                        <button onclick="abrirMesa(${i}, '${nomeCliente}')" class="flex-1 bg-blue-500 text-white py-1 rounded text-[10px] font-bold">ADD</button>
-                        ${mesa ? `<button onclick="fecharMesa(${i}, ${totalMesa}, '${nomeCliente}')" class="flex-1 bg-green-500 text-white py-1 rounded text-[10px] font-bold">PAGAR</button>` : ''}
-                    </div>
-                `;
-                grid.appendChild(card);
-            }
-        });
-
-        // (Relatório e Fiado seguem a mesma lógica anterior para manter os dados salvos)
-        db.ref('vendas_gerais').on('value', (s) => {
-            let t = 0;
-            const h = document.getElementById('historico-vendas');
-            h.innerHTML = '';
-            s.forEach(v => {
-                t += v.val().valor;
-                const d = document.createElement('div');
-                d.className = "text-xs border-b py-1 flex justify-between";
-                d.innerHTML = `<span>${v.val().item}</span><span class="font-bold">R$ ${v.val().valor.toFixed(2)}</span>`;
-                h.prepend(d);
-            });
-            document.getElementById('total-geral').innerText = 'R$ ' + t.toFixed(2);
-        });
-
         function lancarFiado() {
-            const n = document.getElementById('cliente-nome').value.trim().toUpperCase();
-            const v = parseFloat(document.getElementById('cliente-valor').value);
-            if(n && v) {
-                db.ref('fiado/' + n).transaction(a => (a || 0) + v);
+            const nome = formatarNome(document.getElementById('cliente-nome').value.trim());
+            const tel = document.getElementById('cliente-contato').value.trim();
+            const valor = parseFloat(document.getElementById('cliente-valor').value);
+            if(nome && valor) {
+                db.ref('fiado/' + nome).transaction(a => {
+                    const at = a || { saldo: 0, telefone: tel };
+                    return { saldo: (at.saldo || 0) + valor, telefone: tel || at.telefone || '' };
+                });
                 document.getElementById('cliente-nome').value = '';
                 document.getElementById('cliente-valor').value = '';
             }
         }
 
-        db.ref('fiado').on('value', (s) => {
-            const l = document.getElementById('lista-fiado');
-            l.innerHTML = '';
-            s.forEach(p => {
-                if(p.val() > 0) {
-                    const d = document.createElement('div');
-                    d.className = "bg-white p-2 rounded shadow flex justify-between items-center text-sm border-l-4 border-red-500";
-                    d.innerHTML = `<span><b>${p.key}</b>: R$ ${p.val().toFixed(2)}</span>
-                                   <button onclick="window.open('https://api.whatsapp.com/send?text=Olá ${p.key}! Seu saldo no Boteco 934 é R$ ${p.val().toFixed(2)}')" class="bg-green-500 text-white px-2 py-1 rounded text-[10px]">📱 COBRAR</button>`;
-                    l.appendChild(d);
-                }
+        db.ref('fiado').on('value', snap => {
+            const lista = document.getElementById('lista-fiado');
+            lista.innerHTML = '';
+            const cls = [];
+            snap.forEach(p => { if(p.val().saldo > 0) cls.push({ n: p.key, v: p.val().saldo, t: p.val().telefone }); });
+            cls.sort((a,b) => a.n.localeCompare(b.n)).forEach(c => {
+                lista.innerHTML += `
+                    <div class="bg-white p-3 rounded shadow flex justify-between items-center text-sm border-l-4 border-red-500">
+                        <span><b>${c.n}</b><br>R$ ${c.v.toFixed(2)}</span>
+                        <button onclick="window.open('https://api.whatsapp.com/send?phone=55${c.t}&text=Olá ${c.n}, seu saldo no Boteco 934 é R$ ${c.v.toFixed(2)}')" class="bg-green-500 text-white p-2 rounded text-[10px]">WHATSAPP</button>
+                    </div>`;
             });
         });
+
+        db.ref('vendas_gerais').on('value', s => {
+            let t = 0;
+            const h = document.getElementById('historico-vendas');
+            h.innerHTML = '';
+            s.forEach(v => {
+                t += v.val().valor;
+                h.insertAdjacentHTML('afterbegin', `<div class="flex justify-between border-b py-1"><span>${v.val().item}</span><b>R$ ${v.val().valor.toFixed(2)}</b></div>`);
+            });
+            document.getElementById('total-geral').innerText = 'R$ ' + t.toFixed(2);
+        });
+
+        function fecharMesa(num, total, nome) {
+            if(confirm(`Fechar Mesa ${num} (${nome}) - Total R$ ${total.toFixed(2)}?`)) {
+                db.ref('vendas_gerais').push({ item: `Mesa ${num} (${nome})`, valor: total, data: new Date().toLocaleString() });
+                db.ref('mesas_ativas/' + num).remove();
+            }
+        }
     </script>
 </body>
 </html>
