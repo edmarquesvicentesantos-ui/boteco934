@@ -3,23 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Boteco 934 & Boticário - Nuvem</title>
+    <title>PDV Elite - Boteco 934</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
-        body { background-color: #f4f7f6; color: #333; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #f4f7f6; color: #333; font-family: sans-serif; }
         .sidebar { width: 240px; background: #1a252f; color: white; height: 100vh; position: fixed; }
         .main-content { margin-left: 240px; width: calc(100% - 240px); }
-        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; }
-        .btn-item { transition: all 0.2s; border: 1px solid #e2e8f0; }
-        .btn-item:active { transform: scale(0.95); background: #edf2f7; }
         .section { display: none; }
         .section.active { display: block; animation: fadeIn 0.3s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @media (max-width: 768px) {
-            .sidebar { width: 60px; padding: 10px 5px; }
-            .sidebar h2, .menu-text { display: none; }
+            .sidebar { width: 60px; }
+            .menu-text { display: none; }
             .main-content { margin-left: 60px; width: calc(100% - 60px); }
         }
     </style>
@@ -27,75 +24,47 @@
 <body>
 
     <div class="sidebar p-4">
-        <h2 class="text-xl font-bold mb-8 border-b border-gray-700 pb-4 text-center">PDV 934</h2>
-        <nav>
-            <button onclick="mudarSecao('bar')" class="w-full flex items-center p-3 mb-2 rounded hover:bg-blue-600 transition">
-                <span>🍺</span> <span class="menu-text ml-3">Boteco</span>
-            </button>
-            <button onclick="mudarSecao('boticario')" class="w-full flex items-center p-3 mb-2 rounded hover:bg-pink-600 transition">
-                <span>✨</span> <span class="menu-text ml-3">Boticário</span>
-            </button>
-            <button onclick="mudarSecao('relatorio')" class="w-full flex items-center p-3 mb-2 rounded hover:bg-gray-700 transition">
-                <span>📊</span> <span class="menu-text ml-3">Relatório</span>
-            </button>
+        <h2 class="text-xl font-bold mb-8 text-center menu-text">Boteco 934</h2>
+        <nav class="space-y-2">
+            <button onclick="mudar('bar')" class="w-full p-3 rounded hover:bg-blue-600 flex items-center"><span>🍺</span><span class="ml-3 menu-text text-sm">Vendas</span></button>
+            <button onclick="mudar('fiado')" class="w-full p-3 rounded hover:bg-red-600 flex items-center"><span>📝</span><span class="ml-3 menu-text text-sm">Fiado</span></button>
+            <button onclick="mudar('boticario')" class="w-full p-3 rounded hover:bg-pink-600 flex items-center"><span>✨</span><span class="ml-3 menu-text text-sm">Boticário</span></button>
+            <button onclick="mudar('relatorio')" class="w-full p-3 rounded hover:bg-gray-700 flex items-center"><span>📊</span><span class="ml-3 menu-text text-sm">Relatório</span></button>
         </nav>
     </div>
 
     <main class="main-content p-6">
         <div id="bar" class="section active">
-            <h1 class="text-2xl font-bold mb-6 text-gray-800">Vendas do Boteco</h1>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <button onclick="vender('Cerveja Lata', 6.00, 'bar')" class="btn-item p-4 rounded-xl bg-white flex flex-col items-center">
-                    <span class="text-2xl">🍺</span>
-                    <span class="font-semibold">Cerveja Lata</span>
-                    <span class="text-blue-600">R$ 6,00</span>
-                </button>
-                <button onclick="vender('Dose Cana', 3.00, 'bar')" class="btn-item p-4 rounded-xl bg-white flex flex-col items-center">
-                    <span class="text-2xl">🥃</span>
-                    <span class="font-semibold">Dose Cana</span>
-                    <span class="text-blue-600">R$ 3,00</span>
-                </button>
-                <button onclick="vender('Espetinho', 8.00, 'bar')" class="btn-item p-4 rounded-xl bg-white flex flex-col items-center">
-                    <span class="text-2xl">🍢</span>
-                    <span class="font-semibold">Espetinho</span>
-                    <span class="text-blue-600">R$ 8,00</span>
-                </button>
+            <h1 class="text-2xl font-bold mb-4">Vendas Rápidas</h1>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="vender('Cerveja Lata', 6.00, 'bar')" class="bg-white p-6 rounded-xl shadow border">🍺 Cerveja R$6</button>
+                <button onclick="vender('Dose Cana', 3.00, 'bar')" class="bg-white p-6 rounded-xl shadow border">🥃 Cana R$3</button>
             </div>
+        </div>
+
+        <div id="fiado" class="section">
+            <h1 class="text-2xl font-bold mb-4 text-red-600">Controle de Fiado</h1>
+            <div class="bg-white p-4 rounded-xl shadow mb-6">
+                <input id="cliente-nome" type="text" placeholder="Nome do Cliente" class="w-full p-2 mb-2 border rounded uppercase">
+                <input id="cliente-valor" type="number" placeholder="Valor R$" class="w-full p-2 mb-2 border rounded">
+                <button onclick="lancarFiado()" class="w-full bg-red-600 text-white p-2 rounded font-bold">LANÇAR NO PENDURA</button>
+            </div>
+            <div id="lista-fiado" class="space-y-3"></div>
         </div>
 
         <div id="boticario" class="section">
-            <h1 class="text-2xl font-bold mb-6 text-pink-700">Vendas Boticário</h1>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <button onclick="vender('Perfume Malbec', 180.00, 'boticario')" class="btn-item p-4 rounded-xl bg-white border-pink-100 flex flex-col items-center">
-                    <span class="text-2xl">🎁</span>
-                    <span class="font-semibold">Malbec</span>
-                    <span class="text-pink-600">R$ 180,00</span>
-                </button>
-                <button onclick="vender('Creme Lily', 95.00, 'boticario')" class="btn-item p-4 rounded-xl bg-white border-pink-100 flex flex-col items-center">
-                    <span class="text-2xl">🧴</span>
-                    <span class="font-semibold">Creme Lily</span>
-                    <span class="text-pink-600">R$ 95,00</span>
-                </button>
-            </div>
+            <h1 class="text-2xl font-bold mb-4 text-pink-600 text-sm">Boticário</h1>
+            <button onclick="vender('Perfume Malbec', 180.00, 'boticario')" class="w-full bg-white p-6 rounded-xl shadow border mb-2 text-left">🎁 Malbec - R$180,00</button>
         </div>
 
         <div id="relatorio" class="section">
-            <h1 class="text-2xl font-bold mb-6">Resumo de Vendas (Nuvem)</h1>
-            <div class="card">
-                <div id="lista-vendas" class="space-y-3 mb-6 max-h-96 overflow-y-auto">
-                    <p class="text-gray-400 text-center">Carregando dados...</p>
-                </div>
-                <div class="border-t pt-4 flex justify-between items-center">
-                    <span class="text-xl font-bold">TOTAL GERAL:</span>
-                    <span id="total-valor" class="text-2xl font-bold text-green-600">R$ 0,00</span>
-                </div>
-                <button onclick="limparVendas()" class="mt-6 text-xs text-red-400 underline">Limpar histórico da nuvem</button>
-            </div>
+            <h1 class="text-2xl font-bold mb-4">Vendas Totais</h1>
+            <div id="total-geral" class="text-3xl font-bold text-green-600 mb-4 font-mono">R$ 0,00</div>
+            <div id="historico-vendas" class="bg-white p-4 rounded shadow space-y-2 max-h-96 overflow-y-auto"></div>
         </div>
     </main>
 
     <script>
-        // CONFIGURAÇÃO DO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAxjhzLPeqBqJ18S8m7lagxuvF9LX7OJks",
             authDomain: "boteco934-afc3f.firebaseapp.com",
@@ -105,57 +74,81 @@
             appId: "1:182023728304:web:040a13bb6f1c9fff35f75",
             databaseURL: "https://boteco934-afc3f-default-rtdb.firebaseio.com/"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function mudarSecao(id) {
+        function mudar(id) {
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(id).classList.add('active');
         }
 
-        function vender(nome, preco, categoria) {
-            const venda = {
-                item: nome,
-                valor: preco,
-                tipo: categoria,
-                data: new Date().toLocaleString('pt-BR')
-            };
-            db.ref('vendas_gerais').push(venda);
-            alert('Vendido: ' + nome);
+        function vender(item, valor, tipo) {
+            db.ref('vendas_gerais').push({ item, valor, tipo, data: new Date().toLocaleString() });
+            alert('Venda registrada!');
         }
 
-        // ATUALIZAÇÃO EM TEMPO REAL
-        db.ref('vendas_gerais').on('value', (snapshot) => {
-            const lista = document.getElementById('lista-vendas');
-            const totalTexto = document.getElementById('total-valor');
-            lista.innerHTML = '';
-            let total = 0;
-
-            snapshot.forEach((filho) => {
-                const v = filho.val();
-                total += v.valor;
-                
-                const itemDiv = document.createElement('div');
-                itemDiv.className = "flex justify-between border-b pb-2 text-sm";
-                const cor = v.tipo === 'boticario' ? 'text-pink-600' : 'text-blue-600';
-                itemDiv.innerHTML = `
-                    <div>
-                        <span class="font-bold">${v.item}</span><br>
-                        <span class="text-xs text-gray-400">${v.data}</span>
-                    </div>
-                    <span class="${cor} font-bold">R$ ${v.valor.toFixed(2)}</span>
-                `;
-                lista.prepend(itemDiv);
-            });
-            totalTexto.innerText = 'R$ ' + total.toFixed(2);
-        });
-
-        function limparVendas() {
-            if(confirm("Deseja apagar todas as vendas do banco de dados?")) {
-                db.ref('vendas_gerais').remove();
+        function lancarFiado() {
+            const nome = document.getElementById('cliente-nome').value.trim().toUpperCase();
+            const valor = parseFloat(document.getElementById('cliente-valor').value);
+            if(nome && valor) {
+                db.ref('fiado/' + nome).transaction((atual) => (atual || 0) + valor);
+                document.getElementById('cliente-nome').value = '';
+                document.getElementById('cliente-valor').value = '';
             }
         }
+
+        function pagarFiado(nome) {
+            const valor = parseFloat(prompt("Quanto " + nome + " está pagando?"));
+            if(valor) {
+                db.ref('fiado/' + nome).transaction((atual) => (atual || 0) - valor);
+            }
+        }
+
+        function enviarCobranca(nome, saldo) {
+            const msg = `Olá ${nome}! Passando para informar que seu saldo atual no Boteco 934 é de R$ ${saldo.toFixed(2)}. Quando puder, dá uma passada aqui! 🍻`;
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
+        }
+
+        // ATUALIZAÇÃO EM TEMPO REAL FIADO
+        db.ref('fiado').on('value', (snapshot) => {
+            const lista = document.getElementById('lista-fiado');
+            lista.innerHTML = '';
+            snapshot.forEach((p) => {
+                if(p.val() > 0) {
+                    const div = document.createElement('div');
+                    div.className = "bg-white p-4 rounded-xl shadow border-l-4 border-red-500 flex flex-col space-y-2";
+                    div.innerHTML = `
+                        <div class="flex justify-between">
+                            <span class="font-bold">${p.key}</span>
+                            <span class="text-red-600 font-bold">R$ ${p.val().toFixed(2)}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="pagarFiado('${p.key}')" class="flex-1 bg-green-100 text-green-700 py-1 rounded text-xs font-bold border border-green-200">BAIXAR PGTO</button>
+                            <button onclick="enviarCobranca('${p.key}', ${p.val()})" class="flex-1 bg-green-500 text-white py-1 rounded text-xs font-bold flex items-center justify-center">
+                                📱 WHATSAPP
+                            </button>
+                        </div>
+                    `;
+                    lista.appendChild(div);
+                }
+            });
+        });
+
+        // ATUALIZAÇÃO RELATÓRIO
+        db.ref('vendas_gerais').on('value', (snapshot) => {
+            let total = 0;
+            const hist = document.getElementById('historico-vendas');
+            hist.innerHTML = '';
+            snapshot.forEach(v => {
+                total += v.val().valor;
+                const d = document.createElement('div');
+                d.className = "text-sm border-b pb-1";
+                d.innerHTML = `<b>${v.val().item}</b> - R$ ${v.val().valor.toFixed(2)} <br><small>${v.val().data}</small>`;
+                hist.prepend(d);
+            });
+            document.getElementById('total-geral').innerText = 'R$ ' + total.toFixed(2);
+        });
     </script>
 </body>
 </html>
