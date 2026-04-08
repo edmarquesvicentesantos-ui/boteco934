@@ -47,7 +47,7 @@
         <input type="text" id="busca-cli" placeholder="🔍 BUSCAR CLIENTE..." oninput="filtrarClientes()">
         <select id="select-clientes" size="5"></select>
         <div id="info-status" style="background: #d1d8e0; padding: 10px; border-radius: 4px; margin: 10px 0; font-weight: bold; text-align: center; font-size: 13px;">AGUARDANDO SELEÇÃO</div>
-        <h2 style="border-bottom-color: #2980b9;">💰 PAGAMENTO</h2>
+        <h2 style="border-bottom-color: #2980b9;">💰 PAGAMENTO (OBRIGATÓRIO)</h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
             <input type="number" id="pg-dinheiro" placeholder="💵 DINHEIRO" oninput="salvarPagamento()">
             <input type="number" id="pg-pix" placeholder="📱 PIX" oninput="salvarPagamento()">
@@ -55,7 +55,7 @@
             <input type="number" id="pg-fiado" placeholder="📝 FIADO" oninput="salvarPagamento()">
         </div>
         <div id="display-falta" style="text-align: center; font-weight: bold; margin-top: 10px; font-size: 18px; color: #e74c3c;">FALTA: R$ 0,00</div>
-        <button class="btn-finalizar" onclick="fecharConta()">FINALIZAR CONTA / RECIBO</button>
+        <button class="btn-finalizar" onclick="fecharConta()">FINALIZAR E IMPRIMIR</button>
     </div>
 </div>
 
@@ -93,20 +93,17 @@
     function selecionarMesa(id) {
         if (!mesas[id].aberta) {
             const cli = document.getElementById('select-clientes').value;
-            if (!cli) { alert("⚠️ SELECIONE O CLIENTE ANTES!"); return; }
+            if (!cli) { alert("⚠️ SELECIONE O CLIENTE PRIMEIRO!"); return; }
             mesas[id].aberta = true;
             mesas[id].cliente = cli;
         }
         mesaSelecionada = id;
         document.getElementById('titulo-mesa').innerText = `🛒 MESA ${id} - ${mesas[id].cliente}`;
         document.getElementById('info-status').innerText = `MESA ${id} ATIVA: ${mesas[id].cliente}`;
-        
-        // Carrega os pagamentos da mesa
         document.getElementById('pg-dinheiro').value = mesas[id].pDin;
         document.getElementById('pg-pix').value = mesas[id].pPix;
         document.getElementById('pg-cartao').value = mesas[id].pCar;
         document.getElementById('pg-fiado').value = mesas[id].pFia;
-
         gerarMesas();
         atualizarTelaCarrinho();
     }
@@ -154,15 +151,25 @@
         const d = document.getElementById('display-falta');
         d.innerText = falta <= 0.01 ? "VALOR OK / TROCO: R$ " + Math.abs(falta).toFixed(2) : "FALTA: R$ " + falta.toFixed(2);
         d.style.color = falta <= 0.01 ? "#27ae60" : "#e74c3c";
+        return p; // Retorna o total pago para a função de fechar
     }
 
     function fecharConta() {
-        if (!mesaSelecionada || mesas[mesaSelecionada].itens.length === 0) return;
+        if (!mesaSelecionada) { alert("⚠️ SELECIONE UMA MESA!"); return; }
         const m = mesas[mesaSelecionada];
+        if (m.itens.length === 0) { alert("⚠️ CARRINHO VAZIO!"); return; }
+
+        const pago = calcRestante();
+        if (pago < (m.total - 0.01)) {
+            alert("⚠️ PAGAMENTO INCOMPLETO!\nInforme como o cliente pagou nos campos (Dinheiro, PIX, etc).");
+            return;
+        }
+
         const win = window.open('', '', 'width=350,height=600');
         let itensTxt = m.itens.map(i => `<tr><td>${i.qtd}x</td><td>${i.nome}</td><td align="right">R$ ${(i.qtd*i.preco).toFixed(2)}</td></tr>`).join('');
-        win.document.write(`<html><body style="font-family:monospace;width:280px;padding:10px;"><center><strong>BOTECO 934</strong><br>MESA ${mesaSelecionada}<br>${new Date().toLocaleString()}<br>---</center><table width="100%">${itensTxt}</table>---<br>TOTAL: R$ ${m.total.toFixed(2)}<br>PAGO: R$ ${((parseFloat(m.pDin)||0)+(parseFloat(m.pPix)||0)+(parseFloat(m.pCar)||0)+(parseFloat(m.pFia)||0)).toFixed(2)}<br><br><center>CLIENTE: ${m.cliente}</center></body></html>`);
+        win.document.write(`<html><body style="font-family:monospace;width:280px;padding:10px;"><center><strong>BOTECO 934</strong><br>MESA ${mesaSelecionada}<br>${new Date().toLocaleString()}<br>---</center><table width="100%">${itensTxt}</table>---<br>TOTAL: R$ ${m.total.toFixed(2)}<br>PAGO: R$ ${pago.toFixed(2)}<br><br><center>CLIENTE: ${m.cliente}</center></body></html>`);
         win.document.close(); win.print(); win.close();
+        
         mesas[mesaSelecionada] = { aberta: false, cliente: "", itens: [], total: 0, pDin: "", pPix: "", pCar: "", pFia: "" };
         mesaSelecionada = null;
         document.querySelectorAll('input[type="number"]').forEach(i => i.value = "");
