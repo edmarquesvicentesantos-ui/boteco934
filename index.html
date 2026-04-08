@@ -1,128 +1,93 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>PDV Elite - Boteco 934</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; margin: 0; padding: 20px; }
-        .container { display: flex; gap: 20px; max-width: 1200px; margin: auto; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        
-        .col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
-        h2 { border-bottom: 2px solid #27ae60; padding-bottom: 5px; color: #333; font-size: 22px; display: flex; align-items: center; gap: 10px; }
-
-        input, select { padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; width: 100%; box-sizing: border-box; }
-        
-        /* Ajuste das Listas (Mercadorias e Clientes) */
-        .lista-box { height: 180px; overflow-y: auto; text-transform: uppercase; font-weight: bold; }
-
-        /* Grade de Pagamentos */
-        .grid-pagamentos { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #fdfdfd; padding: 15px; border: 1px solid #eee; border-radius: 8px; }
-        .campo-pg { display: flex; flex-direction: column; gap: 5px; }
-        .campo-pg label { font-weight: bold; font-size: 14px; color: #444; }
-
-        /* Destaque do Total */
-        .total-container { background: #e8f5e9; padding: 20px; border-radius: 8px; text-align: center; margin-top: auto; }
-        .total-valor { font-size: 35px; color: #27ae60; font-weight: bold; }
-
-        .btn-fechar { background: #27ae60; color: white; border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 5px; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .btn-fechar:hover { background: #219150; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <div class="col">
-        <h2>📦 Mercadorias</h2>
-        <input type="text" placeholder="BUSCAR PRODUTO...">
-        <select size="8" class="lista-box">
-            <option>AGUA MINERAL - R$ 3.50</option>
-            <option>CERVEJA LATA - R$ 6.50</option>
-            <option>COCA-COLA 2L - R$ 12.00</option>
-            <option>PETISCO MISTO - R$ 25.00</option>
-        </select>
-
-        <h2>🛒 Itens da Venda</h2>
-        <div class="total-container">
-            <span>Total:</span>
-            <div class="total-valor">R$ <span id="valor-total">47.00</span></div>
-        </div>
+<div id="recibo-container" style="display:none; width: 300px; font-family: 'Courier New', Courier, monospace; border: 1px solid #000; padding: 10px; background: #fff;">
+    
+    <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 10px;">
+        <h2 style="margin: 0;">BOTECO 934</h2>
+        <p style="font-size: 12px; margin: 5px 0;">Distribuidora de Bebidas e Bar<br>
+        Petrolina - PE</p>
+        <p id="recibo-data" style="font-size: 12px;"></p>
     </div>
 
-    <div class="col">
-        <h2>👤 Cliente & Cobrança</h2>
-        <input type="text" placeholder="BUSCAR CLIENTE...">
-        <select id="select-clientes" size="4" class="lista-box" style="height: 100px;">
-            <option value="ADRIANO SANTOS">ADRIANO SANTOS</option>
-            <option value="EDMARQUES">EDMARQUES</option>
-        </select>
-        
-        <p><strong>Contato:</strong> <span id="contato-cliente">---</span></p>
+    <table style="width: 100%; font-size: 12px; margin-top: 10px; border-bottom: 1px dashed #000;">
+        <thead>
+            <tr style="text-align: left;">
+                <th>QTD</th>
+                <th>PRODUTO</th>
+                <th>VALOR</th>
+            </tr>
+        </thead>
+        <tbody id="recibo-itens">
+            </tbody>
+    </table>
 
-        <div class="grid-pagamentos">
-            <div class="campo-pg">
-                <label>💵 Dinheiro:</label>
-                <input type="number" step="0.01" class="input-pg" placeholder="0.00" oninput="calcularRestante()">
-            </div>
-            <div class="campo-pg">
-                <label>💳 Cartão Crédito:</label>
-                <input type="number" step="0.01" class="input-pg" placeholder="0.00" oninput="calcularRestante()">
-            </div>
-            <div class="campo-pg">
-                <label>💳 Cartão Débito:</label>
-                <input type="number" step="0.01" class="input-pg" placeholder="0.00" oninput="calcularRestante()">
-            </div>
-            <div class="campo-pg">
-                <label>📲 PIX:</label>
-                <input type="number" step="0.01" class="input-pg" placeholder="0.00" oninput="calcularRestante()">
-            </div>
-            <div class="campo-pg" style="grid-column: span 2;">
-                <label>📝 FIADO (Pendura):</label>
-                <input type="number" id="v-fiado" step="0.01" class="input-pg" placeholder="0.00" style="border: 1px solid red;" oninput="calcularRestante()">
-            </div>
+    <div style="font-size: 12px; margin-top: 10px;">
+        <div style="display: flex; justify-content: space-between; font-weight: bold;">
+            <span>TOTAL GERAL:</span>
+            <span id="recibo-total">R$ 0,00</span>
         </div>
+        <div id="recibo-divisao-pagamento" style="margin-top: 5px; border-top: 1px solid #eee;">
+            </div>
+    </div>
 
-        <div id="aviso-restante" style="text-align: center; font-weight: bold; color: red; margin-top: 10px;">
-            FALTA: R$ <span id="valor-restante">47.00</span>
-        </div>
-
-        <button class="btn-fechar" onclick="finalizar()">Finalizar Conta</button>
+    <div style="text-align: center; margin-top: 20px; border-top: 1px dashed #000; padding-top: 10px;">
+        <p id="recibo-cliente" style="font-size: 12px; font-weight: bold;"></p>
+        <p style="font-size: 11px;">OBRIGADO PELA PREFERÊNCIA!</p>
+        <p style="font-size: 10px;">PDV Elite - Sistema de Gestão</p>
     </div>
 </div>
 
 <script>
-    const totalVenda = 47.00;
+// FUNÇÃO PARA GERAR O RECIBO
+function gerarRecibo() {
+    const dataAtual = new Date().toLocaleString('pt-BR');
+    document.getElementById('recibo-data').innerText = dataAtual;
 
-    function calcularRestante() {
-        const inputs = document.querySelectorAll('.input-pg');
-        let pago = 0;
-        inputs.forEach(i => pago += parseFloat(i.value) || 0);
-        
-        const restante = totalVenda - pago;
-        const display = document.getElementById('valor-restante');
-        const aviso = document.getElementById('aviso-restante');
+    // 1. Pegar Itens do Carrinho (Exemplo de lógica)
+    const tabelaItens = document.getElementById('recibo-itens');
+    tabelaItens.innerHTML = ""; 
+    
+    // Supondo que você tenha um array 'carrinho' com {nome, qtd, preco}
+    carrinho.forEach(item => {
+        let linha = `<tr>
+            <td>${item.qtd}</td>
+            <td>${item.nome.toUpperCase()}</td>
+            <td>R$ ${(item.qtd * item.preco).toFixed(2)}</td>
+        </tr>`;
+        tabelaItens.innerHTML += linha;
+    });
 
-        if (restante <= 0) {
-            display.innerText = Math.abs(restante).toFixed(2);
-            aviso.style.color = "green";
-            aviso.innerHTML = "PAGO / TROCO: R$ " + Math.abs(restante).toFixed(2);
-        } else {
-            display.innerText = restante.toFixed(2);
-            aviso.style.color = "red";
-            aviso.innerHTML = "FALTA: R$ " + restante.toFixed(2);
+    // 2. Preencher Totais
+    document.getElementById('recibo-total').innerText = "R$ " + totalVenda.toFixed(2);
+
+    // 3. Mostrar Divisão de Pagamento no Rodapé
+    const divisao = document.getElementById('recibo-divisao-pagamento');
+    divisao.innerHTML = "";
+    
+    const pagamentos = [
+        { nome: "DINHEIRO", valor: parseFloat(document.getElementById('pg-dinheiro').value) },
+        { nome: "PIX", valor: parseFloat(document.getElementById('pg-pix').value) },
+        { nome: "CARTÃO", valor: parseFloat(document.getElementById('pg-credito').value) + parseFloat(document.getElementById('pg-debito').value) },
+        { nome: "FIADO", valor: parseFloat(document.getElementById('pg-fiado').value) }
+    ];
+
+    pagamentos.forEach(pg => {
+        if (pg.valor > 0) {
+            divisao.innerHTML += `<div style="display:flex; justify-content:space-between;">
+                <span>${pg.nome}:</span> <span>R$ ${pg.valor.toFixed(2)}</span>
+            </div>`;
         }
-    }
+    });
 
-    function finalizar() {
-        const fiado = parseFloat(document.getElementById('v-fiado').value) || 0;
-        const cliente = document.getElementById('select-clientes').value;
+    // 4. Nome do Cliente
+    const nomeCliente = document.getElementById('lista-clientes').value;
+    document.getElementById('recibo-cliente').innerText = nomeCliente ? "CLIENTE: " + nomeCliente : "CLIENTE: CONSUMIDOR";
 
-        if (fiado > 0 && !cliente) {
-            alert("Selecione um cliente para a venda no FIADO!");
-            return;
-        }
-        alert("Venda finalizada com sucesso!");
-    }
+    // 5. Comando de Impressão
+    const conteudoRecibo = document.getElementById('recibo-container').innerHTML;
+    const janelaImpressao = window.open('', '', 'width=350,height=600');
+    janelaImpressao.document.write('<html><body style="margin:0;">');
+    janelaImpressao.document.write(conteudoRecibo);
+    janelaImpressao.document.write('</body></html>');
+    janelaImpressao.print();
+    janelaImpressao.close();
+}
 </script>
-
-</body>
-</html>
