@@ -7,28 +7,20 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #1a252f; color: #333; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         #container { display: flex; width: 100%; padding: 10px; gap: 10px; box-sizing: border-box; }
-        
         .painel { background: #ecf0f1; padding: 15px; border-radius: 8px; flex: 1; display: flex; flex-direction: column; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         h2 { margin: 0 0 10px 0; border-bottom: 3px solid #27ae60; color: #2c3e50; font-size: 16px; text-transform: uppercase; }
-
-        /* MAPA DE MESAS */
         #mapa-mesas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
         .mesa { padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 12px; transition: 0.2s; }
         .mesa-livre { background: #27ae60; }
         .mesa-ocupada { background: #e74c3c; }
-        .mesa-selecionada { border: 3px solid #f1c40f; transform: scale(1.05); }
-
+        .mesa-selecionada { border: 4px solid #f1c40f !important; transform: scale(1.05); }
         input, select { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #bdc3c7; border-radius: 4px; box-sizing: border-box; text-transform: uppercase; }
-        
         .carrinho-area { flex-grow: 1; background: #fff; border: 1px solid #ddd; margin: 10px 0; padding: 5px; overflow-y: auto; border-radius: 4px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { background: #dcdde1; padding: 8px; text-align: left; }
         td { padding: 8px; border-bottom: 1px solid #eee; }
-        
         .total-destaque { font-size: 26px; font-weight: bold; background: #2c3e50; color: white; padding: 12px; text-align: center; border-radius: 4px; }
         .btn-finalizar { background: #27ae60; color: white; border: none; padding: 15px; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 4px; margin-top: 10px; width: 100%; }
-        .btn-finalizar:hover { background: #219150; }
-        
         .btn-excluir { background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 16px; font-weight: bold; }
     </style>
 </head>
@@ -38,11 +30,9 @@
     <div class="painel">
         <h2>📍 MAPA DE MESAS</h2>
         <div id="mapa-mesas"></div>
-
         <h2 id="titulo-mesa">🛒 SELECIONE UMA MESA</h2>
         <input type="text" id="busca-prod" placeholder="🔍 BUSCAR PRODUTO..." oninput="filtrarProdutos()">
         <select id="select-produtos" size="8" ondblclick="addCarrinho()"></select>
-        
         <div class="carrinho-area">
             <table id="tabela-itens">
                 <thead><tr><th>QTD</th><th>ITEM</th><th>TOTAL</th><th>❌</th></tr></thead>
@@ -56,20 +46,15 @@
         <h2>👤 CLIENTE</h2>
         <input type="text" id="busca-cli" placeholder="🔍 BUSCAR CLIENTE..." oninput="filtrarClientes()">
         <select id="select-clientes" size="5"></select>
-        
-        <div id="info-status" style="background: #d1d8e0; padding: 10px; border-radius: 4px; margin: 10px 0; font-weight: bold; text-align: center; font-size: 13px;">
-            AGUARDANDO...
-        </div>
-
+        <div id="info-status" style="background: #d1d8e0; padding: 10px; border-radius: 4px; margin: 10px 0; font-weight: bold; text-align: center; font-size: 13px;">AGUARDANDO SELEÇÃO</div>
         <h2 style="border-bottom-color: #2980b9;">💰 PAGAMENTO</h2>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-            <input type="number" id="pg-dinheiro" placeholder="💵 DINHEIRO" oninput="calcRestante()">
-            <input type="number" id="pg-pix" placeholder="📱 PIX" oninput="calcRestante()">
-            <input type="number" id="pg-cartao" placeholder="💳 CARTÃO" oninput="calcRestante()">
-            <input type="number" id="pg-fiado" placeholder="📝 FIADO" oninput="calcRestante()">
+            <input type="number" id="pg-dinheiro" placeholder="💵 DINHEIRO" oninput="salvarPagamento()">
+            <input type="number" id="pg-pix" placeholder="📱 PIX" oninput="salvarPagamento()">
+            <input type="number" id="pg-cartao" placeholder="💳 CARTÃO" oninput="salvarPagamento()">
+            <input type="number" id="pg-fiado" placeholder="📝 FIADO" oninput="salvarPagamento()">
         </div>
         <div id="display-falta" style="text-align: center; font-weight: bold; margin-top: 10px; font-size: 18px; color: #e74c3c;">FALTA: R$ 0,00</div>
-        
         <button class="btn-finalizar" onclick="fecharConta()">FINALIZAR CONTA / RECIBO</button>
     </div>
 </div>
@@ -78,15 +63,17 @@
     let produtos = [
         { nome: "CERVEJA LATA", preco: 6.00 },
         { nome: "CERVEJA 600ML", preco: 10.00 },
-        { nome: "COCA-COLA 2L", preco: 12.00 },
-        { nome: "AGUA S/ GAS", preco: 3.00 },
-        { nome: "PETISCO MISTO", preco: 25.00 }
+        { nome: "REFRIGERANTE 2L", preco: 12.00 },
+        { nome: "AGUA S/ GAS", preco: 3.00 }
     ];
 
-    let clientes = [{ nome: "ADRIANO SILVA" }, { nome: "BRUNO OLIVEIRA" }, { nome: "MARIA SOUZA" }, { nome: "ZECA PAGODINHO" }];
+    let clientes = [{ nome: "ADRIANO SILVA" }, { nome: "BRUNO OLIVEIRA" }, { nome: "MARIA SOUZA" }, { nome: "CONSUMIDOR" }];
 
     let mesas = {};
-    for(let i=1; i<=12; i++) { mesas[i] = { aberta: false, cliente: "", itens: [], total: 0 }; }
+    for(let i=1; i<=12; i++) { 
+        mesas[i] = { aberta: false, cliente: "", itens: [], total: 0, pDin: "", pPix: "", pCar: "", pFia: "" }; 
+    }
+    
     let mesaSelecionada = null;
 
     function iniciar() { gerarMesas(); filtrarProdutos(); filtrarClientes(); }
@@ -106,13 +93,20 @@
     function selecionarMesa(id) {
         if (!mesas[id].aberta) {
             const cli = document.getElementById('select-clientes').value;
-            if (!cli) { alert("⚠️ SELECIONE O CLIENTE ANTES DE ABRIR A MESA " + id); return; }
+            if (!cli) { alert("⚠️ SELECIONE O CLIENTE ANTES!"); return; }
             mesas[id].aberta = true;
             mesas[id].cliente = cli;
         }
         mesaSelecionada = id;
         document.getElementById('titulo-mesa').innerText = `🛒 MESA ${id} - ${mesas[id].cliente}`;
         document.getElementById('info-status').innerText = `MESA ${id} ATIVA: ${mesas[id].cliente}`;
+        
+        // Carrega os pagamentos da mesa
+        document.getElementById('pg-dinheiro').value = mesas[id].pDin;
+        document.getElementById('pg-pix').value = mesas[id].pPix;
+        document.getElementById('pg-cartao').value = mesas[id].pCar;
+        document.getElementById('pg-fiado').value = mesas[id].pFia;
+
         gerarMesas();
         atualizarTelaCarrinho();
     }
@@ -122,9 +116,79 @@
         const s = document.getElementById('select-produtos');
         const nome = s.options[s.selectedIndex].getAttribute('data-nome');
         const preco = parseFloat(s.value);
-        let item = mesas[mesaSelecionada].itens.find(i => i.nome === nome);
-        if (item) item.qtd++; else mesas[mesaSelecionada].itens.push({ nome, preco, qtd: 1 });
+        let m = mesas[mesaSelecionada];
+        let item = m.itens.find(i => i.nome === nome);
+        if (item) item.qtd++; else m.itens.push({ nome, preco, qtd: 1 });
         atualizarTelaCarrinho();
     }
 
-    function
+    function salvarPagamento() {
+        if(!mesaSelecionada) return;
+        mesas[mesaSelecionada].pDin = document.getElementById('pg-dinheiro').value;
+        mesas[mesaSelecionada].pPix = document.getElementById('pg-pix').value;
+        mesas[mesaSelecionada].pCar = document.getElementById('pg-cartao').value;
+        mesas[mesaSelecionada].pFia = document.getElementById('pg-fiado').value;
+        calcRestante();
+    }
+
+    function atualizarTelaCarrinho() {
+        const corpo = document.querySelector('#tabela-itens tbody');
+        corpo.innerHTML = ""; let total = 0;
+        if(mesaSelecionada) {
+            mesas[mesaSelecionada].itens.forEach((i, idx) => {
+                let sub = i.preco * i.qtd; total += sub;
+                corpo.innerHTML += `<tr><td>${i.qtd}x</td><td>${i.nome}</td><td>R$ ${sub.toFixed(2)}</td><td><button class="btn-excluir" onclick="removerItem(${idx})">❌</button></td></tr>`;
+            });
+            mesas[mesaSelecionada].total = total;
+        }
+        document.getElementById('display-total').innerText = "TOTAL: R$ " + total.toFixed(2);
+        calcRestante();
+    }
+
+    function removerItem(idx) { mesas[mesaSelecionada].itens.splice(idx, 1); atualizarTelaCarrinho(); }
+
+    function calcRestante() {
+        if(!mesaSelecionada) return;
+        const p = (parseFloat(mesas[mesaSelecionada].pDin) || 0) + (parseFloat(mesas[mesaSelecionada].pPix) || 0) + (parseFloat(mesas[mesaSelecionada].pCar) || 0) + (parseFloat(mesas[mesaSelecionada].pFia) || 0);
+        let falta = mesas[mesaSelecionada].total - p;
+        const d = document.getElementById('display-falta');
+        d.innerText = falta <= 0.01 ? "VALOR OK / TROCO: R$ " + Math.abs(falta).toFixed(2) : "FALTA: R$ " + falta.toFixed(2);
+        d.style.color = falta <= 0.01 ? "#27ae60" : "#e74c3c";
+    }
+
+    function fecharConta() {
+        if (!mesaSelecionada || mesas[mesaSelecionada].itens.length === 0) return;
+        const m = mesas[mesaSelecionada];
+        const win = window.open('', '', 'width=350,height=600');
+        let itensTxt = m.itens.map(i => `<tr><td>${i.qtd}x</td><td>${i.nome}</td><td align="right">R$ ${(i.qtd*i.preco).toFixed(2)}</td></tr>`).join('');
+        win.document.write(`<html><body style="font-family:monospace;width:280px;padding:10px;"><center><strong>BOTECO 934</strong><br>MESA ${mesaSelecionada}<br>${new Date().toLocaleString()}<br>---</center><table width="100%">${itensTxt}</table>---<br>TOTAL: R$ ${m.total.toFixed(2)}<br>PAGO: R$ ${((parseFloat(m.pDin)||0)+(parseFloat(m.pPix)||0)+(parseFloat(m.pCar)||0)+(parseFloat(m.pFia)||0)).toFixed(2)}<br><br><center>CLIENTE: ${m.cliente}</center></body></html>`);
+        win.document.close(); win.print(); win.close();
+        mesas[mesaSelecionada] = { aberta: false, cliente: "", itens: [], total: 0, pDin: "", pPix: "", pCar: "", pFia: "" };
+        mesaSelecionada = null;
+        document.querySelectorAll('input[type="number"]').forEach(i => i.value = "");
+        gerarMesas(); atualizarTelaCarrinho();
+    }
+
+    function filtrarProdutos() {
+        const b = document.getElementById('busca-prod').value.toUpperCase();
+        const s = document.getElementById('select-produtos'); s.innerHTML = "";
+        produtos.sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p => {
+            if(p.nome.includes(b)) {
+                let o = document.createElement('option'); o.text = `${p.nome} - R$ ${p.preco.toFixed(2)}`; o.value = p.preco; o.setAttribute('data-nome', p.nome); s.add(o);
+            }
+        });
+    }
+
+    function filtrarClientes() {
+        const b = document.getElementById('busca-cli').value.toUpperCase();
+        const s = document.getElementById('select-clientes'); s.innerHTML = "";
+        clientes.sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(c => {
+            if(c.nome.includes(b)) {
+                let o = document.createElement('option'); o.text = c.nome; o.value = c.nome; s.add(o);
+            }
+        });
+    }
+    window.onload = iniciar;
+</script>
+</body>
+</html>
