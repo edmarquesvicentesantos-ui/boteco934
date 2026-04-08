@@ -3,51 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PDV Elite - Boteco 934</title>
+    <title>Boteco 934 & Boticário - Nuvem</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
-        body { background-color: #000; color: #fff; font-family: sans-serif; }
-        .btn-pdv { transition: all 0.2s; border: 1px solid #333; }
-        .btn-pdv:active { transform: scale(0.95); background-color: #222; }
+        body { background-color: #f4f7f6; color: #333; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .sidebar { width: 240px; background: #1a252f; color: white; height: 100vh; position: fixed; }
+        .main-content { margin-left: 240px; width: calc(100% - 240px); }
+        .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; }
+        .btn-item { transition: all 0.2s; border: 1px solid #e2e8f0; }
+        .btn-item:active { transform: scale(0.95); background: #edf2f7; }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @media (max-width: 768px) {
+            .sidebar { width: 60px; padding: 10px 5px; }
+            .sidebar h2, .menu-text { display: none; }
+            .main-content { margin-left: 60px; width: calc(100% - 60px); }
+        }
     </style>
 </head>
-<body class="p-4">
+<body>
 
-    <header class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
-        <div>
-            <h1 class="text-2xl font-bold text-yellow-500">BOTECO 934</h1>
-            <p class="text-xs text-gray-400">SISTEMA EM NUVEM</p>
-        </div>
-        <div id="status-conexao" class="h-3 w-3 rounded-full bg-red-500"></div>
-    </header>
-
-    <div class="grid grid-cols-2 gap-4 mb-8">
-        <button onclick="registrarVenda('Cerveja Lata', 6.00)" class="btn-pdv p-6 rounded-xl flex flex-col items-center">
-            <span class="text-3xl mb-2">🍺</span>
-            <span>Cerveja Lata</span>
-            <span class="text-yellow-500 font-bold">R$ 6,00</span>
-        </button>
-        <button onclick="registrarVenda('Dose Cana', 3.00)" class="btn-pdv p-6 rounded-xl flex flex-col items-center">
-            <span class="text-3xl mb-2">🥃</span>
-            <span>Dose Cana</span>
-            <span class="text-yellow-500 font-bold">R$ 3,00</span>
-        </button>
+    <div class="sidebar p-4">
+        <h2 class="text-xl font-bold mb-8 border-b border-gray-700 pb-4 text-center">PDV 934</h2>
+        <nav>
+            <button onclick="mudarSecao('bar')" class="w-full flex items-center p-3 mb-2 rounded hover:bg-blue-600 transition">
+                <span>🍺</span> <span class="menu-text ml-3">Boteco</span>
+            </button>
+            <button onclick="mudarSecao('boticario')" class="w-full flex items-center p-3 mb-2 rounded hover:bg-pink-600 transition">
+                <span>✨</span> <span class="menu-text ml-3">Boticário</span>
+            </button>
+            <button onclick="mudarSecao('relatorio')" class="w-full flex items-center p-3 mb-2 rounded hover:bg-gray-700 transition">
+                <span>📊</span> <span class="menu-text ml-3">Relatório</span>
+            </button>
+        </nav>
     </div>
 
-    <div class="bg-gray-900 p-4 rounded-xl border border-gray-800">
-        <h2 class="text-lg font-semibold mb-4 border-b border-gray-800 pb-2">Vendas Hoje (Nuvem)</h2>
-        <div id="lista-vendas" class="space-y-2 max-h-60 overflow-y-auto mb-4">
+    <main class="main-content p-6">
+        <div id="bar" class="section active">
+            <h1 class="text-2xl font-bold mb-6 text-gray-800">Vendas do Boteco</h1>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <button onclick="vender('Cerveja Lata', 6.00, 'bar')" class="btn-item p-4 rounded-xl bg-white flex flex-col items-center">
+                    <span class="text-2xl">🍺</span>
+                    <span class="font-semibold">Cerveja Lata</span>
+                    <span class="text-blue-600">R$ 6,00</span>
+                </button>
+                <button onclick="vender('Dose Cana', 3.00, 'bar')" class="btn-item p-4 rounded-xl bg-white flex flex-col items-center">
+                    <span class="text-2xl">🥃</span>
+                    <span class="font-semibold">Dose Cana</span>
+                    <span class="text-blue-600">R$ 3,00</span>
+                </button>
+                <button onclick="vender('Espetinho', 8.00, 'bar')" class="btn-item p-4 rounded-xl bg-white flex flex-col items-center">
+                    <span class="text-2xl">🍢</span>
+                    <span class="font-semibold">Espetinho</span>
+                    <span class="text-blue-600">R$ 8,00</span>
+                </button>
             </div>
-        <div class="flex justify-between text-xl font-bold text-green-500 pt-2 border-t border-gray-800">
-            <span>TOTAL:</span>
-            <span id="total-dia">R$ 0,00</span>
         </div>
-    </div>
+
+        <div id="boticario" class="section">
+            <h1 class="text-2xl font-bold mb-6 text-pink-700">Vendas Boticário</h1>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <button onclick="vender('Perfume Malbec', 180.00, 'boticario')" class="btn-item p-4 rounded-xl bg-white border-pink-100 flex flex-col items-center">
+                    <span class="text-2xl">🎁</span>
+                    <span class="font-semibold">Malbec</span>
+                    <span class="text-pink-600">R$ 180,00</span>
+                </button>
+                <button onclick="vender('Creme Lily', 95.00, 'boticario')" class="btn-item p-4 rounded-xl bg-white border-pink-100 flex flex-col items-center">
+                    <span class="text-2xl">🧴</span>
+                    <span class="font-semibold">Creme Lily</span>
+                    <span class="text-pink-600">R$ 95,00</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="relatorio" class="section">
+            <h1 class="text-2xl font-bold mb-6">Resumo de Vendas (Nuvem)</h1>
+            <div class="card">
+                <div id="lista-vendas" class="space-y-3 mb-6 max-h-96 overflow-y-auto">
+                    <p class="text-gray-400 text-center">Carregando dados...</p>
+                </div>
+                <div class="border-t pt-4 flex justify-between items-center">
+                    <span class="text-xl font-bold">TOTAL GERAL:</span>
+                    <span id="total-valor" class="text-2xl font-bold text-green-600">R$ 0,00</span>
+                </div>
+                <button onclick="limparVendas()" class="mt-6 text-xs text-red-400 underline">Limpar histórico da nuvem</button>
+            </div>
+        </div>
+    </main>
 
     <script>
-        // CONFIGURAÇÃO QUE VOCÊ ME MANDOU
+        // CONFIGURAÇÃO DO FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAxjhzLPeqBqJ18S8m7lagxuvF9LX7OJks",
             authDomain: "boteco934-afc3f.firebaseapp.com",
@@ -55,49 +103,59 @@
             storageBucket: "boteco934-afc3f.firebasestorage.app",
             messagingSenderId: "182023728304",
             appId: "1:182023728304:web:040a13bb6f1c9fff35f75",
-            databaseURL: "https://boteco934-afc3f-default-rtdb.firebaseio.com/" 
+            databaseURL: "https://boteco934-afc3f-default-rtdb.firebaseio.com/"
         };
 
-        // INICIALIZAR FIREBASE
         firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        const db = firebase.database();
 
-        // ELEMENTOS DA TELA
-        const statusConexao = document.getElementById('status-conexao');
-        const listaVendas = document.getElementById('lista-vendas');
-        const totalDiaLabel = document.getElementById('total-dia');
-
-        // FUNÇÃO PARA REGISTRAR VENDA
-        function registrarVenda(produto, valor) {
-            const novaVenda = {
-                item: produto,
-                preco: valor,
-                hora: new Date().toLocaleTimeString(),
-                data: new Date().toLocaleDateString()
-            };
-            
-            database.ref('vendas').push(novaVenda);
-            alert(produto + ' registrado na nuvem!');
+        function mudarSecao(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
         }
 
-        // ESCUTAR O BANCO DE DADOS (TEMPO REAL)
-        database.ref('vendas').on('value', (snapshot) => {
-            statusConexao.classList.replace('bg-red-500', 'bg-green-500');
-            listaVendas.innerHTML = '';
+        function vender(nome, preco, categoria) {
+            const venda = {
+                item: nome,
+                valor: preco,
+                tipo: categoria,
+                data: new Date().toLocaleString('pt-BR')
+            };
+            db.ref('vendas_gerais').push(venda);
+            alert('Vendido: ' + nome);
+        }
+
+        // ATUALIZAÇÃO EM TEMPO REAL
+        db.ref('vendas_gerais').on('value', (snapshot) => {
+            const lista = document.getElementById('lista-vendas');
+            const totalTexto = document.getElementById('total-valor');
+            lista.innerHTML = '';
             let total = 0;
 
-            snapshot.forEach((item) => {
-                const venda = item.val();
-                total += venda.preco;
-
-                const div = document.createElement('div');
-                div.className = "flex justify-between text-sm text-gray-300";
-                div.innerHTML = `<span>${venda.hora} - ${venda.item}</span><span>R$ ${venda.preco.toFixed(2)}</span>`;
-                listaVendas.prepend(div);
+            snapshot.forEach((filho) => {
+                const v = filho.val();
+                total += v.valor;
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = "flex justify-between border-b pb-2 text-sm";
+                const cor = v.tipo === 'boticario' ? 'text-pink-600' : 'text-blue-600';
+                itemDiv.innerHTML = `
+                    <div>
+                        <span class="font-bold">${v.item}</span><br>
+                        <span class="text-xs text-gray-400">${v.data}</span>
+                    </div>
+                    <span class="${cor} font-bold">R$ ${v.valor.toFixed(2)}</span>
+                `;
+                lista.prepend(itemDiv);
             });
-
-            totalDiaLabel.innerText = 'R$ ' + total.toFixed(2);
+            totalTexto.innerText = 'R$ ' + total.toFixed(2);
         });
+
+        function limparVendas() {
+            if(confirm("Deseja apagar todas as vendas do banco de dados?")) {
+                db.ref('vendas_gerais').remove();
+            }
+        }
     </script>
 </body>
 </html>
