@@ -2,173 +2,118 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA ELITE V24 - BOTECO 934</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BOTECO 934 | MARGEM DE LUCRO</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { 
-            --dark: #1a252f; --sidebar: #2c3e50; --accent: #f39c12; 
-            --success: #27ae60; --danger: #c0392b; --info: #2980b9; 
-            --bg: #f1f2f6;
-        }
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
-
-        aside { width: 250px; background: var(--dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; border-right: 5px solid var(--accent); }
-        .header-loja { padding: 25px; text-align: center; font-size: 20px; font-weight: bold; color: var(--accent); border-bottom: 2px solid var(--sidebar); }
-        .menu-btn { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #34495e; font-weight: bold; transition: 0.3s; }
-        .menu-btn.active { background: var(--sidebar); color: var(--accent); border-left: 8px solid var(--accent); }
-
-        main { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
-        .conteudo { flex-grow: 1; padding: 20px; overflow-y: auto; }
-        .painel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-
-        .grid-calc { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; }
-        
-        .res-card { background: #1e272e; color: white; padding: 20px; border-radius: 10px; height: 100%; border-left: 8px solid var(--accent); }
-        .linha-res { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #3d4e5f; font-weight: bold; }
-        .secao-titulo { color: var(--accent); margin-top: 15px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .destaque-valor { color: #2ecc71; font-size: 1.4em; }
-        .btn-tipo { padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-bottom: 15px; width: 48%; }
+        :root { --gold: #ffd700; --green: #2ecc71; --bg: #0f172a; --card: rgba(255, 255, 255, 0.05); }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; padding: 15px; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; }
+        .header { background: var(--card); backdrop-filter: blur(10px); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); text-align: center; margin-bottom: 15px; border-bottom: 3px solid var(--gold); }
+        .header h1 { margin: 0; color: var(--gold); letter-spacing: 2px; font-size: 22px; }
+        #inputBipe { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); background: var(--card); color: var(--gold); font-size: 18px; text-align: center; outline: none; margin-bottom: 15px; box-sizing: border-box; }
+        .main-layout { display: grid; grid-template-columns: 1fr 320px; gap: 15px; flex: 1; min-height: 0; }
+        @media (max-width: 850px) { .main-layout { grid-template-columns: 1fr; } }
+        .lista-venda { background: var(--card); border-radius: 15px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
+        .item-row { display: flex; align-items: center; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--gold); }
+        .item-img { width: 45px; height: 45px; border-radius: 5px; object-fit: contain; background: white; margin-right: 12px; }
+        .item-details { flex: 1; }
+        .item-name { display: block; font-weight: bold; text-transform: uppercase; font-size: 13px; }
+        .item-meta { color: #94a3b8; font-size: 12px; }
+        .item-lucro { color: var(--green); font-size: 11px; font-weight: bold; }
+        .item-total { color: var(--green); font-weight: bold; margin: 0 10px; font-size: 16px; }
+        .resumo-venda { background: var(--card); border-radius: 15px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); height: fit-content; text-align: center; }
+        .total-v { font-size: 42px; font-weight: 900; color: var(--green); margin: 10px 0; }
+        .btn-zap { width: 100%; padding: 16px; border-radius: 10px; border: none; background: #25d366; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-del { background: none; border: none; color: #ff4b2b; cursor: pointer; font-size: 16px; }
     </style>
 </head>
 <body>
-
-<aside>
-    <div class="header-loja">BOTECO 934</div>
-    <div class="menu-btn active">🧠 MIX & DOSES</div>
-    <div class="menu-btn" onclick="ver('aba-vendas', this)">🛒 VENDAS</div>
-    <div class="menu-btn" onclick="ver('aba-produtos', this)">📦 ESTOQUE</div>
-    <div style="margin-top: auto; padding: 20px; text-align: center; color: #7f8c8d; font-size: 12px;">
-        Elite V24 - Boteco 934
-    </div>
-</aside>
-
-<main>
-    <div class="conteudo">
-        <div class="painel">
-            <h2 style="margin-top:0;">📊 CALCULADORA PROFISSIONAL DE LUCRO</h2>
-            
-            <div style="margin-bottom: 20px;">
-                <button id="btn-grade" class="btn-tipo" style="background:var(--info); color:white;" onclick="mudarModo('grade')">GRADE / FARDO / VINHO</button>
-                <button id="btn-dose" class="btn-tipo" style="background:#ecf0f1; color:var(--dark);" onclick="mudarModo('dose')">DOSES (DESTILADOS)</button>
-            </div>
-
-            <div class="grid-calc">
-                <div>
-                    <label id="lbl-custo"><b>Custo da Compra (R$):</b></label>
-                    <input type="number" id="c-total" placeholder="0.00" oninput="calcular()">
-                    
-                    <label id="lbl-qtd"><b>Qtd de Itens na Grade:</b></label>
-                    <input type="number" id="c-qtd" placeholder="Ex: 12 ou 24" oninput="calcular()">
-
-                    <div id="campos-dose" style="display:none;">
-                        <label><b>Tamanho da Dose (ml):</b></label>
-                        <select id="dose-ml" onchange="calcular()">
-                            <option value="50">50 ml (Padrão)</option>
-                            <option value="60">60 ml (Generosa)</option>
-                            <option value="70">70 ml (Dose Dupla/Especial)</option>
-                        </select>
-                    </div>
-
-                    <label><b>Preço de Venda Unitário/Dose (R$):</b></label>
-                    <input type="number" id="v-venda" placeholder="Por quanto vai vender?" oninput="calcular()">
-
-                    <label id="lbl-extra"><b>Custo de Gelo/Energia (Opcional):</b></label>
-                    <input type="number" id="c-extra" placeholder="0.00" value="0" oninput="calcular()">
-                </div>
-
-                <div class="res-card">
-                    <h3 style="text-align:center; margin-top:0; border-bottom: 2px solid var(--accent); padding-bottom: 10px;">ANÁLISE ELITE</h3>
-                    
-                    <div class="secao-titulo">CUSTO REAL</div>
-                    <div class="linha-res"><span id="txt-custo-unid">Custo p/ Unidade:</span> <span id="res-custo">R$ 0,00</span></div>
-                    
-                    <div class="secao-titulo">LUCRO NO BOLSO</div>
-                    <div class="linha-res"><span>Lucro por Venda:</span> <span id="res-lucro" class="destaque-valor">R$ 0,00</span></div>
-                    <div class="linha-res"><span id="txt-lucro-total">Lucro p/ Grade:</span> <span id="res-total">R$ 0,00</span></div>
-                    
-                    <div class="secao-titulo">DESEMPENHO</div>
-                    <div class="linha-res"><span>Margem de Lucro:</span> <span id="res-margem">0%</span></div>
-                    <div id="box-rendimento" class="linha-res" style="display:none; color:var(--accent);">
-                        <span>Doses por Garrafa:</span> <span id="res-rend">0</span>
-                    </div>
-                </div>
-            </div>
+    <div class="header"><h1>BOTECO 934 | PDV LUCRO</h1></div>
+    <input type="text" id="inputBipe" placeholder="BIPE O PRODUTO..." onkeypress="if(event.key === 'Enter') handleBipe(this.value)" autofocus>
+    <div class="main-layout">
+        <div class="lista-venda" id="caixa"></div>
+        <div class="resumo-venda">
+            <span style="color:#94a3b8; font-size:12px;">VALOR TOTAL</span>
+            <div class="total-v">R$ <span id="totalTxt">0,00</span></div>
+            <button class="btn-zap" onclick="enviarZap()"><i class="fab fa-whatsapp"></i> ENVIAR RECIBO</button>
         </div>
     </div>
-</main>
-
 <script>
-    let modoAtual = 'grade';
+    let db = JSON.parse(localStorage.getItem('b934_db_lucro')) || [];
+    let mesa = [];
+    const fallImg = "https://cdn-icons-png.flaticon.com/512/3121/3121784.png";
 
-    function mudarModo(modo) {
-        modoAtual = modo;
-        const btnGrade = document.getElementById('btn-grade');
-        const btnDose = document.getElementById('btn-dose');
-        const camposDose = document.getElementById('campos-dose');
-        const boxRend = document.getElementById('box-rendimento');
+    function handleBipe(cod) {
+        if(!cod) return;
+        cod = cod.trim();
+        document.getElementById('inputBipe').value = '';
+
+        let jaTem = mesa.find(i => i.id === cod);
+        if(jaTem) { jaTem.qtd++; render(); return; }
+
+        let prod = db.find(p => p.id === cod);
+        if(prod) { mesa.push({...prod, qtd: 1}); render(); } 
+        else { buscarInternet(cod); }
+    }
+
+    async function buscarInternet(cod) {
+        try {
+            const r = await fetch(`https://world.openfoodfacts.org/api/v2/product/${cod}.json`);
+            const d = await r.json();
+            let n = (d.status === 1 && d.product.product_name) ? d.product.product_name : "Produto Novo";
+            let f = (d.status === 1 && d.product.image_url) ? d.product.image_url : fallImg;
+            
+            let custo = prompt(`Novo item: ${n}\nPreço de CUSTO:`, "4.00");
+            if(custo) {
+                let margem = prompt(`Margem de Lucro desejada (%):`, "50");
+                let c = parseFloat(custo.replace(',','.'));
+                let m = parseFloat(margem) / 100;
+                let sugerido = c * (1 + m);
+                
+                let venda = prompt(`Preço Sugerido: R$ ${sugerido.toFixed(2)}\nPreço de VENDA Final:`, sugerido.toFixed(2));
+                
+                if(venda) {
+                    let novo = { id: cod, nome: n, foto: f, custo: c, preco: parseFloat(venda.replace(',','.')) };
+                    db.push(novo);
+                    localStorage.setItem('b934_db_lucro', JSON.stringify(db));
+                    mesa.push({...novo, qtd: 1});
+                    render();
+                }
+            }
+        } catch(e) { alert("Erro ao buscar."); }
+    }
+
+    function render() {
+        const c = document.getElementById('caixa');
+        const t = document.getElementById('totalTxt');
+        c.innerHTML = ''; let soma = 0;
+        if(mesa.length === 0) { c.innerHTML = '<div style="text-align:center;color:#475569;margin-top:50px;">Bipe para vender!</div>'; t.innerText="0,00"; return; }
         
-        // Labels
-        const lblCusto = document.getElementById('lbl-custo');
-        const lblQtd = document.getElementById('lbl-qtd');
-        const txtCustoUnid = document.getElementById('txt-custo-unid');
-        const txtLucroTotal = document.getElementById('txt-lucro-total');
-
-        if(modo === 'dose') {
-            btnDose.style.background = "var(--info)"; btnDose.style.color = "white";
-            btnGrade.style.background = "#ecf0f1"; btnGrade.style.color = "var(--dark)";
-            camposDose.style.display = "block";
-            boxRend.style.display = "flex";
-            
-            lblCusto.innerHTML = "<b>Custo da Garrafa (R$):</b>";
-            lblQtd.innerHTML = "<b>ML da Garrafa (Total):</b>";
-            document.getElementById('c-qtd').placeholder = "Ex: 750 ou 1000";
-            txtCustoUnid.innerText = "Custo p/ Dose:";
-            txtLucroTotal.innerText = "Lucro Total Garrafa:";
-        } else {
-            btnGrade.style.background = "var(--info)"; btnGrade.style.color = "white";
-            btnDose.style.background = "#ecf0f1"; btnDose.style.color = "var(--dark)";
-            camposDose.style.display = "none";
-            boxRend.style.display = "none";
-            
-            lblCusto.innerHTML = "<b>Custo da Compra (R$):</b>";
-            lblQtd.innerHTML = "<b>Qtd de Itens na Grade:</b>";
-            document.getElementById('c-qtd').placeholder = "Ex: 12 ou 24";
-            txtCustoUnid.innerText = "Custo p/ Unidade:";
-            txtLucroTotal.innerText = "Lucro p/ Grade:";
-        }
-        calcular();
+        mesa.forEach(i => {
+            let tot = i.preco * i.qtd; soma += tot;
+            let lucroUnit = i.preco - i.custo;
+            c.innerHTML += `<div class="item-row">
+                <img src="${i.foto}" class="item-img" onerror="this.src='${fallImg}'">
+                <div class="item-details">
+                    <span class="item-name">${i.nome}</span>
+                    <span class="item-meta">${i.qtd}x R$ ${i.preco.toFixed(2)}</span>
+                    <span class="item-lucro">Lucro: R$ ${(lucroUnit * i.qtd).toFixed(2)}</span>
+                </div>
+                <div class="item-total">R$ ${tot.toFixed(2)}</div>
+                <button class="btn-del" onclick="mesa=mesa.filter(x=>x.id!=='${i.id}');render()"><i class="fas fa-trash"></i></button>
+            </div>`;
+        });
+        t.innerText = soma.toFixed(2).replace('.', ',');
     }
 
-    function calcular() {
-        const custoTotal = parseFloat(document.getElementById('c-total').value) || 0;
-        const qtdOuML = parseFloat(document.getElementById('c-qtd').value) || 1;
-        const precoVenda = parseFloat(document.getElementById('v-venda').value) || 0;
-        const extra = parseFloat(document.getElementById('c-extra').value) || 0;
-
-        let custoIndividual = 0;
-        let rendimento = 0;
-
-        if(modoAtual === 'dose') {
-            const doseML = parseFloat(document.getElementById('dose-ml').value);
-            const custoPorML = custoTotal / qtdOuML;
-            custoIndividual = (custoPorML * doseML) + (extra / (qtdOuML / doseML));
-            rendimento = Math.floor(qtdOuML / doseML);
-            document.getElementById('res-rend').innerText = rendimento + " doses";
-        } else {
-            custoIndividual = (custoTotal / qtdOuML) + (extra / qtdOuML);
-        }
-
-        const lucroUnitario = precoVenda - custoIndividual;
-        const lucroTotal = modoAtual === 'dose' ? lucroUnitario * rendimento : lucroUnitario * qtdOuML;
-        const margem = (lucroUnitario / (precoVenda || 1)) * 100;
-
-        document.getElementById('res-custo').innerText = "R$ " + custoIndividual.toFixed(2);
-        document.getElementById('res-lucro').innerText = "R$ " + lucroUnitario.toFixed(2);
-        document.getElementById('res-total').innerText = "R$ " + lucroTotal.toFixed(2);
-        document.getElementById('res-margem').innerText = isFinite(margem) ? margem.toFixed(1) + "%" : "0%";
+    function enviarZap() {
+        if(mesa.length === 0) return;
+        let m = "*BOTECO 934 - RECIBO*\n----------------------------\n";
+        mesa.forEach(i => m += `${i.qtd}x ${i.nome} - R$ ${(i.preco*i.qtd).toFixed(2)}\n`);
+        m += "----------------------------\n*TOTAL: R$ " + document.getElementById('totalTxt').innerText + "*";
+        window.open(`https://wa.me/?text=${encodeURIComponent(m)}`);
     }
+    render();
 </script>
 </body>
 </html>
