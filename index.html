@@ -2,376 +2,240 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDV Elite - Boteco 934</title>
     <style>
-        :root { --dark: #1a252f; --sidebar: #2c3e50; --accent: #f39c12; --success: #27ae60; --danger: #e74c3c; }
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: #dfe6e9; color: #333; }
+        :root { 
+            --dark: #1a252f; 
+            --sidebar: #2c3e50; 
+            --accent: #f39c12; 
+            --success: #27ae60; 
+            --danger: #e74c3c; 
+            --bg: #dfe6e9;
+            --font-padrao: 13px; /* Harmonizado com sua lateral */
+        }
 
-        /* LATERAL ESTREITA E ROLÁVEL */
-        nav { width: 180px; background: var(--dark); color: white; display: flex; flex-direction: column; overflow-y: auto; }
-        .nav-item { padding: 12px 15px; cursor: pointer; font-size: 11px; font-weight: bold; border-bottom: 1px solid #2c3e50; transition: 0.2s; }
-        .nav-item:hover { background: var(--sidebar); color: var(--accent); }
-        .nav-item.active { background: var(--accent); color: var(--dark); }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        body { margin: 0; display: flex; height: 100vh; background: var(--bg); font-size: var(--font-padrao); overflow: hidden; }
+
+        /* MENU LATERAL ESTREITO */
+        nav { width: 190px; background: var(--dark); color: white; display: flex; flex-direction: column; overflow-y: auto; border-right: 2px solid var(--accent); }
+        .logo-area { padding: 15px; text-align: center; color: var(--accent); font-weight: bold; font-size: 16px; border-bottom: 1px solid #2c3e50; }
+        .nav-label { font-size: 10px; color: #7f8c8d; padding: 15px 15px 5px; text-transform: uppercase; font-weight: bold; }
+        .nav-item { padding: 12px 15px; cursor: pointer; transition: 0.2s; border-left: 4px solid transparent; font-weight: 600; }
+        .nav-item:hover { background: #3e5871; }
+        .nav-item.active { background: var(--sidebar); border-left-color: var(--accent); color: var(--accent); }
 
         /* ÁREA PRINCIPAL */
-        main { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; }
-        .painel { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        main { flex: 1; display: flex; flex-direction: column; padding: 15px; gap: 15px; overflow-y: auto; }
+        .painel { background: white; padding: 12px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        h2 { font-size: var(--font-padrao); margin: 0 0 10px 0; text-transform: uppercase; color: var(--dark); border-bottom: 1px solid #eee; padding-bottom: 5px; }
 
-        /* GRID DE MESAS PEQUENAS (BOTÕES MINI) */
-        .grid-mini { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; margin-bottom: 20px; }
-        .mesa-btn { padding: 10px 2px; border: none; border-radius: 4px; color: white; cursor: pointer; font-size: 10px; font-weight: bold; text-align: center; }
+        /* MESAS COMPACTAS NO TOPO */
+        .grid-mesas { display: flex; gap: 6px; flex-wrap: wrap; }
+        .mesa-btn { flex: 1; min-width: 60px; padding: 10px; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; font-size: 11px; }
         .livre { background: var(--success); }
         .ocupada { background: var(--danger); }
-        .sel { outline: 3px solid var(--accent); transform: scale(1.05); }
+        .mesa-sel { outline: 3px solid var(--accent); transform: scale(1.05); }
 
-        /* CUPOM EXPANSÍVEL (FORMATO SUPERMERCADO) */
-        #area-cupom { 
-            display: none; /* Só aparece quando clica na mesa */
-            background: #fff; 
-            border: 1px dashed #000; 
-            padding: 20px; 
-            width: 100%; 
-            max-width: 380px; 
-            margin: 10px auto; 
-            font-family: 'Courier New', monospace; 
-        }
-        .item-linha { display: flex; justify-content: space-between; border-bottom: 1px dotted #ccc; padding: 5px 0; }
-        .total-cupom { font-size: 24px; font-weight: bold; border-top: 2px solid #000; margin-top: 10px; padding-top: 10px; display: flex; justify-content: space-between; }
+        /* CONTEÚDO DIVIDIDO */
+        .venda-container { display: flex; gap: 15px; flex: 1; min-height: 0; }
+        
+        /* LADO ESQUERDO: CUPOM FISCAL */
+        .coluna-cupom { flex: 0.8; background: #fff; border: 1px solid #ccc; display: flex; flex-direction: column; padding: 15px; font-family: 'Courier New', monospace; }
+        .cupom-header { text-align: center; border-bottom: 1px dashed #000; padding-bottom: 8px; margin-bottom: 10px; }
+        .cupom-lista { flex: 1; overflow-y: auto; font-size: 12px; }
+        .cupom-item { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .cupom-total { border-top: 2px solid #000; padding-top: 8px; font-size: 18px; font-weight: bold; display: flex; justify-content: space-between; font-family: sans-serif; }
+
+        /* LADO DIREITO: LANÇAMENTO E LISTA */
+        .coluna-dados { flex: 1.2; display: flex; flex-direction: column; gap: 15px; }
+        
+        /* TABELA DE PRODUTOS */
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        th { text-align: left; padding: 8px; background: #f8f9fa; border-bottom: 2px solid #dee2e6; }
+        td { padding: 6px 8px; border-bottom: 1px solid #eee; }
+
+        /* INPUTS */
+        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: var(--font-padrao); }
+        .input-bipa { background: #fff9c4; border: 2px solid var(--accent); font-weight: bold; width: 100%; }
+
+        /* BOTÃO FECHAR */
+        .btn-acao { background: var(--success); color: white; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <nav>
-    <div style="padding: 15px; color: var(--accent); font-weight: bold; text-align: center;">BOTECO 934</div>
-    <div class="nav-item active">🛒 VENDAS</div>
-    <div class="nav-item">📦 ESTOQUE</div>
-    <div class="nav-item">💰 FINANCEIRO</div>
-    <div class="nav-item" style="color: #00a859;">🌸 BOTICÁRIO</div>
-    <div class="nav-item">📝 PENDURA</div>
-    <div class="nav-item">🧮 CALCULADORA</div>
+    <div class="logo-area">BOTECO 934</div>
+    <div class="nav-label">Movimento</div>
+    <div class="nav-item active" onclick="aba('vendas')">🛒 VENDAS</div>
+    <div class="nav-item" onclick="aba('cadastros')">📝 CADASTROS</div>
+    
+    <div class="nav-label">Controles</div>
+    <div class="nav-item" onclick="aba('estoque')">🗄️ ESTOQUE</div>
+    <div class="nav-item" onclick="aba('financeiro')">💰 FINANCEIRO</div>
+    <div class="nav-item" onclick="aba('fiado')">📓 PENDURA</div>
+    
+    <div class="nav-label">Parcerias</div>
+    <div class="nav-item" style="color: #00a859;" onclick="aba('boticario')">🌸 BOTICÁRIO</div>
+    
+    <div class="nav-label">Apoio</div>
+    <div class="nav-item" onclick="aba('calc')">🧮 CALCULADORA</div>
 </nav>
 
-<main>
+<main id="tela-vendas">
     <div class="painel">
-        <h2 style="font-size: 14px; margin-top: 0;">📍 MAPA DE MESAS (CLIQUE PARA ABRIR)</h2>
-        <div id="grid-mesas" class="grid-mini"></div>
+        <h2>📍 MAPA DE MESAS</h2>
+        <div id="grid-mesas" class="grid-mesas"></div>
+    </div>
 
-        <div id="area-cupom">
-            <div style="text-align: center; border-bottom: 1px solid #000; padding-bottom: 10px;">
-                <h3 id="cupom-num" style="margin: 0;">MESA 01</h3>
-                <small id="cupom-cli">CLIENTE: CONSUMIDOR</small>
+    <div class="venda-container">
+        <div class="coluna-cupom" id="cupom-fiscal">
+            <div class="cupom-header">
+                <b id="cupom-nome-mesa">SELECIONE UMA MESA</b><br>
+                <small id="cupom-cliente">CLIENTE: CONSUMIDOR</small>
             </div>
-            
-            <div id="cupom-lista" style="margin: 15px 0;">
+            <div id="cupom-lista" class="cupom-lista">
                 </div>
-
-            <div class="total-cupom">
+            <div class="cupom-total">
                 <span>TOTAL:</span>
-                <span id="cupom-total">R$ 0,00</span>
+                <span id="txt-total">R$ 0,00</span>
             </div>
-
-            <button onclick="fecharCupom()" style="width: 100%; margin-top: 20px; padding: 10px; cursor: pointer;">✖ FECHAR CUPOM</button>
+            <button class="btn-acao" onclick="fecharVenda()">FECHAR CONTA (F2)</button>
         </div>
-    </div>
 
-    <div class="painel" style="margin-top: 20px;">
-        <h2>⚡ LANÇAR PRODUTO</h2>
-        <div style="display: flex; gap: 10px;">
-            <input type="number" id="qtd" value="1" style="width: 60px; padding: 10px; font-size: 18px;">
-            <input type="text" id="barcode" placeholder="BIPE O CÓDIGO DE BARRAS..." style="flex: 1; padding: 10px; font-size: 18px; background: #fff9c4;">
-        </div>
-    </div>
-</main>
-<style>
-    /* Redução Geral de Fontes e Espaços */
-    :root { 
-        --font-base: 12px; 
-        --font-titulo: 13px; 
-        --padding-box: 10px; 
-    }
-
-    body { font-size: var(--font-base); }
-
-    /* Títulos Menores e Discretos */
-    h2 { 
-        font-size: var(--font-titulo); 
-        margin: 0 0 8px 0; 
-        color: var(--sidebar); 
-        border-left: 3px solid var(--accent); 
-        padding-left: 8px; 
-        text-transform: uppercase;
-    }
-
-    /* Tabelas e Listas de Produtos */
-    .tabela-elite {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 11px; /* Fonte bem pequena para caber tudo */
-    }
-    .tabela-elite th { 
-        background: #f1f2f6; 
-        color: #2c3e50; 
-        padding: 5px; 
-        text-align: left; 
-        border-bottom: 2px solid #dfe6e9;
-    }
-    .tabela-elite td { 
-        padding: 4px 5px; 
-        border-bottom: 1px solid #f1f2f6; 
-    }
-
-    /* Inputs Compactos */
-    input[type="text"], input[type="number"], select {
-        padding: 6px;
-        font-size: 12px;
-        border: 1px solid #ccc;
-        border-radius: 3px;
-    }
-
-    /* Campo de Barcode - O único que continua visível mas sem exagero */
-    .barcode-compacto {
-        background: #fff9c4;
-        border: 2px solid var(--accent);
-        font-weight: bold;
-        width: 100%;
-        padding: 8px;
-    }
-
-    /* Ajuste do Cupom Fiscal */
-    .coluna-cupom {
-        flex: 0.8; /* Diminuí a largura do cupom */
-        background: #fff;
-        border: 1px solid #ccc;
-        padding: 10px;
-        font-family: 'Courier New', monospace;
-        font-size: 11px;
-    }
-</style>
-
-<main>
-    <div style="background: white; padding: 8px; border-radius: 5px; margin-bottom: 10px; display: flex; gap: 5px; overflow-x: auto;">
-        <button class="mesa-mini">M1</button>
-        <button class="mesa-mini">M2</button>
-        <button class="mesa-mini">M3</button>
-        <button class="mesa-mini">M4</button>
-        <button class="mesa-mini">M5</button>
-        <button class="mesa-mini">M6</button>
-        <button class="mesa-mini">M7</button>
-        <button class="mesa-mini">M8</button>
-    </div>
-
-    <div class="conteudo-vendas">
-        
-        <div class="coluna-cupom">
-            <div style="text-align:center; border-bottom: 1px dashed #000; margin-bottom: 10px;">
-                <b id="cupom-num">MESA 01</b><br>
-                <span style="font-size: 9px;">BOTECO 934 - PDV ELITE</span>
-            </div>
-            
-            <div id="cupom-itens" style="height: 250px; overflow-y: auto;">
-                <div style="display:flex; justify-content:space-between;">
-                    <span>1x CERV LATA</span>
-                    <span>6,00</span>
+        <div class="coluna-dados">
+            <div class="painel">
+                <h2>⚡ LANÇAR ITEM (LEITOR)</h2>
+                <div style="display: flex; gap: 8px;">
+                    <input type="number" id="qtd" value="1" style="width: 50px; text-align: center;" title="Quantidade">
+                    <input type="text" id="barcode" class="input-bipa" placeholder="BIPE O CÓDIGO DE BARRAS..." onkeypress="verificarBip(event)">
                 </div>
             </div>
 
-            <div style="border-top: 1px solid #000; padding-top: 5px; margin-top: 10px;">
-                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size: 16px;">
-                    <span>TOTAL:</span>
-                    <span>R$ 6,00</span>
-                </div>
-                <button style="width:100%; margin-top:10px; background:var(--success); color:white; border:none; padding:8px; cursor:pointer; font-weight:bold;">FECHAR (F2)</button>
-            </div>
-        </div>
-
-        <div class="coluna-lancamento">
-            <div class="painel" style="padding: 10px;">
-                <h2>LANÇAR</h2>
-                <div style="display: flex; gap: 5px;">
-                    <input type="number" id="qtd" value="1" style="width: 45px;">
-                    <input type="text" class="barcode-compacto" placeholder="CÓDIGO DE BARRAS">
-                </div>
-            </div>
-
-            <div class="painel" style="flex: 1; padding: 10px;">
-                <h2>ESTOQUE / PREÇOS</h2>
-                <input type="text" placeholder="Filtrar..." style="width: 100%; margin-bottom: 8px;">
-                
-                <table class="tabela-elite">
+            <div class="painel" style="flex: 1; overflow-y: auto;">
+                <h2>📦 PRODUTOS EM ESTOQUE</h2>
+                <input type="text" id="busca" placeholder="Filtrar por nome..." style="width:100%; margin-bottom:10px;" oninput="filtrar()">
+                <table id="tabela-prods">
                     <thead>
                         <tr>
                             <th>DESCRIÇÃO</th>
                             <th>PREÇO</th>
                             <th>ESTOQUE</th>
-                            <th>AÇÃO</th>
+                            <th>ADD</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr><td>CERVEJA LATA 350ML</td><td>6,00</td><td>48</td><td><button>+</button></td></tr>
-                        <tr><td>CERVEJA 600ML</td><td>10,00</td><td>24</td><td><button>+</button></td></tr>
-                        <tr><td>CACHAÇA DOSE</td><td>3,00</td><td>--</td><td><button>+</button></td></tr>
-                        <tr><td>REFRI LATA</td><td>5,00</td><td>12</td><td><button>+</button></td></tr>
-                    </tbody>
+                    <tbody id="lista-estoque"></tbody>
                 </table>
             </div>
         </div>
-
     </div>
 </main>
-<script>
-    let mesas = {};
-    for(let i=1; i<=8; i++) mesas[i] = { ativa: false, itens: [], cli: "CONSUMIDOR", total: 0 };
-    let mesaSel = null;
 
-    function desenharMesas() {
+<script>
+    // Dados iniciais
+    let prods = [
+        {id: "123", n: "CERVEJA LATA 350ML", p: 6.00, e: 48},
+        {id: "456", n: "CERVEJA 600ML", p: 10.00, e: 24},
+        {id: "789", n: "COCA-COLA LATA", p: 5.00, e: 12}
+    ];
+
+    let mesas = {};
+    for(let i=1; i<=8; i++) mesas[i] = { ativa: false, itens: [], total: 0 };
+    let mesaAtiva = null;
+
+    // Inicia o sistema
+    function init() {
+        renderMesas();
+        renderEstoque();
+    }
+
+    function renderMesas() {
         const grid = document.getElementById('grid-mesas');
         grid.innerHTML = "";
         for(let i=1; i<=8; i++) {
-            let b = document.createElement('button');
-            b.className = `mesa-btn ${mesas[i].ativa ? 'ocupada' : 'livre'} ${mesaSel == i ? 'sel' : ''}`;
-            b.innerHTML = `M${i}`;
-            b.onclick = () => abrirMesa(i);
-            grid.appendChild(b);
+            let btn = document.createElement('button');
+            btn.className = `mesa-btn ${mesas[i].ativa ? 'ocupada' : 'livre'} ${mesaAtiva == i ? 'mesa-sel' : ''}`;
+            btn.innerHTML = `M${i}<br>${mesas[i].ativa ? 'R$ '+mesas[i].total.toFixed(2) : 'LIVRE'}`;
+            btn.onclick = () => selMesa(i);
+            grid.appendChild(btn);
         }
     }
 
-    function abrirMesa(id) {
-        mesaSel = id;
-        mesas[id].ativa = true; // Ativa a mesa ao clicar
-        document.getElementById('area-cupom').style.display = 'block';
-        document.getElementById('cupom-num').innerText = "MESA " + id.toString().padStart(2, '0');
+    function selMesa(id) {
+        mesaAtiva = id;
+        document.getElementById('cupom-nome-mesa').innerText = "MESA " + id.toString().padStart(2, '0');
         document.getElementById('barcode').focus();
-        desenharMesas();
-        atualizarCupom();
+        renderMesas();
+        renderCupom();
     }
 
-    function fecharCupom() {
-        document.getElementById('area-cupom').style.display = 'none';
-        mesaSel = null;
-        desenharMesas();
-    }
-
-    function atualizarCupom() {
-        if(!mesaSel) return;
-        let m = mesas[mesaSel];
-        let lista = document.getElementById('cupom-lista');
-        lista.innerHTML = m.itens.length ? "" : "<p style='text-align:center'>MESA VAZIA</p>";
+    function renderCupom() {
+        const lista = document.getElementById('cupom-lista');
+        if(!mesaAtiva) { lista.innerHTML = ""; return; }
         
+        let m = mesas[mesaAtiva];
+        lista.innerHTML = "";
         m.total = 0;
-        m.itens.forEach(item => {
-            m.total += item.p;
-            lista.innerHTML += `<div class="item-linha"><span>${item.n}</span><span>R$ ${item.p.toFixed(2)}</span></div>`;
-        });
-        document.getElementById('cupom-total').innerText = "R$ " + m.total.toFixed(2);
-    }
-
-    window.onload = desenharMesas;
-</script>
-    <style>
-    /* DIVISÃO DA TELA: ESQUERDA (CUPOM) | DIREITA (PRODUTOS) */
-    .conteudo-vendas {
-        display: flex;
-        gap: 20px;
-        flex: 1;
-        overflow: hidden;
-    }
-
-    /* COLUNA DO CUPOM (ESTILO SUPERMERCADO) */
-    .coluna-cupom {
-        flex: 1;
-        background: #fff;
-        border: 1px dashed #333;
-        display: flex;
-        flex-direction: column;
-        padding: 15px;
-        font-family: 'Courier New', monospace;
-        box-shadow: 5px 5px 15px rgba(0,0,0,0.05);
-    }
-
-    /* COLUNA DE LANÇAMENTO E BUSCA */
-    .coluna-lancamento {
-        flex: 1.5; /* Lado direito um pouco maior para a lista de itens */
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    /* TABELA DE PRODUTOS COMPACTA */
-    .tabela-compacta {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13px; /* Fonte menor como você pediu */
-        background: white;
-    }
-    .tabela-compacta th { background: var(--sidebar); color: white; padding: 8px; text-align: left; }
-    .tabela-compacta td { padding: 6px 8px; border-bottom: 1px solid #eee; }
-
-    /* CAMPO DE BARCODE EM DESTAQUE */
-    .input-barcode {
-        width: 100%;
-        padding: 12px;
-        font-size: 16px;
-        border: 2px solid var(--accent);
-        background: #fff9c4;
-        font-weight: bold;
-    }
-</style>
-
-<main>
-    <div class="painel" style="margin-bottom: 15px; padding: 10px;">
-        <div id="grid-mesas" class="grid-mini"></div>
-    </div>
-
-    <div class="conteudo-vendas">
         
-        <div id="area-cupom" class="coluna-cupom">
-            <div style="text-align: center; border-bottom: 2px double #000; padding-bottom: 10px;">
-                <h3 id="cupom-num" style="margin:0">MESA 00</h3>
-                <span id="cupom-cli" style="font-size: 12px;">CLIENTE: SELECIONE</span>
-            </div>
+        m.itens.forEach((it, index) => {
+            m.total += it.p;
+            lista.innerHTML += `
+                <div class="cupom-item">
+                    <span>1x ${it.n}</span>
+                    <span>${it.p.toFixed(2)}</span>
+                </div>`;
+        });
+        document.getElementById('txt-total').innerText = "R$ " + m.total.toFixed(2);
+    }
+
+    function verificarBip(e) {
+        if(e.key === 'Enter') {
+            let code = document.getElementById('barcode').value;
+            let qtd = parseInt(document.getElementById('qtd').value);
+            let p = prods.find(x => x.id === code);
             
-            <div id="cupom-lista" style="flex: 1; overflow-y: auto; padding: 10px 0;">
-                </div>
+            if(p && mesaAtiva) {
+                mesas[mesaAtiva].ativa = true;
+                for(let i=0; i<qtd; i++) mesas[mesaAtiva].itens.push({n: p.n, p: p.p});
+                document.getElementById('barcode').value = "";
+                document.getElementById('qtd').value = "1";
+                renderCupom();
+                renderMesas();
+            } else {
+                alert("MESA NÃO SELECIONADA OU PRODUTO NÃO ENCONTRADO!");
+            }
+        }
+    }
 
-            <div style="border-top: 2px solid #000; padding-top: 10px;">
-                <div style="display: flex; justify-content: space-between; font-size: 22px; font-weight: bold;">
-                    <span>TOTAL:</span>
-                    <span id="cupom-total">R$ 0,00</span>
-                </div>
-                <button class="btn-compact" style="background: var(--success); color: white; margin-top: 10px; width: 100%; font-size: 16px;">FECHAR E ENVIAR WHATSAPP</button>
-            </div>
-        </div>
+    function renderEstoque() {
+        const corpo = document.getElementById('lista-estoque');
+        corpo.innerHTML = prods.map(p => `
+            <tr>
+                <td>${p.n}</td>
+                <td>R$ ${p.p.toFixed(2)}</td>
+                <td>${p.e}</td>
+                <td><button onclick="addManual('${p.id}')">+</button></td>
+            </tr>
+        `).join('');
+    }
 
-        <div class="coluna-lancamento">
-            <div class="painel">
-                <h2>⚡ LANÇAMENTO RÁPIDO (LEITOR)</h2>
-                <div style="display: flex; gap: 10px;">
-                    <input type="number" id="qtd" value="1" title="Qtd" style="width: 60px; text-align: center; font-weight: bold;">
-                    <input type="text" id="barcode" class="input-barcode" placeholder="PASSE O CÓDIGO DE BARRAS...">
-                </div>
-            </div>
+    function addManual(id) {
+        if(!mesaAtiva) return alert("Selecione uma mesa!");
+        let p = prods.find(x => x.id === id);
+        mesas[mesaAtiva].ativa = true;
+        mesas[mesaAtiva].itens.push({n: p.n, p: p.p});
+        renderCupom();
+        renderMesas();
+    }
 
-            <div class="painel" style="flex: 1; overflow-y: auto;">
-                <h2>📦 LISTA DE PREÇOS / ESTOQUE</h2>
-                <input type="text" placeholder="🔍 Buscar produto pelo nome..." style="margin-bottom: 10px;">
-                <table class="tabela-compacta">
-                    <thead>
-                        <tr>
-                            <th>PRODUTO</th>
-                            <th>PREÇO</th>
-                            <th>AÇÃO</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>CERVEJA LATA 350ML</td><td>R$ 6,00</td><td><button>+</button></td></tr>
-                        <tr><td>CERVEJA 600ML</td><td>R$ 10,00</td><td><button>+</button></td></tr>
-                        <tr><td>DOSE PITÚ</td><td>R$ 3,00</td><td><button>+</button></td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    function aba(nome) {
+        alert("Aba " + nome.toUpperCase() + " integrada ao layout!");
+    }
 
-    </div>
-</main>
+    window.onload = init;
+</script>
 </body>
 </html>
