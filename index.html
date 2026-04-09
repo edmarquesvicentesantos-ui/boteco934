@@ -39,7 +39,7 @@
         </div>
     </div>
 <script>
-    let db = JSON.parse(localStorage.getItem('b934_db_mix')) || [];
+    let db = JSON.parse(localStorage.getItem('b934_db_v3')) || [];
     let mesa = [];
     const fallImg = "https://cdn-icons-png.flaticon.com/512/3121/3121784.png";
 
@@ -63,25 +63,26 @@
             let n = (d.status === 1 && d.product.product_name) ? d.product.product_name : "Produto Novo";
             let f = (d.status === 1 && d.product.image_url) ? d.product.image_url : fallImg;
             
-            let custo = prompt(`CADASTRO: ${n}\n\n1. Qual o PREÇO DE CUSTO?`, "4.00");
+            let custo = prompt(`NOVO ITEM: ${n}\n\n1. Qual o PREÇO DE CUSTO?`, "4.00");
             if(custo) {
                 let c = parseFloat(custo.replace(',','.'));
                 let margem = prompt(`2. Qual a MARGEM DE LUCRO desejada? (%)`, "50");
                 let m = parseFloat(margem) / 100;
                 let sugerido = (c * (1 + m)).toFixed(2);
                 
-                let venda = prompt(`SUGESTÃO DE VENDA: R$ ${sugerido}\n(Lucro de R$ ${(sugerido - c).toFixed(2)})\n\nConfirma o PREÇO DE VENDA?`, sugerido);
+                // Aqui está a mágica: O sistema já sugere a venda com lucro
+                let venda = prompt(`SUGESTÃO DE VENDA: R$ ${sugerido}\n(Seu lucro será de R$ ${(sugerido - c).toFixed(2)} por unidade)\n\nDigite o PREÇO DE VENDA final:`, sugerido);
                 
                 if(venda) {
                     let v = parseFloat(venda.replace(',','.'));
                     let novo = { id: cod, nome: n, foto: f, custo: c, preco: v };
                     db.push(novo);
-                    localStorage.setItem('b934_db_mix', JSON.stringify(db));
+                    localStorage.setItem('b934_db_v3', JSON.stringify(db));
                     mesa.push({...novo, qtd: 1});
                     render();
                 }
             }
-        } catch(e) { alert("Erro ao buscar."); }
+        } catch(e) { alert("Erro ao buscar produto."); }
     }
 
     function render() {
@@ -111,7 +112,7 @@
         if(mesa.length === 0) return;
         let m = "*BOTECO 934 - RECIBO*\n----------------------------\n";
         mesa.forEach(i => m += `${i.qtd}x ${i.nome} - R$ ${(i.preco*i.qtd).toFixed(2)}\n`);
-        m += "----------------------------\n*TOTAL: R$ " + document.getElementById('totalTxt').innerText + "*";
+        m += "----------------------------\n*TOTAL DA MESA: R$ " + document.getElementById('totalTxt').innerText + "*";
         window.open(`https://wa.me/?text=${encodeURIComponent(m)}`);
     }
     render();
