@@ -2,207 +2,226 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA ELITE V3 - BOTECO 934</title>
+    <title>SISTEMA ELITE V7 - BOTECO 934</title>
+    
     <style>
         :root { --dark: #1a252f; --sidebar: #2c3e50; --accent: #f39c12; --success: #27ae60; --danger: #e74c3c; --bg: #dfe6e9; --font-padrao: 13px; }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { margin: 0; display: flex; height: 100vh; background: var(--bg); font-size: var(--font-padrao); overflow: hidden; }
 
-        nav { width: 180px; background: var(--dark); color: white; display: flex; flex-direction: column; border-right: 2px solid var(--accent); }
+        /* Estilo do Menu Lateral */
+        nav { width: 190px; background: var(--dark); color: white; display: flex; flex-direction: column; border-right: 2px solid var(--accent); }
         .nav-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #2c3e50; font-weight: 600; }
         .nav-item.active { background: var(--sidebar); color: var(--accent); border-left: 4px solid var(--accent); }
 
         main { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .painel { background: white; padding: 12px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 10px; }
-        h2 { font-size: 13px; margin: 0 0 10px 0; text-transform: uppercase; color: var(--dark); border-bottom: 1px solid #eee; padding-bottom: 5px; }
-
+        .painel { background: white; padding: 15px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        
+        /* Estilo da Calculadora Fugitiva */
+        .area-calculadora { background: #f1f2f6; border: 2px solid var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; align-items: end; }
+        
         .cards-fin { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
         .card { padding: 10px; border-radius: 4px; color: white; text-align: center; }
-
-        .grid-mesas { display: flex; gap: 5px; margin-bottom: 10px; }
-        .mesa-btn { flex: 1; padding: 8px; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; font-size: 11px; }
-        .livre { background: var(--success); }
-        .ocupada { background: var(--danger); }
-        .sel { outline: 3px solid var(--accent); transform: scale(1.05); }
-
-        table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th { text-align: left; padding: 8px; background: #f8f9fa; border-bottom: 2px solid #ddd; }
-        td { padding: 7px 8px; border-bottom: 1px solid #eee; }
-
-        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 100%; }
-        .btn-grande { width: 100%; padding: 10px; border: none; border-radius: 4px; color: white; font-weight: bold; cursor: pointer; margin-top: 5px; }
         
-        .alerta-guerra { background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; border-radius: 5px; color: #856404; font-weight: bold; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { text-align: left; padding: 10px; background: #e9ecef; border-bottom: 2px solid #dee2e6; }
+        td { padding: 10px; border-bottom: 1px solid #eee; }
+        
+        input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; width: 100%; }
+        .btn-acao { padding: 12px; border: none; border-radius: 4px; color: white; font-weight: bold; cursor: pointer; width: 100%; }
+        .caixa-fechado { filter: grayscale(1); pointer-events: none; opacity: 0.5; }
     </style>
-</head>
+    </head>
 <body>
 
 <nav>
     <div style="padding:20px; color:var(--accent); font-weight:bold; text-align:center;">BOTECO 934</div>
-    <div class="nav-item active" onclick="ver('aba-vendas')">🛒 VENDAS</div>
-    <div class="nav-item" onclick="ver('aba-estoque')">🗄️ ESTOQUE / MIX</div>
-    <div class="nav-item" onclick="ver('aba-inteligencia')">🧠 INTELIGÊNCIA</div>
-    <div class="nav-item" onclick="ver('aba-boticario')">🌸 BOTICÁRIO</div>
+    <div class="nav-item active" onclick="ver('aba-vendas')">🛒 VENDAS / MESAS</div>
+    <div class="nav-item" onclick="ver('aba-estoque')">🧠 CALCULADORA / MIX</div>
+    <div class="nav-item" onclick="ver('aba-financeiro')">💸 CONTAS A PAGAR</div>
+    <button onclick="abrirCaixa()" style="background:var(--success); color:white; border:none; padding:10px; cursor:pointer; font-weight:bold; margin:10px; border-radius:4px;">🔓 ABRIR CAIXA</button>
 </nav>
-
 <main>
     <div class="cards-fin">
-        <div class="card" style="background: #27ae60;">Dinheiro: <b id="res-din">R$ 0,00</b></div>
-        <div class="card" style="background: #2980b9;">Pix/Cartão: <b id="res-digital">R$ 0,00</b></div>
-        <div class="card" style="background: #e67e22;">Pendura: <b id="res-pendura">R$ 0,00</b></div>
-        <button onclick="enviarFechamento()" style="background: var(--dark); color: var(--accent); border: 2px solid var(--accent); border-radius: 4px; cursor: pointer; font-weight: bold;">📲 FECHAMENTO ZAP</button>
+        <div class="card" style="background: #7f8c8d;">Troco Inicial<br><b id="res-troco">R$ 0,00</b></div>
+        <div class="card" style="background: #27ae60;">Vendas Brutas<br><b id="res-vendas">R$ 0,00</b></div>
+        <div class="card" style="background: #e74c3c;">Contas Pagas<br><b id="res-contas">R$ 0,00</b></div>
+        <div class="card" style="background: #2980b9;">Saldo Final<br><b id="res-saldo">R$ 0,00</b></div>
     </div>
-
     <div id="aba-vendas" class="tab-content">
-        <div class="painel">
-            <h2>📍 MAPA DE MESAS</h2>
-            <div id="grid-mesas" class="grid-mesas"></div>
-        </div>
-        <div style="display: flex; gap: 15px;">
-            <div class="painel" style="flex: 1.2;">
-                <h2>⚡ LANÇAMENTO</h2>
-                <div style="display: flex; gap: 5px; margin-bottom: 10px;">
-                    <input type="number" id="qtd" value="1" style="width: 50px; text-align: center;">
-                    <input type="text" id="barcode" placeholder="BIPE OU DIGITE..." onkeypress="handleVenda(event)" style="background:#fff9c4; border:2px solid var(--accent)">
-                </div>
-                <table id="tab-venda">
-                    <thead><tr><th>Item</th><th>Preço</th><th>Qtd</th><th>Total</th></tr></thead>
-                    <tbody id="lista-venda"></tbody>
-                </table>
+        <div id="lock-screen" style="background:#f8d7da; padding:10px; text-align:center; font-weight:bold; margin-bottom:10px; border-radius:4px;">⚠️ CAIXA FECHADO! ABRA O CAIXA NO MENU LATERAL.</div>
+        <div id="conteudo-vendas" class="caixa-fechado">
+            <div class="painel">
+                <h2>📍 MESAS EM ATENDIMENTO</h2>
+                <div id="grid-mesas" style="display:flex; gap:5px;"></div>
             </div>
-            <div class="painel" style="flex: 0.8; font-family: monospace; border: 1px dashed #000;">
-                <h3 style="text-align: center;">CUPOM</h3>
-                <div id="cupom-itens" style="min-height: 150px;"></div>
-                <div style="font-size: 18px; font-weight: bold; border-top: 2px solid #000; padding-top: 10px;">
-                    TOTAL: <span id="total-venda">R$ 0,00</span>
+            <div style="display:flex; gap:15px;">
+                <div class="painel" style="flex:1.2;">
+                    <h2>⚡ LANÇAR ITEM (BIPE OU DIGITE)</h2>
+                    <input type="text" id="barcode" placeholder="NOME DO PRODUTO..." onkeypress="handleVenda(event)" style="background:#fff9c4; border:2px solid var(--accent)">
+                    <table style="margin-top:10px;"><tbody id="lista-venda"></tbody></table>
                 </div>
-                <button class="btn-grande" style="background:var(--success)" onclick="finalizar('DINHEIRO')">DINHEIRO</button>
-                <button class="btn-grande" style="background:#3498db" onclick="finalizar('PIX')">PIX / CARTÃO</button>
-                <button class="btn-grande" style="background:var(--danger)" onclick="finalizar('PENDURA')">PENDURA (FIADO)</button>
+                <div class="painel" style="flex:0.8; border:1px dashed #333;">
+                    <h3 style="text-align:center;">CUPOM DO CLIENTE</h3>
+                    <div id="cupom-itens" style="min-height:100px;"></div>
+                    <div style="font-size:20px; font-weight:bold; border-top:2px solid #000; padding-top:10px;">TOTAL: <span id="total-venda">R$ 0,00</span></div>
+                    <button class="btn-acao" style="background:var(--success); margin-top:10px;" onclick="finalizar('DINHEIRO')">PAGOU EM DINHEIRO</button>
+                    <button class="btn-acao" style="background:#3498db; margin-top:5px;" onclick="finalizar('PIX')">PAGOU EM PIX / CARTÃO</button>
+                </div>
             </div>
         </div>
     </div>
-
-    <div id="aba-inteligencia" class="tab-content" style="display:none">
-        <div class="alerta-guerra">⚠️ ESTRATÉGIA: Você precisa vender R$ 150,00 hoje para cobrir os custos fixos!</div>
-        <div class="painel">
-            <h2>🥇 RANKING DE LUCRO (QUEM MANDA NO BAR)</h2>
-            <table>
-                <thead><tr><th>Produto</th><th>Vendas</th><th>Lucro Total</th><th>Status</th></tr></thead>
-                <tbody>
-                    <tr><td>Cerveja Lata (Gelada)</td><td>42</td><td>R$ 105,00</td><td style="color:green">🔥 General</td></tr>
-                    <tr><td>Dose Pitú</td><td>15</td><td>R$ 37,50</td><td style="color:blue">🛡️ Soldado</td></tr>
-                    <tr><td>Cerveja Natural</td><td>2</td><td>R$ 2,00</td><td style="color:orange">💤 Recruta</td></tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="painel">
-            <h2>🚫 REGISTRAR QUEBRA / PERDA</h2>
-            <p>Sumiu ou quebrou? Registre aqui para não ser enganado pela matemática.</p>
-            <div style="display:flex; gap:10px;">
-                <select id="perda-item" style="flex:2; padding:8px;"><option>CERVEJA LATA</option></select>
-                <input type="number" placeholder="Qtd" style="flex:1;">
-                <button class="btn-grande" style="background:var(--danger); margin:0;">REGISTRAR PERDA</button>
-            </div>
-        </div>
-    </div>
-
     <div id="aba-estoque" class="tab-content" style="display:none">
         <div class="painel">
-            <h2>🧠 MIX INTELIGENTE</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                <input type="number" id="custo-cx" value="60.00" oninput="calcMix()" placeholder="Custo Caixa">
-                <input type="number" id="qtd-cx" value="24" oninput="calcMix()" placeholder="Qtd Itens">
-                <div style="background:#f1f2f6; padding:10px; border-radius:5px; text-align:center;">Custo Unit: <b id="unit-cx">R$ 2,50</b></div>
+            <h2>🧠 CALCULADORA DE MIX INTELIGENTE</h2>
+            <div class="area-calculadora">
+                <div class="grid-inputs">
+                    <div>
+                        <label><b>Preço da Caixa (R$)</b></label>
+                        <input type="number" id="custo-cx" value="60.00" oninput="executarCalculo()">
+                    </div>
+                    <div>
+                        <label><b>Qtd de Unidades na Caixa</b></label>
+                        <input type="number" id="qtd-cx" value="24" oninput="executarCalculo()">
+                    </div>
+                    <div style="background:var(--dark); color:var(--accent); padding:10px; border-radius:4px; text-align:center;">
+                        Custo por Unidade: <br>
+                        <span id="unit-result" style="font-size:16px; font-weight:bold;">R$ 2,50</span>
+                    </div>
+                </div>
             </div>
-            <table id="body-mix"></table>
+
+            <h2>📊 SUGESTÕES DE PREÇO PARA O BOTECO</h2>
+            <table>
+                <thead>
+                    <tr><th>Tipo de Venda</th><th>Preço Venda</th><th>Lucro Real</th><th>Margem (%)</th></tr>
+                </thead>
+                <tbody id="tabela-sugestao"></tbody>
+            </table>
         </div>
     </div>
-</main>
+    <div id="aba-financeiro" class="tab-content" style="display:none">
+        <div class="painel">
+            <h2>💸 LANÇAR PAGAMENTO / SAÍDA DE DINHEIRO</h2>
+            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px;">
+                <input type="text" id="desc-conta" placeholder="Descrição (Ex: Fornecedor Ambev)">
+                <input type="number" id="valor-conta" placeholder="Valor R$">
+                <button class="btn-acao" style="background:var(--danger)" onclick="registrarSaida()">REGISTRAR SAÍDA</button>
+            </div>
+        </div>
+    </div>
+    </main>
 
 <script>
-    const FONE_PESSOAL = "5587996806181";
-    let estoque = [{id: "123", n: "CERVEJA LATA", p: 6.00, q: 48}];
+    // [LOGICA DE DADOS GERAIS]
+    let fin = { troco: 0, vendas: 0, contas: 0 };
     let mesas = {};
-    for(let i=1; i<=8; i++) mesas[i] = { ativa: false, itens: [], total: 0 };
+    for(let i=1; i<=8; i++) mesas[i] = { ativa: false, total: 0, itens: [] };
     let mesaSel = null;
-    let saldos = { dinheiro: 0, digital: 0, pendura: 0 };
 
-    function init() { renderMesas(); calcMix(); }
+    // [LOGICA: ABERTURA DE CAIXA]
+    function abrirCaixa() {
+        let v = prompt("Quanto de dinheiro tem para troco?");
+        if(v) {
+            fin.troco = parseFloat(v);
+            document.getElementById('res-troco').innerText = "R$ " + fin.troco.toFixed(2);
+            document.getElementById('lock-screen').style.display = 'none';
+            document.getElementById('conteudo-vendas').classList.remove('caixa-fechado');
+            atualizarSaldo();
+        }
+    }
 
+    // [LOGICA: CALCULADORA DE MIX]
+    function executarCalculo() {
+        let custoCx = parseFloat(document.getElementById('custo-cx').value) || 0;
+        let qtd = parseInt(document.getElementById('qtd-cx').value) || 1;
+        let unit = custoCx / qtd;
+        document.getElementById('unit-result').innerText = "R$ " + unit.toFixed(2);
+
+        let dados = [
+            { n: "Cerveja Natural (Unidade)", p: unit * 1.4, c: unit },
+            { n: "Cerveja Gelada (Unidade + Luz)", p: (unit * 1.4) + 1.5, c: unit },
+            { n: "Caixa Atacado (Fechada)", p: custoCx * 1.2, c: custoCx }
+        ];
+
+        document.getElementById('tabela-sugestao').innerHTML = dados.map(d => {
+            let lucro = d.p - d.c;
+            return `<tr><td><b>${d.n}</b></td><td>R$ ${d.p.toFixed(2)}</td><td style="color:green; font-weight:bold;">R$ ${lucro.toFixed(2)}</td><td>${((lucro/d.p)*100).toFixed(0)}%</td></tr>`;
+        }).join('');
+    }
+
+    // [LOGICA: REGISTRAR CONTAS PAGAS]
+    function registrarSaida() {
+        let v = parseFloat(document.getElementById('valor-conta').value) || 0;
+        if(v > 0) {
+            fin.contas += v;
+            document.getElementById('res-contas').innerText = "R$ " + fin.contas.toFixed(2);
+            atualizarSaldo();
+            document.getElementById('valor-conta').value = "";
+            document.getElementById('desc-conta').value = "";
+            alert("Saída registrada no financeiro!");
+        }
+    }
+
+    // [LOGICA: FINALIZAR VENDA]
+    function finalizar(tipo) {
+        if(!mesaSel || !mesas[mesaSel].ativa) return;
+        fin.vendas += mesas[mesaSel].total;
+        document.getElementById('res-vendas').innerText = "R$ " + fin.vendas.toFixed(2);
+        mesas[mesaSel] = { ativa: false, total: 0, itens: [] };
+        mesaSel = null; renderMesas(); renderCupom(); atualizarSaldo();
+    }
+
+    // [LOGICA: CALCULO DO SALDO ATUAL]
+    function atualizarSaldo() {
+        let s = (fin.troco + fin.vendas) - fin.contas;
+        document.getElementById('res-saldo').innerText = "R$ " + s.toFixed(2);
+    }
+
+    // [LOGICA: NAVEGAÇÃO ENTRE ABAS]
     function ver(id) {
         document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
         document.getElementById(id).style.display = 'block';
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         event.currentTarget.classList.add('active');
+        if(id === 'aba-estoque') executarCalculo();
     }
 
+    // [LOGICA: RENDERIZAR MESAS]
     function renderMesas() {
         const grid = document.getElementById('grid-mesas');
         grid.innerHTML = "";
         for(let i=1; i<=8; i++) {
             let b = document.createElement('button');
-            b.className = `mesa-btn ${mesas[i].ativa ? 'ocupada' : 'livre'} ${mesaSel == i ? 'sel' : ''}`;
+            b.style = `flex:1; padding:10px; border:none; border-radius:4px; color:white; font-weight:bold; cursor:pointer; background:${mesas[i].ativa ? '#e74c3c' : '#27ae60'}; ${mesaSel==i ? 'border:3px solid #f39c12' : ''}`;
             b.innerHTML = `M${i}<br>${mesas[i].ativa ? 'R$'+mesas[i].total.toFixed(2) : 'LIVRE'}`;
             b.onclick = () => { mesaSel = i; renderMesas(); renderCupom(); };
             grid.appendChild(b);
         }
     }
 
+    // [LOGICA: ADICIONAR ITEM NA MESA]
     function handleVenda(e) {
         if(e.key === 'Enter') {
-            if(!mesaSel) return alert("Selecione a mesa!");
-            let val = document.getElementById('barcode').value;
-            let q = parseInt(document.getElementById('qtd').value);
-            let p = estoque.find(x => x.id === val || x.n.includes(val.toUpperCase()));
-            if(p) {
-                mesas[mesaSel].ativa = true;
-                mesas[mesaSel].itens.push({n: p.n, p: p.p, q: q});
-                mesas[mesaSel].total += (p.p * q);
-                document.getElementById('barcode').value = "";
-                renderCupom(); renderMesas();
-            } else { alert("Produto não encontrado!"); }
+            if(!mesaSel) return;
+            mesas[mesaSel].ativa = true;
+            mesas[mesaSel].itens.push({n: "PRODUTO EXEM.", p: 6});
+            mesas[mesaSel].total += 6;
+            renderMesas(); renderCupom();
+            document.getElementById('barcode').value = "";
         }
     }
 
+    // [LOGICA: MOSTRAR CUPOM]
     function renderCupom() {
         if(!mesaSel) return;
-        let m = mesas[mesaSel];
-        document.getElementById('cupom-itens').innerHTML = m.itens.map(it => `<div>${it.q}x ${it.n} - R$ ${(it.q*it.p).toFixed(2)}</div>`).join('');
-        document.getElementById('total-venda').innerText = "R$ " + m.total.toFixed(2);
+        document.getElementById('cupom-itens').innerHTML = mesas[mesaSel].itens.map(i => `<div>1x ${i.n} - R$ ${i.p.toFixed(2)}</div>`).join('');
+        document.getElementById('total-venda').innerText = "R$ " + mesas[mesaSel].total.toFixed(2);
     }
 
-    function finalizar(tipo) {
-        if(!mesaSel || !mesas[mesaSel].ativa) return;
-        let t = mesas[mesaSel].total;
-        if(tipo === 'DINHEIRO') saldos.dinheiro += t;
-        if(tipo === 'PIX') saldos.digital += t;
-        if(tipo === 'PENDURA') saldos.pendura += t;
-        document.getElementById('res-din').innerText = "R$ " + saldos.dinheiro.toFixed(2);
-        document.getElementById('res-digital').innerText = "R$ " + saldos.digital.toFixed(2);
-        document.getElementById('res-pendura').innerText = "R$ " + saldos.pendura.toFixed(2);
-        mesas[mesaSel] = { ativa: false, itens: [], total: 0 };
-        mesaSel = null; renderMesas(); renderCupom();
-    }
-
-    function calcMix() {
-        let cx = parseFloat(document.getElementById('custo-cx').value) || 0;
-        let q = parseInt(document.getElementById('qtd-cx').value) || 1;
-        let unit = cx / q;
-        document.getElementById('unit-cx').innerText = "R$ " + unit.toFixed(2);
-        let html = `<thead><tr><th>Venda</th><th>Preço</th><th>Lucro</th></tr></thead><tbody>`;
-        html += `<tr><td>Natural (30%)</td><td>R$ ${(unit*1.3).toFixed(2)}</td><td>R$ ${(unit*0.3).toFixed(2)}</td></tr>`;
-        html += `<tr><td>Gelada (+Luz)</td><td>R$ ${(unit*1.4+1.5).toFixed(2)}</td><td>R$ ${(unit*0.4+1.5).toFixed(2)}</td></tr>`;
-        html += `</tbody>`;
-        document.getElementById('body-mix').innerHTML = html;
-    }
-
-    function enviarFechamento() {
-        let msg = `*📊 RELATÓRIO ELITE BOTECO 934*%0A*Dinheiro:* R$ ${saldos.dinheiro.toFixed(2)}%0A*Digital:* R$ ${saldos.digital.toFixed(2)}%0A*Pendura:* R$ ${saldos.pendura.toFixed(2)}`;
-        window.open(`https://wa.me/${FONE_PESSOAL}?text=${msg}`);
-    }
-
-    window.onload = init;
+    // Iniciar sistema
+    window.onload = () => { renderMesas(); executarCalculo(); };
 </script>
 </body>
 </html>
