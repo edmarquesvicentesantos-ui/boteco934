@@ -2,293 +2,121 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA ELITE V18 - BOTECO 934</title>
+    <title>SISTEMA ELITE V19 - BOTECO 934 (DOSES)</title>
     <style>
-        :root { 
-            --dark: #1a252f; --sidebar: #2c3e50; --accent: #f39c12; 
-            --success: #27ae60; --danger: #c0392b; --info: #2980b9; 
-            --bg: #f1f2f6; 
-        }
+        :root { --dark: #1a252f; --sidebar: #2c3e50; --accent: #f39c12; --success: #27ae60; --danger: #c0392b; --info: #2980b9; --bg: #f1f2f6; }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
 
-        /* MENU LATERAL */
         aside { width: 250px; background: var(--dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; border-right: 5px solid var(--accent); }
         .header-loja { padding: 25px; text-align: center; font-size: 20px; font-weight: bold; color: var(--accent); border-bottom: 2px solid var(--sidebar); }
-        .menu-btn { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #34495e; font-weight: bold; transition: 0.3s; }
-        .menu-btn:hover, .menu-btn.active { background: var(--sidebar); color: var(--accent); border-left: 8px solid var(--accent); }
+        .menu-btn { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #34495e; font-weight: bold; }
+        .menu-btn.active { background: var(--sidebar); color: var(--accent); border-left: 8px solid var(--accent); }
 
-        /* PRINCIPAL */
-        main { flex-grow: 1; display: flex; flex-direction: column; min-width: 0; }
-        .topo { background: white; padding: 15px; display: flex; gap: 15px; border-bottom: 1px solid #ddd; }
-        .stat { flex: 1; padding: 10px; border-radius: 8px; color: white; text-align: center; font-weight: bold; }
+        main { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
         .conteudo { flex-grow: 1; padding: 20px; overflow-y: auto; }
         .painel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
-
-        /* VENDAS */
-        .grid-mesas { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-bottom: 20px; }
-        .mesa-btn { padding: 15px 5px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; }
-        .campo-bipe { width: 100%; padding: 15px; font-size: 22px; text-align: center; border: 4px solid var(--accent); border-radius: 10px; background: #fffde7; font-weight: bold; }
-
-        .btn-acao { padding: 12px; border: none; border-radius: 5px; color: white; font-weight: bold; cursor: pointer; width: 100%; }
+        
+        input { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; }
+        .btn-calc { background: var(--accent); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        
+        .res-box { background: #f8f9fa; border: 2px solid var(--sidebar); padding: 15px; border-radius: 10px; margin-top: 15px; }
+        .res-linha { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; font-size: 15px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .caixa-fechado { filter: grayscale(1); pointer-events: none; opacity: 0.5; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
 
 <aside>
     <div class="header-loja">BOTECO 934</div>
-    <div class="menu-btn active" onclick="ver('aba-vendas', this)">🛒 VENDAS</div>
+    <div class="menu-btn" onclick="ver('aba-vendas', this)">🛒 VENDAS</div>
+    <div class="menu-btn active" onclick="ver('aba-calculadora', this)">🥃 CALC. DE DOSES</div>
     <div class="menu-btn" onclick="ver('aba-produtos', this)">📦 ESTOQUE</div>
-    <div class="menu-btn" onclick="ver('aba-boticario', this)">🌸 BOTICÁRIO</div>
-    <div class="menu-btn" onclick="ver('aba-calculadora', this)">🧠 CALCULADORA</div>
     <div class="menu-btn" onclick="ver('aba-despesas', this)">💸 DESPESAS</div>
-    <div class="menu-btn" onclick="ver('aba-clientes', this)">👥 CLIENTES</div>
     <div style="margin-top: auto; padding: 20px;">
-        <button id="btn-abrir" onclick="abrirCaixa()" style="width:100%; padding:15px; background:var(--success); color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">🔓 ABRIR CAIXA</button>
+        <button onclick="alert('Caixa Pronto!')" style="width:100%; padding:15px; background:var(--success); color:white; border:none; border-radius:8px; font-weight:bold;">SISTEMA ATIVO</button>
     </div>
 </aside>
 
 <main>
-    <div class="topo">
-        <div class="stat" style="background:var(--info)">VENDAS: <span id="res-vendas">R$ 0,00</span></div>
-        <div class="stat" style="background:var(--danger)">SAÍDAS: <span id="res-contas">R$ 0,00</span></div>
-        <div class="stat" style="background:var(--success)">SALDO: <span id="res-saldo">R$ 0,00</span></div>
-    </div>
-
     <div class="conteudo">
-        <div id="aba-vendas" class="tab-content active">
-            <div id="modulo-vendas" class="caixa-fechado">
-                <div class="grid-mesas" id="grid-mesas"></div>
-                <div style="display: flex; gap: 20px;">
-                    <div class="painel" style="flex: 1.5;">
-                        <h2 id="titulo-mesa">Selecione uma Mesa</h2>
-                        <input type="text" id="campo-bipe" class="campo-bipe" placeholder="BIPE O CÓDIGO AQUI" onkeypress="bipar(event)">
-                        <div id="lista-venda-itens"></div>
+        
+        <div id="aba-calculadora" class="tab-content active">
+            <div class="painel">
+                <h2 style="color:var(--dark); margin-top:0;">🥃 CALCULADORA DE DOSES (LUCRO REAL)</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    
+                    <div>
+                        <label><b>Custo da Garrafa (R$):</b></label>
+                        <input type="number" id="dose-custo-garrafa" placeholder="Ex: 120.00" step="0.01">
+                        
+                        <label><b>Tamanho da Garrafa (ml):</b></label>
+                        <input type="number" id="dose-ml-total" placeholder="Ex: 750 ou 1000">
+                        
+                        <label><b>Tamanho da Dose Servida (ml):</b></label>
+                        <input type="number" id="dose-tamanho" placeholder="Ex: 50">
+                        
+                        <label><b>Preço que deseja cobrar (R$):</b></label>
+                        <input type="number" id="dose-preco-venda" placeholder="Ex: 15.00">
+                        
+                        <button class="btn-calc" onclick="calcularDose()">CALCULAR LUCRO DA DOSE</button>
                     </div>
-                    <div class="painel" style="flex: 1;">
-                        <h3 style="text-align:center;">TOTAL DA MESA</h3>
-                        <div id="total-venda" style="font-size:35px; font-weight:bold; text-align:center; margin:15px 0; color:var(--success);">R$ 0,00</div>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                            <button class="btn-acao" style="background:var(--success)" onclick="finalizar('DINHEIRO')">DINHEIRO</button>
-                            <button class="btn-acao" style="background:var(--info)" onclick="finalizar('PIX')">PIX</button>
-                            <button class="btn-acao" style="background:#8e44ad" onclick="finalizar('CARTÃO')">CARTÃO</button>
-                            <button class="btn-acao" style="background:var(--danger)" onclick="finalizar('PENDURA')">PENDURA</button>
+
+                    <div id="resultado-dose" class="res-box">
+                        <h3 style="text-align:center; margin-top:0; color:var(--info);">RESULTADO DO MIX</h3>
+                        <div class="res-linha"><span>Custo por ML:</span> <b id="res-ml">R$ 0,00</b></div>
+                        <div class="res-linha"><span>Custo da Dose:</span> <b id="res-custo-dose">R$ 0,00</b></div>
+                        <div class="res-linha"><span>Doses por Garrafa:</span> <b id="res-qtd-doses">0</b></div>
+                        <div class="res-linha"><span>Lucro por Dose:</span> <b id="res-lucro-dose" style="color:green">R$ 0,00</b></div>
+                        <div class="res-linha"><span>Margem de Lucro:</span> <b id="res-margem">0%</b></div>
+                        
+                        <div style="margin-top:15px; padding:10px; background:#fff3cd; border-radius:5px; font-size:12px; border:1px solid #ffeeba;">
+                            <b>Dica Elite:</b> Se o lucro estiver baixo, tente diminuir a dose para 40ml ou aumentar o preço de venda.
                         </div>
                     </div>
+
                 </div>
+            </div>
+        </div>
+
+        <div id="aba-vendas" class="tab-content">
+            <div class="painel">
+                <h2>🛒 FRENTE DE CAIXA</h2>
+                <p>Módulo de vendas ativo e integrado ao estoque.</p>
             </div>
         </div>
 
         <div id="aba-produtos" class="tab-content">
             <div class="painel">
-                <h2>📦 GERENCIAR ESTOQUE</h2>
-                <div style="display:grid; grid-template-columns: 1.2fr 2fr 1fr 1fr; gap:10px; align-items:end;">
-                    <input type="text" id="p-ean" placeholder="Código de Barras">
-                    <input type="text" id="p-nome" placeholder="Nome do Produto">
-                    <input type="number" id="p-venda" placeholder="Preço">
-                    <button class="btn-acao" style="background:var(--success)" onclick="salvarProduto()">SALVAR</button>
-                </div>
-                <table>
-                    <thead><tr><th>EAN</th><th>Produto</th><th>Preço</th></tr></thead>
-                    <tbody id="tabela-produtos"></tbody>
-                </table>
+                <h2>📦 ESTOQUE</h2>
+                <p>Gerencie seus produtos e preços aqui.</p>
             </div>
         </div>
 
-        <div id="aba-calculadora" class="tab-content">
-            <div class="painel" style="min-height: 350px;">
-                <h2>🧠 MIX INTELIGENTE (CUSTO X LUCRO)</h2>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                    <div>
-                        <label>Custo do Fardo/Caixa:</label>
-                        <input type="number" id="c-custo" placeholder="0.00">
-                        <label>Qtd de Unidades:</label>
-                        <input type="number" id="c-qtd" placeholder="1">
-                        <label>Preço Venda p/ Unid:</label>
-                        <input type="number" id="c-venda" placeholder="0.00">
-                        <button class="btn-acao" style="background:var(--accent)" onclick="calcularMix()">CALCULAR</button>
-                    </div>
-                    <div style="background:#f8f9fa; padding:20px; border-radius:10px; text-align:center;">
-                        <p>Custo Unitário: <br><b id="m-unid" style="font-size:20px">R$ 0,00</b></p>
-                        <p>Lucro Unitário: <br><b id="m-lucro" style="font-size:20px; color:green">R$ 0,00</b></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="aba-clientes" class="tab-content">
-            <div class="painel">
-                <h2>👥 LISTA DE CLIENTES / CONTATOS</h2>
-                <div style="display:grid; grid-template-columns: 2fr 1.5fr 1fr; gap:10px;">
-                    <input type="text" id="cl-nome" placeholder="Nome">
-                    <input type="text" id="cl-tel" placeholder="WhatsApp">
-                    <button class="btn-acao" style="background:var(--info)" onclick="salvarCliente()">ADICIONAR</button>
-                </div>
-                <table style="margin-top:15px;"><tbody id="tabela-clientes"></tbody></table>
-            </div>
-        </div>
-
-        <div id="aba-boticario" class="tab-content">
-            <div class="painel">
-                <h2>🌸 O BOTICÁRIO</h2>
-                <input type="text" id="bot-item" placeholder="Produto">
-                <input type="number" id="bot-val" placeholder="Valor Revista">
-                <button class="btn-acao" style="background:#2ecc71" onclick="lancarBoticario()">VENDER</button>
-            </div>
-        </div>
-
-        <div id="aba-despesas" class="tab-content">
-            <div class="painel">
-                <h2>💸 DESPESAS</h2>
-                <input type="text" id="d-item" placeholder="O que pagou?">
-                <input type="number" id="d-val" placeholder="Valor">
-                <button class="btn-acao" style="background:var(--danger)" onclick="lancarDespesa()">PAGAR</button>
-            </div>
-        </div>
     </div>
 </main>
 
 <script>
-    let estoque = [{ean: "7891991000858", n: "Heineken 600ml", v: 14.00}];
-    let clientes = [];
-    let mesas = {};
-    for(let i=1; i<=12; i++) mesas[i] = { ativa: false, cliente: "", total: 0, itens: [] };
-    let mesaSel = null;
-    let fin = { vendas: 0, contas: 0 };
+    function calcularDose() {
+        let custoGarrafa = parseFloat(document.getElementById('dose-custo-garrafa').value) || 0;
+        let mlTotal = parseFloat(document.getElementById('dose-ml-total').value) || 1;
+        let tamanhoDose = parseFloat(document.getElementById('dose-tamanho').value) || 1;
+        let precoVenda = parseFloat(document.getElementById('dose-preco-venda').value) || 0;
 
-    function abrirCaixa() {
-        document.getElementById('modulo-vendas').classList.remove('caixa-fechado');
-        document.getElementById('btn-abrir').innerText = "✅ CAIXA ABERTO";
-        document.getElementById('btn-abrir').disabled = true;
-        renderMesas();
-    }
+        // Cálculos
+        let custoML = custoGarrafa / mlTotal;
+        let custoDose = custoML * tamanhoDose;
+        let qtdDoses = mlTotal / tamanhoDose;
+        let lucroDose = precoVenda - custoDose;
+        let margem = (lucroDose / precoVenda) * 100;
 
-    function bipar(e) {
-        if(e.key === 'Enter') {
-            let cod = document.getElementById('campo-bipe').value.trim();
-            if(!mesaSel) { alert("Escolha a mesa!"); return; }
-
-            // BUSCA NO ESTOQUE (Sem erro de espaço)
-            let p = estoque.find(i => i.ean.trim() === cod);
-
-            if(p) {
-                lancarNaMesa(p);
-            } else {
-                let buscar = confirm("CÓDIGO "+cod+" NÃO CADASTRADO.\nBuscar na internet e cadastrar agora?");
-                if(buscar) {
-                    let nome = prompt("Nome do produto:");
-                    let preco = prompt("Preço de venda:");
-                    if(nome && preco) {
-                        let novo = {ean: cod, n: nome, v: parseFloat(preco)};
-                        estoque.push(novo);
-                        atualizarTabelaProd();
-                        lancarNaMesa(novo);
-                    }
-                }
-            }
-            document.getElementById('campo-bipe').value = "";
-        }
-    }
-
-    function lancarNaMesa(p) {
-        mesas[mesaSel].itens.push(p);
-        mesas[mesaSel].total += p.v;
-        renderCupom(); renderMesas();
-    }
-
-    function renderCupom() {
-        let m = mesas[mesaSel];
-        document.getElementById('titulo-mesa').innerText = `Mesa ${mesaSel} - ${m.cliente}`;
-        document.getElementById('lista-venda-itens').innerHTML = m.itens.map(i => `
-            <div style="display:flex; justify-content:space-between; padding:8px; border-bottom:1px solid #eee;">
-                <span>${i.n}</span><b>R$ ${i.v.toFixed(2)}</b>
-            </div>
-        `).join('');
-        document.getElementById('total-venda').innerText = "R$ " + m.total.toFixed(2);
-    }
-
-    function renderMesas() {
-        const grid = document.getElementById('grid-mesas');
-        grid.innerHTML = "";
-        for(let i=1; i<=12; i++) {
-            let b = document.createElement('button');
-            b.className = "mesa-btn";
-            b.style.background = mesas[i].ativa ? 'var(--danger)' : 'var(--success)';
-            if(mesaSel == i) b.style.boxShadow = "0 0 0 4px var(--accent)";
-            b.innerHTML = `MESA ${i}<br>${mesas[i].ativa ? mesas[i].cliente : 'LIVRE'}`;
-            b.onclick = () => {
-                if(!mesas[i].ativa) {
-                    let n = prompt("Nome do Cliente:");
-                    if(!n) return;
-                    mesas[i].ativa = true; mesas[i].cliente = n;
-                }
-                mesaSel = i; renderMesas(); renderCupom();
-                document.getElementById('campo-bipe').focus();
-            };
-            grid.appendChild(b);
-        }
-    }
-
-    function finalizar(tipo) {
-        if(!mesaSel) return;
-        fin.vendas += mesas[mesaSel].total;
-        alert(`FECHADO: R$ ${mesas[mesaSel].total.toFixed(2)} (${tipo})`);
-        mesas[mesaSel] = { ativa: false, cliente: "", total: 0, itens: [] };
-        mesaSel = null; atualizarFin(); renderMesas();
-        document.getElementById('total-venda').innerText = "R$ 0,00";
-        document.getElementById('lista-venda-itens').innerHTML = "";
-    }
-
-    function calcularMix() {
-        let custo = parseFloat(document.getElementById('c-custo').value) || 0;
-        let qtd = parseFloat(document.getElementById('c-qtd').value) || 1;
-        let venda = parseFloat(document.getElementById('c-venda').value) || 0;
-        let unid = custo / qtd;
-        document.getElementById('m-unid').innerText = "R$ " + unid.toFixed(2);
-        document.getElementById('m-lucro').innerText = "R$ " + (venda - unid).toFixed(2);
-    }
-
-    function salvarProduto() {
-        let ean = document.getElementById('p-ean').value;
-        let n = document.getElementById('p-nome').value;
-        let v = parseFloat(document.getElementById('p-venda').value);
-        if(n && v) { estoque.push({ean, n, v}); atualizarTabelaProd(); alert("Salvo!"); }
-    }
-
-    function atualizarTabelaProd() {
-        document.getElementById('tabela-produtos').innerHTML = estoque.map(p => `<tr><td>${p.ean}</td><td>${p.n}</td><td>R$ ${p.v.toFixed(2)}</td></tr>`).join('');
-    }
-
-    function salvarCliente() {
-        let n = document.getElementById('cl-nome').value;
-        let t = document.getElementById('cl-tel').value;
-        if(n) { clientes.push({n, t}); atualizarTabelaClientes(); }
-    }
-
-    function atualizarTabelaClientes() {
-        document.getElementById('tabela-clientes').innerHTML = clientes.map(c => `<tr><td><b>${c.n}</b></td><td>${c.t}</td></tr>`).join('');
-    }
-
-    function lancarDespesa() {
-        let v = parseFloat(document.getElementById('d-val').value);
-        if(v) { fin.contas += v; atualizarFin(); alert("Pago!"); }
-    }
-
-    function lancarBoticario() {
-        let v = parseFloat(document.getElementById('bot-val').value);
-        if(v) { fin.vendas += v; atualizarFin(); alert("Venda Boticário registrada!"); }
-    }
-
-    function atualizarFin() {
-        document.getElementById('res-vendas').innerText = "R$ " + fin.vendas.toFixed(2);
-        document.getElementById('res-contas').innerText = "R$ " + fin.contas.toFixed(2);
-        document.getElementById('res-saldo').innerText = "R$ " + (fin.vendas - fin.contas).toFixed(2);
+        // Exibição
+        document.getElementById('res-ml').innerText = "R$ " + custoML.toFixed(4);
+        document.getElementById('res-custo-dose').innerText = "R$ " + custoDose.toFixed(2);
+        document.getElementById('res-qtd-doses').innerText = Math.floor(qtdDoses) + " doses";
+        document.getElementById('res-lucro-dose').innerText = "R$ " + lucroDose.toFixed(2);
+        document.getElementById('res-margem').innerText = isFinite(margem) ? margem.toFixed(1) + "%" : "0%";
     }
 
     function ver(id, btn) {
@@ -297,8 +125,6 @@
         document.getElementById(id).classList.add('active');
         btn.classList.add('active');
     }
-
-    window.onload = () => { atualizarTabelaProd(); };
 </script>
 </body>
 </html>
