@@ -3,47 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BOTECO 934 | MARGEM DE LUCRO</title>
+    <title>BOTECO 934 | MIX INTELIGENTE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --gold: #ffd700; --green: #2ecc71; --bg: #0f172a; --card: rgba(255, 255, 255, 0.05); }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; padding: 15px; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; }
-        .header { background: var(--card); backdrop-filter: blur(10px); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); text-align: center; margin-bottom: 15px; border-bottom: 3px solid var(--gold); }
-        .header h1 { margin: 0; color: var(--gold); letter-spacing: 2px; font-size: 22px; }
-        #inputBipe { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); background: var(--card); color: var(--gold); font-size: 18px; text-align: center; outline: none; margin-bottom: 15px; box-sizing: border-box; }
-        .main-layout { display: grid; grid-template-columns: 1fr 320px; gap: 15px; flex: 1; min-height: 0; }
-        @media (max-width: 850px) { .main-layout { grid-template-columns: 1fr; } }
-        .lista-venda { background: var(--card); border-radius: 15px; padding: 15px; border: 1px solid rgba(255,255,255,0.1); overflow-y: auto; }
-        .item-row { display: flex; align-items: center; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; margin-bottom: 8px; border-left: 4px solid var(--gold); }
-        .item-img { width: 45px; height: 45px; border-radius: 5px; object-fit: contain; background: white; margin-right: 12px; }
-        .item-details { flex: 1; }
-        .item-name { display: block; font-weight: bold; text-transform: uppercase; font-size: 13px; }
-        .item-meta { color: #94a3b8; font-size: 12px; }
-        .item-lucro { color: var(--green); font-size: 11px; font-weight: bold; }
-        .item-total { color: var(--green); font-weight: bold; margin: 0 10px; font-size: 16px; }
-        .resumo-venda { background: var(--card); border-radius: 15px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); height: fit-content; text-align: center; }
-        .total-v { font-size: 42px; font-weight: 900; color: var(--green); margin: 10px 0; }
-        .btn-zap { width: 100%; padding: 16px; border-radius: 10px; border: none; background: #25d366; color: white; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-del { background: none; border: none; color: #ff4b2b; cursor: pointer; font-size: 16px; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .header { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); text-align: center; margin-bottom: 10px; border-bottom: 3px solid var(--gold); }
+        #inputBipe { width: 100%; padding: 20px; border-radius: 10px; border: 2px solid var(--gold); background: #1e293b; color: var(--gold); font-size: 22px; text-align: center; margin-bottom: 10px; outline: none; }
+        .main { display: grid; grid-template-columns: 1fr 300px; gap: 10px; flex: 1; min-height: 0; }
+        @media (max-width: 800px) { .main { grid-template-columns: 1fr; } }
+        .lista { background: var(--card); border-radius: 12px; padding: 10px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
+        .row { display: flex; align-items: center; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; margin-bottom: 5px; border-left: 4px solid var(--gold); }
+        .details { flex: 1; padding-left: 10px; }
+        .name { display: block; font-weight: bold; text-transform: uppercase; font-size: 13px; }
+        .meta { color: #94a3b8; font-size: 11px; }
+        .lucro-tag { color: var(--green); font-weight: bold; font-size: 11px; }
+        .total-p { color: var(--green); font-weight: bold; font-size: 18px; margin: 0 10px; }
+        .resumo { background: var(--card); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); height: fit-content; }
+        .btn-zap { width: 100%; padding: 15px; border-radius: 10px; border: none; background: #25d366; color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
     </style>
 </head>
 <body>
-    <div class="header"><h1>BOTECO 934 | PDV LUCRO</h1></div>
-    <input type="text" id="inputBipe" placeholder="BIPE O PRODUTO..." onkeypress="if(event.key === 'Enter') handleBipe(this.value)" autofocus>
-    <div class="main-layout">
-        <div class="lista-venda" id="caixa"></div>
-        <div class="resumo-venda">
-            <span style="color:#94a3b8; font-size:12px;">VALOR TOTAL</span>
-            <div class="total-v">R$ <span id="totalTxt">0,00</span></div>
-            <button class="btn-zap" onclick="enviarZap()"><i class="fab fa-whatsapp"></i> ENVIAR RECIBO</button>
+    <div class="header"><h1 style="margin:0; color:var(--gold); font-size:20px;">BOTECO 934 | MIX INTELIGENTE</h1></div>
+    <input type="text" id="inputBipe" placeholder="BIPE O PRODUTO..." onkeypress="if(event.key === 'Enter') handle(this.value)" autofocus>
+    <div class="main">
+        <div class="lista" id="caixa"></div>
+        <div class="resumo">
+            <span style="color:#94a3b8">TOTAL DA MESA</span>
+            <div style="font-size: 40px; font-weight: 900; color: var(--green); margin: 10px 0;">R$ <span id="totalTxt">0,00</span></div>
+            <button class="btn-zap" onclick="enviarZap()">ENVIAR RECIBO</button>
+            <button onclick="localStorage.clear(); location.reload();" style="background:none; border:none; color:grey; font-size:10px; margin-top:20px; cursor:pointer;">REINICIAR TUDO</button>
         </div>
     </div>
 <script>
-    let db = JSON.parse(localStorage.getItem('b934_db_lucro')) || [];
-    let mesa = [];
-    const fallImg = "https://cdn-icons-png.flaticon.com/512/3121/3121784.png";
+    // Limpeza forçada via URL
+    if(window.location.search.includes('reset=true')) { localStorage.clear(); window.location.href = window.location.pathname; }
 
-    function handleBipe(cod) {
+    let db = JSON.parse(localStorage.getItem('b934_final')) || [];
+    let mesa = [];
+
+    function handle(cod) {
         if(!cod) return;
         cod = cod.trim();
         document.getElementById('inputBipe').value = '';
@@ -53,54 +52,50 @@
 
         let prod = db.find(p => p.id === cod);
         if(prod) { mesa.push({...prod, qtd: 1}); render(); } 
-        else { buscarInternet(cod); }
+        else { cadastrar(cod); }
     }
 
-    async function buscarInternet(cod) {
+    async function cadastrar(cod) {
         try {
             const r = await fetch(`https://world.openfoodfacts.org/api/v2/product/${cod}.json`);
             const d = await r.json();
-            let n = (d.status === 1 && d.product.product_name) ? d.product.product_name : "Produto Novo";
-            let f = (d.status === 1 && d.product.image_url) ? d.product.image_url : fallImg;
+            let n = (d.status === 1 && d.product.product_name) ? d.product.product_name : "PRODUTO NOVO";
             
-            let custo = prompt(`Novo item: ${n}\nPreço de CUSTO:`, "4.00");
+            let custo = prompt(`NOME: ${n}\n1. PREÇO DE CUSTO (Ex: 4.50):`, "4.00");
             if(custo) {
-                let margem = prompt(`Margem de Lucro desejada (%):`, "50");
                 let c = parseFloat(custo.replace(',','.'));
-                let m = parseFloat(margem) / 100;
-                let sugerido = c * (1 + m);
+                let margem = prompt(`2. MARGEM DE LUCRO (%)`, "50");
+                let sugerido = (c * (1 + (parseFloat(margem)/100))).toFixed(2);
                 
-                let venda = prompt(`Preço Sugerido: R$ ${sugerido.toFixed(2)}\nPreço de VENDA Final:`, sugerido.toFixed(2));
-                
+                let venda = prompt(`SUGESTÃO DE VENDA: R$ ${sugerido}\nDigite o PREÇO FINAL:`, sugerido);
                 if(venda) {
-                    let novo = { id: cod, nome: n, foto: f, custo: c, preco: parseFloat(venda.replace(',','.')) };
+                    let v = parseFloat(venda.replace(',','.'));
+                    let novo = { id: cod, nome: n, custo: c, preco: v };
                     db.push(novo);
-                    localStorage.setItem('b934_db_lucro', JSON.stringify(db));
+                    localStorage.setItem('b934_final', JSON.stringify(db));
                     mesa.push({...novo, qtd: 1});
                     render();
                 }
             }
-        } catch(e) { alert("Erro ao buscar."); }
+        } catch(e) { alert("Erro de conexão."); }
     }
 
     function render() {
         const c = document.getElementById('caixa');
         const t = document.getElementById('totalTxt');
         c.innerHTML = ''; let soma = 0;
-        if(mesa.length === 0) { c.innerHTML = '<div style="text-align:center;color:#475569;margin-top:50px;">Bipe para vender!</div>'; t.innerText="0,00"; return; }
+        if(mesa.length === 0) { c.innerHTML = '<div style="text-align:center; padding-top:50px; color:#475569;">Aguardando bipe...</div>'; t.innerText = "0,00"; return; }
         
         mesa.forEach(i => {
             let tot = i.preco * i.qtd; soma += tot;
-            let lucroUnit = i.preco - i.custo;
-            c.innerHTML += `<div class="item-row">
-                <img src="${i.foto}" class="item-img" onerror="this.src='${fallImg}'">
-                <div class="item-details">
-                    <span class="item-name">${i.nome}</span>
-                    <span class="item-meta">${i.qtd}x R$ ${i.preco.toFixed(2)}</span>
-                    <span class="item-lucro">Lucro: R$ ${(lucroUnit * i.qtd).toFixed(2)}</span>
+            c.innerHTML += `<div class="row">
+                <div class="details">
+                    <span class="name">${i.nome}</span>
+                    <span class="meta">${i.qtd}x R$ ${i.preco.toFixed(2)}</span><br>
+                    <span class="lucro-tag">Lucro: R$ ${((i.preco - i.custo) * i.qtd).toFixed(2)}</span>
                 </div>
-                <div class="item-total">R$ ${tot.toFixed(2)}</div>
-                <button class="btn-del" onclick="mesa=mesa.filter(x=>x.id!=='${i.id}');render()"><i class="fas fa-trash"></i></button>
+                <div class="total-p">R$ ${tot.toFixed(2)}</div>
+                <button onclick="mesa=mesa.filter(x=>x.id!=='${i.id}');render()" style="background:none; border:none; color:#ff4b2b; cursor:pointer;"><i class="fas fa-trash"></i></button>
             </div>`;
         });
         t.innerText = soma.toFixed(2).replace('.', ',');
@@ -108,9 +103,9 @@
 
     function enviarZap() {
         if(mesa.length === 0) return;
-        let m = "*BOTECO 934 - RECIBO*\n----------------------------\n";
+        let m = "*BOTECO 934 - RECIBO*\n";
         mesa.forEach(i => m += `${i.qtd}x ${i.nome} - R$ ${(i.preco*i.qtd).toFixed(2)}\n`);
-        m += "----------------------------\n*TOTAL: R$ " + document.getElementById('totalTxt').innerText + "*";
+        m += "*TOTAL: R$ " + document.getElementById('totalTxt').innerText + "*";
         window.open(`https://wa.me/?text=${encodeURIComponent(m)}`);
     }
     render();
