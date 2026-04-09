@@ -2,129 +2,139 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOTECO 934 - SISTEMA FINAL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BOTECO 934 - SISTEMA LOCAL</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --gold: #ffd700; --green: #27ae60; --red: #ff4b2b; }
-        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 10px; }
-        .header { background: #000; color: var(--gold); text-align: center; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
-        .caixa-bipe { width: 100%; padding: 20px; font-size: 20px; border-radius: 10px; border: 2px solid #ccc; text-align: center; margin-bottom: 15px; }
+        :root { --gold: #ffd700; --green: #27ae60; --red: #ff4b2b; --dark: #1a1a1a; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 10px; }
+        .header { background: #000; color: var(--gold); text-align: center; padding: 15px; border-bottom: 4px solid var(--gold); border-radius: 10px; margin-bottom: 15px; }
+        input#inputBipe { width: 100%; padding: 20px; border-radius: 12px; border: 3px solid #ccc; font-size: 20px; text-align: center; background: #fffbe6; outline: none; margin-bottom: 15px; box-sizing: border-box; }
         .layout { display: grid; grid-template-columns: 1fr 350px; gap: 15px; }
-        @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
-        .lista-venda { background: #fff; border-radius: 12px; padding: 15px; min-height: 400px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .item { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; gap: 10px; }
-        .foto { width: 50px; height: 50px; object-fit: contain; border: 1px solid #ddd; border-radius: 5px; }
-        .info { flex: 1; font-weight: bold; text-transform: uppercase; font-size: 14px; }
-        .btn-x { background: var(--red); color: #fff; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
-        .resumo { background: #fff; padding: 20px; border-radius: 12px; text-align: center; height: fit-content; }
-        .total { font-size: 35px; font-weight: 900; color: var(--green); margin: 15px 0; }
-        .btn-whats { background: #25d366; color: #fff; width: 100%; padding: 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        @media (max-width: 850px) { .layout { grid-template-columns: 1fr; } }
+        .card { background: #fff; border-radius: 12px; padding: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); min-height: 400px; }
+        .item { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; gap: 12px; }
+        .foto { width: 60px; height: 60px; border-radius: 8px; object-fit: contain; background: #f9f9f9; border: 1px solid #ddd; }
+        .info { flex: 1; }
+        .nome { font-weight: bold; font-size: 14px; text-transform: uppercase; color: #333; display: block; }
+        .detalhe { font-size: 13px; color: #666; }
+        .btn-x { background: var(--red); color: #fff; border: none; width: 40px; height: 40px; border-radius: 8px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+        .resumo { background: #fff; padding: 20px; border-radius: 12px; text-align: center; border: 1px solid #ddd; height: fit-content; }
+        .total-venda { font-size: 35px; font-weight: 900; color: var(--green); margin-bottom: 20px; }
+        .btn-whats { background: #25d366; color: #fff; width: 100%; padding: 18px; border: none; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
-<body onload="atualizarEstoque()">
+<body onload="carregarEstoqueLocal()">
 
-    <div class="header"><h1>BOTECO 934</h1></div>
+    <div class="header">
+        <h1 style="margin:0">BOTECO 934</h1>
+    </div>
 
-    <input type="text" id="inputBipe" class="caixa-bipe" placeholder="BIPE O CÓDIGO AQUI..." onkeypress="if(event.key === 'Enter') handleBipe(this.value)">
+    <input type="text" id="inputBipe" placeholder="BIPE O CÓDIGO AQUI..." onkeypress="if(event.key === 'Enter') processarBipe(this.value)" autofocus>
 
     <div class="layout">
-        <div class="lista-venda" id="carrinho">
-            <p id="msg-status" style="text-align:center; color: #999; margin-top: 100px;">Sincronizando estoque...</p>
+        <div class="card" id="listaItens">
+            <p style="text-align:center; color:#999; padding-top:100px;">Bipe um produto para começar!</p>
         </div>
 
         <div class="resumo">
             <h3>TOTAL DA MESA</h3>
-            <div class="total">R$ <span id="valorTotal">0,00</span></div>
-            <button class="btn-whats" onclick="enviarRecibo()">
+            <div class="total-venda">R$ <span id="totalTxt">0,00</span></div>
+            <button class="btn-whats" onclick="enviarWhats()">
                 <i class="fa-brands fa-whatsapp"></i> RECIBO WHATSAPP
             </button>
         </div>
     </div>
 
 <script>
-    const API = "COLE_AQUI_O_LINK_DO_PASSO_1"; 
-    let estoque = [];
-    let vendaAtual = [];
+    let estoqueLocal = JSON.parse(localStorage.getItem('estoque_boteco')) || [];
+    let carrinho = [];
 
-    async function atualizarEstoque() {
-        try {
-            const r = await fetch(API + "?action=getEstoque");
-            estoque = await r.json();
-            document.getElementById('msg-status').innerText = "Pronto para vender!";
-        } catch (e) {
-            document.getElementById('msg-status').innerHTML = "<b style='color:red'>Erro na Planilha!</b>";
-        }
+    function carregarEstoqueLocal() {
+        console.log("Sistema pronto e offline.");
     }
 
-    async function handleBipe(cod) {
-        if (!cod) return;
-        cod = cod.trim();
+    async function processarBipe(codigo) {
+        if (!codigo) return;
+        const cod = codigo.trim();
         document.getElementById('inputBipe').value = '';
 
-        // 1. Já está na mesa? (Evita repetir linhas)
-        let jaExiste = vendaAtual.find(i => i.id === cod);
-        if (jaExiste) {
-            jaExiste.qtd++;
+        // 1. TRAVA DE REPETIÇÃO: Já está na mesa?
+        let noCarrinho = carrinho.find(i => i.id === cod);
+        if (noCarrinho) {
+            noCarrinho.qtd++;
             render();
             return;
         }
 
-        // 2. Está no estoque salvo?
-        let noEstoque = estoque.find(p => p.codigo === cod);
+        // 2. BUSCA NO ESTOQUE SALVO (LocalStorage)
+        let noEstoque = estoqueLocal.find(p => p.id === cod);
         if (noEstoque) {
-            vendaAtual.push({...noEstoque, id: cod, qtd: 1, preco: parseFloat(noEstoque.preco)});
+            carrinho.push({ ...noEstoque, qtd: 1 });
             render();
         } else {
-            // 3. Se não tem, busca na internet
-            buscarNaWeb(cod);
+            // 3. NÃO ACHOU? BUSCA NA INTERNET
+            try {
+                const res = await fetch(`https://world.openfoodfacts.org/api/v2/product/${cod}.json`);
+                const data = await res.json();
+                let nomeWeb = (data.status === 1 && data.product.product_name) ? data.product.product_name : "NOVO ITEM";
+                let fotoWeb = (data.status === 1 && data.product.image_url) ? data.product.image_url : "";
+                
+                let preco = prompt(`Produto Novo: ${nomeWeb}\nPreço de Venda:`, "6.00");
+                if (preco) {
+                    let novoProd = { id: cod, nome: nomeWeb, foto: fotoWeb, preco: parseFloat(preco.replace(',','.')) };
+                    
+                    // Salva no estoque para a próxima vez
+                    estoqueLocal.push(novoProd);
+                    localStorage.setItem('estoque_boteco', JSON.stringify(estoqueLocal));
+                    
+                    carrinho.push({ ...novoProd, qtd: 1 });
+                    render();
+                }
+            } catch (e) { alert("Erro ao buscar produto."); }
         }
     }
 
-    async function buscarNaWeb(cod) {
-        try {
-            const r = await fetch(`https://world.openfoodfacts.org/api/v2/product/${cod}.json`);
-            const d = await r.json();
-            let nome = (d.status === 1 && d.product.product_name) ? d.product.product_name : "ITEM NOVO";
-            let foto = (d.status === 1 && d.product.image_url) ? d.product.image_url : "";
-            let preco = prompt(`PRODUTO NÃO CADASTRADO: ${nome}\nPreço de Venda:`, "6.00");
-            if (preco) {
-                vendaAtual.push({id: cod, nome: nome, foto: foto, preco: parseFloat(preco.replace(',','.')), qtd: 1});
-                render();
-            }
-        } catch (e) { alert("Erro ao buscar produto."); }
-    }
-
     function excluir(id) {
-        vendaAtual = vendaAtual.filter(i => i.id !== id);
+        carrinho = carrinho.filter(i => i.id !== id);
         render();
     }
 
     function render() {
-        const div = document.getElementById('carrinho');
-        const tot = document.getElementById('valorTotal');
-        div.innerHTML = ''; let soma = 0;
+        const div = document.getElementById('listaItens');
+        const tot = document.getElementById('totalTxt');
+        div.innerHTML = '';
+        let soma = 0;
 
-        vendaAtual.forEach(i => {
-            let sub = i.preco * i.qtd;
+        if (carrinho.length === 0) {
+            div.innerHTML = '<p style="text-align:center; color:#999; padding-top:100px;">Bipe um produto!</p>';
+            tot.innerText = "0,00";
+            return;
+        }
+
+        carrinho.forEach(item => {
+            let sub = item.preco * item.qtd;
             soma += sub;
             div.innerHTML += `
                 <div class="item">
-                    <img src="${i.foto}" class="foto" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3121/3121784.png'">
-                    <div class="info">${i.qtd}x ${i.nome}<br><small>R$ ${i.preco.toFixed(2)}</small></div>
-                    <div style="font-weight:bold; margin-right:10px">R$ ${sub.toFixed(2)}</div>
-                    <button class="btn-x" onclick="excluir('${i.id}')"><i class="fa-solid fa-trash"></i></button>
-                </div>`;
+                    <img src="${item.foto}" class="foto" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3121/3121784.png'">
+                    <div class="info">
+                        <span class="nome">${item.nome}</span>
+                        <span class="detalhe">${item.qtd}x R$ ${item.preco.toFixed(2)} = R$ ${sub.toFixed(2)}</span>
+                    </div>
+                    <button class="btn-x" onclick="excluir('${item.id}')"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+            `;
         });
         tot.innerText = soma.toFixed(2).replace('.', ',');
     }
 
-    function enviarRecibo() {
-        if (vendaAtual.length === 0) return;
-        let texto = "*BOTECO 934 - RECIBO*\n--------------------\n";
-        vendaAtual.forEach(i => texto += `${i.qtd}x ${i.nome} - R$ ${(i.preco * i.qtd).toFixed(2)}\n`);
-        texto += "--------------------\n*TOTAL: R$ " + document.getElementById('valorTotal').innerText + "*";
-        window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`);
+    function enviarWhats() {
+        if (carrinho.length === 0) return;
+        let msg = "*BOTECO 934 - RECIBO*\n--------------------\n";
+        carrinho.forEach(i => msg += `${i.qtd}x ${i.nome} - R$ ${(i.preco * i.qtd).toFixed(2)}\n`);
+        msg += "--------------------\n*TOTAL: R$ " + document.getElementById('totalTxt').innerText + "*";
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
     }
 </script>
 </body>
