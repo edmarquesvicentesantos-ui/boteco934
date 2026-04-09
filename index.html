@@ -2,12 +2,12 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA ELITE V22 - BOTECO 934</title>
+    <title>SISTEMA ELITE V23 - BOTECO 934</title>
     <style>
         :root { 
             --dark: #1a252f; --sidebar: #2c3e50; --accent: #f39c12; 
             --success: #27ae60; --danger: #c0392b; --info: #2980b9; 
-            --bg: #f1f2f6; --gelada: #00cec9; --natural: #fab1a0;
+            --bg: #f1f2f6;
         }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
@@ -22,27 +22,25 @@
         .painel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
 
         .grid-calc { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        input, select { width: 100%; padding: 10px; margin-bottom: 8px; border: 2px solid #ddd; border-radius: 6px; font-size: 15px; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; }
+        
+        .res-card { background: #f8f9fa; border: 2px solid var(--sidebar); padding: 20px; border-radius: 10px; height: 100%; }
+        .linha-res { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dotted #ccc; font-weight: bold; }
+        .secao-titulo { background: var(--sidebar); color: white; padding: 5px 10px; border-radius: 4px; margin-top: 15px; font-size: 13px; text-transform: uppercase; }
+        
+        .destaque-sucesso { color: var(--success); font-size: 1.2em; }
         .btn-acao { padding: 15px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; margin-top: 10px; }
-        
-        .res-card { background: #f8f9fa; border: 2px solid var(--sidebar); padding: 15px; border-radius: 10px; }
-        .linha-res { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dotted #ccc; font-weight: bold; font-size: 14px; }
-        .titulo-res { text-align: center; margin-top: 0; color: var(--info); border-bottom: 2px solid var(--info); padding-bottom: 5px; }
-        
-        .badge { padding: 2px 8px; border-radius: 4px; font-size: 11px; color: white; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
     </style>
 </head>
 <body>
 
 <aside>
     <div class="header-loja">BOTECO 934</div>
-    <div class="menu-btn active" onclick="ver('aba-calculadora', this)">🧠 MIX INTELIGENTE</div>
+    <div class="menu-btn active" onclick="ver('aba-calculadora', this)">🧠 MIX UNIVERSAL</div>
     <div class="menu-btn" onclick="ver('aba-vendas', this)">🛒 VENDAS</div>
     <div class="menu-btn" onclick="ver('aba-produtos', this)">📦 ESTOQUE</div>
     <div style="margin-top: auto; padding: 20px;">
-        <div style="font-size: 12px; text-align: center; color: #bdc3c7;">V22 - Pro Temperatura</div>
+        <div style="font-size: 12px; text-align: center; color: #bdc3c7;">Boteco 934 - Gestão de Elite</div>
     </div>
 </aside>
 
@@ -50,90 +48,80 @@
     <div class="conteudo">
         <div id="aba-calculadora" class="tab-content active">
             <div class="painel">
-                <h2 style="margin-top:0;">📊 CALCULADORA DE LUCRO REAL (CAIXA / GELADA / NATURAL)</h2>
+                <h2 style="margin-top:0;">🚀 CALCULADORA SUPREMA: GRADE, FARDO E DESTILADOS</h2>
                 
                 <div class="grid-calc">
                     <div>
-                        <label><b>Custo da Caixa/Fardo (R$):</b></label>
-                        <input type="number" id="c-custo" placeholder="Ex: 81.00" oninput="calcular()">
+                        <label><b>Custo Total da Compra (R$):</b></label>
+                        <input type="number" id="c-total" placeholder="Ex: Custo da Caixa de Vinho ou Grade" oninput="calcular()">
                         
-                        <label><b>Itens por Caixa (Unid):</b></label>
-                        <input type="number" id="c-qtd" placeholder="Ex: 24" oninput="calcular()">
+                        <label><b>Qtd de Garrafas/Itens:</b></label>
+                        <input type="number" id="c-qtd" placeholder="Ex: 6 vinhos ou 24 cervejas" oninput="calcular()">
 
-                        <label><b>Preço Venda Unid. NATURAL (R$):</b></label>
-                        <input type="number" id="c-venda-nat" placeholder="Ex: 5.00" oninput="calcular()">
+                        <label><b>Preço Venda Unit. NATURAL (R$):</b></label>
+                        <input type="number" id="v-nat" placeholder="Preço na prateleira" oninput="calcular()">
 
-                        <label><b>Preço Venda Unid. GELADA (R$):</b></label>
-                        <input type="number" id="c-venda-gel" placeholder="Ex: 6.00" oninput="calcular()">
+                        <label><b>Preço Venda Unit. GELADA (R$):</b></label>
+                        <input type="number" id="v-gel" placeholder="Preço no freezer" oninput="calcular()">
                         
-                        <label><b>Custo Extra (Energia/Gelo) por Caixa:</b></label>
-                        <input type="number" id="c-energia" placeholder="Ex: 2.00" value="1.50" oninput="calcular()">
+                        <label><b>Custo Extra por Caixa (Energia/Gelo):</b></label>
+                        <input type="number" id="c-extra" placeholder="Gasto extra por fardo/grade" value="0" oninput="calcular()">
                     </div>
 
                     <div class="res-card">
-                        <h3 class="titulo-res">ANÁLISE DE RESULTADOS</h3>
+                        <h3 style="text-align:center; margin-top:0; color:var(--info);">ANÁLISE DE LUCRO</h3>
                         
-                        <div class="linha-res"><span>Custo Unitário Bruto:</span> <span id="res-unid-bruto">R$ 0,00</span></div>
-                        <div class="linha-res"><span>Custo Unitário + Frio:</span> <span id="res-unid-frio" style="color:var(--danger)">R$ 0,00</span></div>
+                        <div class="secao-titulo">Custos</div>
+                        <div class="linha-res"><span>Custo por Garrafa:</span> <span id="res-unid">R$ 0,00</span></div>
                         
-                        <hr>
+                        <div class="secao-titulo">Venda Individual</div>
+                        <div class="linha-res"><span>Lucro (Natural):</span> <span id="res-lucro-nat">R$ 0,00</span></div>
+                        <div class="linha-res"><span>Lucro (Gelada):</span> <span id="res-lucro-gel" class="destaque-sucesso">R$ 0,00</span></div>
                         
-                        <div class="linha-res"><span>LUCRO UNID. NATURAL:</span> <span id="res-lucro-nat" style="color:var(--success)">R$ 0,00</span></div>
-                        <div class="linha-res"><span>LUCRO UNID. GELADA:</span> <span id="res-lucro-gel" style="color:var(--info)">R$ 0,00</span></div>
+                        <div class="secao-titulo">Venda da Grade/Caixa Fechada</div>
+                        <div class="linha-res"><span>Lucro Total (Natural):</span> <span id="res-caixa-nat">R$ 0,00</span></div>
+                        <div class="linha-res"><span>Lucro Total (Gelada):</span> <span id="res-caixa-gel" class="destaque-sucesso">R$ 0,00</span></div>
                         
-                        <hr>
-
-                        <div class="linha-res"><span>LUCRO CAIXA NATURAL:</span> <span id="res-caixa-nat">R$ 0,00</span></div>
-                        <div class="linha-res"><span>LUCRO CAIXA GELADA:</span> <span id="res-caixa-gel" style="font-size:18px; color:var(--success)">R$ 0,00</span></div>
-                        
-                        <div class="linha-res"><span>Margem Real (Gelada):</span> <span id="res-margem">0%</span></div>
+                        <div class="secao-titulo">Desempenho</div>
+                        <div class="linha-res"><span>Margem de Lucro:</span> <span id="res-margem">0%</span></div>
                     </div>
                 </div>
-                <button class="btn-acao" style="background:var(--success)" onclick="alert('Dados salvos para relatório!')">SALVAR PRECIFICAÇÃO</button>
+                <div style="margin-top:20px; padding:10px; background:#e1f5fe; border-radius:8px; font-size:14px; color:#01579b; border:1px solid #b3e5fc;">
+                    <b>💡 Dica do Sistema:</b> Use esta tela para precificar desde a <b>Grade de Heineken</b> até a <b>Caixa de Vinho Chileno</b>. O lucro da caixa fechada ajuda você a decidir se dá desconto para o cliente levar o fardo todo.
+                </div>
             </div>
         </div>
-        
-        <div id="aba-vendas" class="tab-content"><div class="painel"><h2>🛒 FRENTE DE CAIXA</h2></div></div>
-        <div id="aba-produtos" class="tab-content"><div class="painel"><h2>📦 ESTOQUE</h2></div></div>
     </div>
 </main>
 
 <script>
     function calcular() {
-        // Pega os valores
-        const custoCaixa = parseFloat(document.getElementById('c-custo').value) || 0;
+        const custoTotal = parseFloat(document.getElementById('c-total').value) || 0;
         const qtd = parseFloat(document.getElementById('c-qtd').value) || 1;
-        const vendaNat = parseFloat(document.getElementById('c-venda-nat').value) || 0;
-        const vendaGel = parseFloat(document.getElementById('c-venda-gel').value) || 0;
-        const energia = parseFloat(document.getElementById('c-energia').value) || 0;
+        const vendaNat = parseFloat(document.getElementById('v-nat').value) || 0;
+        const vendaGel = parseFloat(document.getElementById('v-gel').value) || 0;
+        const extra = parseFloat(document.getElementById('c-extra').value) || 0;
 
-        // Cálculos Base
-        const custoUnidBruto = custoCaixa / qtd;
-        const custoFrioUnid = energia / qtd;
-        const custoUnidFinal = custoUnidBruto + custoFrioUnid;
+        // Cálculos
+        const custoUnid = custoTotal / qtd;
+        const custoExtraUnid = extra / qtd;
+        const custoFinalGelada = custoUnid + custoExtraUnid;
 
-        // Lucros Unitários
-        const lucroNat = vendaNat - custoUnidBruto;
-        const lucroGel = vendaGel - custoUnidFinal;
+        const lucroNat = vendaNat - custoUnid;
+        const lucroGel = vendaGel - custoFinalGelada;
 
-        // Lucros por Caixa
         const lucroCaixaNat = lucroNat * qtd;
         const lucroCaixaGel = lucroGel * qtd;
 
-        // Margem
-        const margemGel = (lucroGel / vendaGel) * 100;
+        const margem = (lucroGel / (vendaGel || 1)) * 100;
 
-        // Exibe na tela
-        document.getElementById('res-unid-bruto').innerText = "R$ " + custoUnidBruto.toFixed(2);
-        document.getElementById('res-unid-frio').innerText = "R$ " + custoUnidFinal.toFixed(2);
-        
+        // Exibição
+        document.getElementById('res-unid').innerText = "R$ " + custoUnid.toFixed(2);
         document.getElementById('res-lucro-nat').innerText = "R$ " + lucroNat.toFixed(2);
         document.getElementById('res-lucro-gel').innerText = "R$ " + lucroGel.toFixed(2);
-        
         document.getElementById('res-caixa-nat').innerText = "R$ " + lucroCaixaNat.toFixed(2);
         document.getElementById('res-caixa-gel').innerText = "R$ " + lucroCaixaGel.toFixed(2);
-        
-        document.getElementById('res-margem').innerText = isFinite(margemGel) ? margemGel.toFixed(1) + "%" : "0%";
+        document.getElementById('res-margem').innerText = isFinite(margem) ? margem.toFixed(1) + "%" : "0%";
     }
 
     function ver(id, btn) {
