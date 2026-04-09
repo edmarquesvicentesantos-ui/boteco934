@@ -8,191 +8,123 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { margin: 0; display: flex; height: 100vh; background: var(--bg); font-size: var(--font-padrao); overflow: hidden; }
 
-        /* Navegação Lateral Harmonizada */
+        /* Lateral Harmonizada */
         nav { width: 180px; background: var(--dark); color: white; display: flex; flex-direction: column; border-right: 2px solid var(--accent); }
-        .nav-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #2c3e50; font-weight: 600; font-size: 13px; }
+        .nav-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #2c3e50; font-weight: 600; }
         .nav-item.active { background: var(--sidebar); color: var(--accent); }
 
-        /* Layout Principal */
         main { flex: 1; display: flex; flex-direction: column; padding: 15px; gap: 10px; overflow-y: auto; }
-        .painel { background: white; padding: 10px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        
-        .grid-mesas { display: flex; gap: 5px; margin-bottom: 10px; }
-        .mesa-btn { flex: 1; padding: 10px; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; font-size: 11px; }
-        .livre { background: var(--success); }
-        .ocupada { background: var(--danger); }
-        .sel { outline: 3px solid var(--accent); }
+        .painel { background: white; padding: 12px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); margin-bottom: 10px; }
+        h2 { font-size: 13px; margin: 0 0 10px 0; text-transform: uppercase; color: var(--dark); border-left: 3px solid var(--accent); padding-left: 8px; }
 
-        .venda-container { display: flex; gap: 15px; flex: 1; }
-        .coluna-cupom { flex: 0.8; background: #fff; border: 1px solid #ccc; padding: 15px; font-family: 'Courier New', monospace; font-size: 12px; }
-        .coluna-dados { flex: 1.2; display: flex; flex-direction: column; gap: 10px; }
+        /* Calculadora de Lucro */
+        .calc-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .resumo-lucro { background: #f8f9fa; border: 1px solid #dee2e6; padding: 10px; border-radius: 4px; text-align: center; }
+        .resumo-lucro b { display: block; font-size: 16px; color: var(--success); }
 
-        /* Tabela Compacta */
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th { text-align: left; padding: 5px; background: #f8f9fa; border-bottom: 1px solid #dee2e6; }
-        td { padding: 5px; border-bottom: 1px solid #eee; }
-
-        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 100%; }
-        .input-bipa { background: #fff9c4; border: 2px solid var(--accent); font-weight: bold; }
-        .btn-pgto { padding: 10px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; flex: 1; font-size: 11px; }
+        th { text-align: left; padding: 8px; background: #f1f2f6; border-bottom: 2px solid #ddd; }
+        td { padding: 8px; border-bottom: 1px solid #eee; }
+        
+        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; font-size: 13px; }
+        .btn-update { background: var(--accent); color: var(--dark); border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <nav>
     <div style="padding:15px; color:var(--accent); font-weight:bold; text-align:center;">BOTECO 934</div>
-    <div class="nav-item active">🛒 VENDAS</div>
-    <div class="nav-item">🗄️ ESTOQUE</div>
+    <div class="nav-item" onclick="mostrar('vendas')">🛒 VENDAS</div>
+    <div class="nav-item active" onclick="mostrar('estoque')">🗄️ ESTOQUE / LUCRO</div>
     <div class="nav-item">💰 FINANCEIRO</div>
     <div class="nav-item" style="color:#00a859;">🌸 BOTICÁRIO</div>
-    <div class="nav-item">🧮 CALCULADORA</div>
 </nav>
 
-<main>
+<main id="conteudo">
     <div class="painel">
-        <div id="grid-mesas" class="grid-mesas"></div>
+        <h2>🧠 CALCULADORA DE LUCRO REAL (MIX INTELIGENTE)</h2>
+        <div class="calc-grid">
+            <div>
+                <label>Custo da Caixa (R$)</label>
+                <input type="number" id="custo-caixa" value="60.00" oninput="calcularLucro()">
+            </div>
+            <div>
+                <label>Qtd na Caixa</label>
+                <input type="number" id="qtd-caixa" value="24" oninput="calcularLucro()">
+            </div>
+            <div class="resumo-lucro">
+                <small>Custo por Unidade</small>
+                <b id="custo-unit">R$ 2,50</b>
+            </div>
+        </div>
+
+        <table id="tabela-sugestao">
+            <thead>
+                <tr>
+                    <th>TIPO DE VENDA</th>
+                    <th>PREÇO SUGERIDO</th>
+                    <th>LUCRO (R$)</th>
+                    <th>MARGEM (%)</th>
+                    <th>AÇÃO</th>
+                </tr>
+            </thead>
+            <tbody id="body-sugestao">
+                </tbody>
+        </table>
     </div>
 
-    <div class="venda-container">
-        <div class="coluna-cupom" id="cupom-fiscal">
-            <div style="text-align:center; border-bottom:1px dashed #000; padding-bottom:5px; margin-bottom:10px;">
-                <b id="cupom-mesa">MESA 00</b><br>
-                <small id="cupom-cliente">CLIENTE: CONSUMIDOR</small>
-            </div>
-            <div id="cupom-itens" style="min-height:180px;"></div>
-            <div style="border-top:2px solid #000; padding-top:5px; font-weight:bold; font-size:16px;">
-                TOTAL: <span id="txt-total">R$ 0,00</span>
-            </div>
-        </div>
-
-        <div class="coluna-dados">
-            <div class="painel">
-                <h2 style="font-size:12px; margin:0 0 8px 0;">⚡ LANÇAR / BUSCAR PRODUTO</h2>
-                <div style="display:flex; gap:5px;">
-                    <input type="number" id="qtd" value="1" style="width:45px; text-align:center;">
-                    <input type="text" id="barcode" class="input-bipa" placeholder="BIPE OU DIGITE O NOME..." onkeypress="handleSearch(event)">
-                </div>
-                <p style="font-size:10px; color:#7f8c8d; margin-top:5px;">*Se não achar no estoque, buscarei no Google automaticamente.</p>
-            </div>
-
-            <div class="painel">
-                <h2 style="font-size:12px; margin:0 0 8px 0;">👤 CLIENTE E PAGAMENTO</h2>
-                <div style="display:flex; gap:5px; margin-bottom:10px;">
-                    <input type="text" id="nome-cliente" placeholder="NOME DO CLIENTE" style="flex:1.5;">
-                    <input type="text" id="fone-cliente" placeholder="FONE (DDD+NÚMERO)" style="flex:1;">
-                </div>
-                <div style="display:flex; gap:5px;">
-                    <button class="btn-pgto" style="background:#2ecc71;" onclick="finalizar('DINHEIRO')">DINHEIRO</button>
-                    <button class="btn-pgto" style="background:#3498db;" onclick="finalizar('PIX')">PIX</button>
-                    <button class="btn-pgto" style="background:#e67e22;" onclick="finalizar('PENDURA')">PENDURA</button>
-                </div>
-            </div>
-
-            <div class="painel" style="flex:1; overflow-y:auto;">
-                <table id="tab-estoque">
-                    <thead><tr><th>ITEM</th><th>PREÇO</th><th>ESTOQUE</th></tr></thead>
-                    <tbody id="lista-estoque"></tbody>
-                </table>
-            </div>
-        </div>
+    <div class="painel">
+        <h2>📦 MEU ESTOQUE ATUAL</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ITEM</th>
+                    <th>PREÇO VENDA</th>
+                    <th>ESTOQUE</th>
+                    <th>VALOR EM ESTOQUE</th>
+                </tr>
+            </thead>
+            <tbody id="estoque-real">
+                <tr><td>CERVEJA LATA (GELADA)</td><td>R$ 5,00</td><td>48</td><td>R$ 240,00</td></tr>
+                <tr><td>CERVEJA LATA (NATURAL)</td><td>R$ 3,50</td><td>24</td><td>R$ 84,00</td></tr>
+            </tbody>
+        </table>
     </div>
 </main>
 
 <script>
-    let estoque = [
-        {id: "78901234", n: "CERVEJA LATA 350ML", p: 6.00, q: 48},
-        {id: "78905678", n: "DOSE PITÚ", p: 3.50, q: 100}
-    ];
+    function calcularLucro() {
+        const custoCaixa = parseFloat(document.getElementById('custo-caixa').value) || 0;
+        const qtdCaixa = parseInt(document.getElementById('qtd-caixa').value) || 1;
+        const custoUnit = custoCaixa / qtdCaixa;
 
-    let mesas = {};
-    for(let i=1; i<=8; i++) mesas[i] = { ativa: false, itens: [], total: 0, cliente: "CONSUMIDOR", fone: "" };
-    let mesaSel = null;
+        document.getElementById('custo-unit').innerText = "R$ " + custoUnit.toFixed(2);
 
-    function init() { renderMesas(); renderEstoque(); }
+        // Estratégias de Venda
+        const estrategias = [
+            { tipo: "Unidade Natural", preco: custoUnit * 1.4, obs: "Margem de 40%" },
+            { tipo: "Unidade Gelada", preco: (custoUnit * 1.4) + 1.50, obs: "Margem + Energia" },
+            { tipo: "Caixa Fechada (Natural)", preco: custoCaixa * 1.2, obs: "Atacado 20%" },
+            { tipo: "Caixa Fechada (Gelada)", preco: (custoCaixa * 1.2) + 15.00, obs: "Atacado + Espaço Freezer" }
+        ];
 
-    function renderMesas() {
-        const grid = document.getElementById('grid-mesas');
-        grid.innerHTML = "";
-        for(let i=1; i<=8; i++) {
-            let b = document.createElement('button');
-            b.className = `mesa-btn ${mesas[i].ativa ? 'ocupada' : 'livre'} ${mesaSel == i ? 'sel' : ''}`;
-            b.innerHTML = `M${i}<br>${mesas[i].ativa ? 'R$'+mesas[i].total.toFixed(2) : 'LIVRE'}`;
-            b.onclick = () => { mesaSel = i; renderMesas(); renderCupom(); };
-            grid.appendChild(b);
-        }
+        const tbody = document.getElementById('body-sugestao');
+        tbody.innerHTML = estrategias.map(est => {
+            const lucro = est.preco - (est.tipo.includes("Caixa") ? custoCaixa : custoUnit);
+            const margem = (lucro / est.preco) * 100;
+            return `
+                <tr>
+                    <td><b>${est.tipo}</b><br><small style="color:gray">${est.obs}</small></td>
+                    <td><input type="number" value="${est.preco.toFixed(2)}" style="width:70px"></td>
+                    <td style="color:green; font-weight:bold">R$ ${lucro.toFixed(2)}</td>
+                    <td>${margem.toFixed(0)}%</td>
+                    <td><button class="btn-update">ATUALIZAR</button></td>
+                </tr>
+            `;
+        }).join('');
     }
 
-    function renderCupom() {
-        if(!mesaSel) return;
-        let m = mesas[mesaSel];
-        document.getElementById('cupom-mesa').innerText = "MESA " + mesaSel;
-        document.getElementById('cupom-cliente').innerText = "CLIENTE: " + m.cliente;
-        document.getElementById('cupom-itens').innerHTML = m.itens.map(it => `
-            <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
-                <span>${it.qtd}x ${it.n}</span><span>${(it.qtd * it.p).toFixed(2)}</span>
-            </div>
-        `).join('');
-        document.getElementById('txt-total').innerText = "R$ " + m.total.toFixed(2);
-    }
-
-    function handleSearch(e) {
-        if(e.key === 'Enter') {
-            if(!mesaSel) return alert("Selecione a mesa!");
-            let val = document.getElementById('barcode').value;
-            let p = estoque.find(x => x.id === val || x.n.toLowerCase().includes(val.toLowerCase()));
-
-            if(p) {
-                addProduto(p);
-            } else {
-                // Busca Externa Simbolizada
-                let buscar = confirm("Produto não encontrado no estoque. Deseja buscar '" + val + "' na internet para cadastrar?");
-                if(buscar) window.open("https://www.google.com/search?q=preço+produto+barcode+" + val);
-            }
-        }
-    }
-
-    function addProduto(p) {
-        let q = parseInt(document.getElementById('qtd').value);
-        mesas[mesaSel].ativa = true;
-        mesas[mesaSel].itens.push({n: p.n, p: p.p, qtd: q});
-        mesas[mesaSel].total += (p.p * q);
-        p.q -= q;
-        document.getElementById('barcode').value = "";
-        renderCupom(); renderMesas(); renderEstoque();
-    }
-
-    function finalizar(tipo) {
-        if(!mesaSel || !mesas[mesaSel].ativa) return alert("Mesa vazia!");
-        
-        let m = mesas[mesaSel];
-        m.cliente = document.getElementById('nome-cliente').value || "Consumidor";
-        m.fone = document.getElementById('fone-cliente').value;
-
-        let recibo = `*BOTECO 934 - RECIBO*%0A---------------------------%0A*MESA:* ${mesaSel}%0A*CLIENTE:* ${m.cliente}%0A---------------------------%0A`;
-        m.itens.forEach(it => recibo += `${it.qtd}x ${it.n} - R$ ${(it.qtd*it.p).toFixed(2)}%0A`);
-        recibo += `---------------------------%0A*TOTAL: R$ ${m.total.toFixed(2)}*%0A*PGTO:* ${tipo}%0A%0A_Obrigado pela preferência!_`;
-
-        if(m.fone) {
-            let link = `https://wa.me/55${m.fone}?text=${recibo}`;
-            window.open(link);
-        } else if(tipo === 'PENDURA') {
-            alert("Favor informar o Fone para registrar o Pendura no WhatsApp!");
-            return;
-        }
-
-        alert("VENDA FINALIZADA COM SUCESSO!");
-        mesas[mesaSel] = { ativa: false, itens: [], total: 0, cliente: "CONSUMIDOR", fone: "" };
-        mesaSel = null;
-        renderMesas(); renderCupom();
-    }
-
-    function renderEstoque() {
-        document.getElementById('lista-estoque').innerHTML = estoque.map(p => `
-            <tr><td>${p.n}</td><td>R$ ${p.p.toFixed(2)}</td><td>${p.q}</td></tr>
-        `).join('');
-    }
-
-    window.onload = init;
+    window.onload = calcularLucro;
 </script>
 </body>
 </html>
