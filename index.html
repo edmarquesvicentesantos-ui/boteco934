@@ -6,40 +6,38 @@
     <title>BOTECO 934 | MIX INTELIGENTE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --gold: #ffd700; --green: #2ecc71; --bg: #0f172a; --card: rgba(255, 255, 255, 0.05); }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-        .header { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); text-align: center; margin-bottom: 10px; border-bottom: 3px solid var(--gold); }
-        #inputBipe { width: 100%; padding: 20px; border-radius: 10px; border: 2px solid var(--gold); background: #1e293b; color: var(--gold); font-size: 22px; text-align: center; margin-bottom: 10px; outline: none; }
+        :root { --gold: #ffd700; --green: #2ecc71; --bg: #0b0f19; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .header { text-align: center; padding: 10px; border-bottom: 2px solid var(--gold); margin-bottom: 10px; }
+        #inputBipe { width: 100%; padding: 20px; border-radius: 10px; border: 2px solid #334155; background: #1e293b; color: var(--gold); font-size: 20px; text-align: center; outline: none; box-sizing: border-box; }
+        #inputBipe:focus { border-color: var(--gold); }
         .main { display: grid; grid-template-columns: 1fr 300px; gap: 10px; flex: 1; min-height: 0; }
         @media (max-width: 800px) { .main { grid-template-columns: 1fr; } }
-        .lista { background: var(--card); border-radius: 12px; padding: 10px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
-        .row { display: flex; align-items: center; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; margin-bottom: 5px; border-left: 4px solid var(--gold); }
-        .details { flex: 1; padding-left: 10px; }
-        .name { display: block; font-weight: bold; text-transform: uppercase; font-size: 13px; }
-        .meta { color: #94a3b8; font-size: 11px; }
-        .lucro-tag { color: var(--green); font-weight: bold; font-size: 11px; }
-        .total-p { color: var(--green); font-weight: bold; font-size: 18px; margin: 0 10px; }
-        .resumo { background: var(--card); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); height: fit-content; }
-        .btn-zap { width: 100%; padding: 15px; border-radius: 10px; border: none; background: #25d366; color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        .lista { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
+        .row { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 5px solid var(--gold); }
+        .details { flex: 1; }
+        .name { display: block; font-weight: bold; text-transform: uppercase; font-size: 14px; color: #f8fafc; }
+        .meta { color: #94a3b8; font-size: 12px; }
+        .lucro-tag { color: var(--green); font-weight: bold; font-size: 12px; }
+        .total-p { color: var(--green); font-weight: bold; font-size: 18px; margin: 0 15px; }
+        .resumo { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .btn-zap { width: 100%; padding: 18px; border-radius: 10px; border: none; background: #25d366; color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <div class="header"><h1 style="margin:0; color:var(--gold); font-size:20px;">BOTECO 934 | MIX INTELIGENTE</h1></div>
-    <input type="text" id="inputBipe" placeholder="BIPE O PRODUTO..." onkeypress="if(event.key === 'Enter') handle(this.value)" autofocus>
+    <div class="header"><h2 style="margin:0; color:var(--gold);">BOTECO 934 | MIX INTELIGENTE</h2></div>
+    <input type="text" id="inputBipe" placeholder="BIPE O PRODUTO AGORA..." onkeypress="if(event.key === 'Enter') handle(this.value)" autofocus>
     <div class="main">
-        <div class="lista" id="caixa"></div>
+        <div class="lista" id="caixa"><div style="text-align:center; padding-top:50px; color:#64748b;">Aguardando o primeiro bipe...</div></div>
         <div class="resumo">
-            <span style="color:#94a3b8">TOTAL DA MESA</span>
-            <div style="font-size: 40px; font-weight: 900; color: var(--green); margin: 10px 0;">R$ <span id="totalTxt">0,00</span></div>
-            <button class="btn-zap" onclick="enviarZap()">ENVIAR RECIBO</button>
-            <button onclick="localStorage.clear(); location.reload();" style="background:none; border:none; color:grey; font-size:10px; margin-top:20px; cursor:pointer;">REINICIAR TUDO</button>
+            <span style="color:#94a3b8">TOTAL ACUMULADO</span>
+            <div style="font-size: 45px; font-weight: 900; color: var(--green); margin: 10px 0;">R$ <span id="totalTxt">0,00</span></div>
+            <button class="btn-zap" onclick="enviarZap()"><i class="fab fa-whatsapp"></i> ENVIAR RECIBO</button>
+            <button onclick="localStorage.clear(); location.reload();" style="background:none; border:none; color:#475569; font-size:11px; margin-top:25px; cursor:pointer; text-decoration:underline;">LIMPAR MEMÓRIA DO CAIXA</button>
         </div>
     </div>
 <script>
-    // Limpeza forçada via URL
-    if(window.location.search.includes('reset=true')) { localStorage.clear(); window.location.href = window.location.pathname; }
-
-    let db = JSON.parse(localStorage.getItem('b934_final')) || [];
+    let db = JSON.parse(localStorage.getItem('b934_v4')) || [];
     let mesa = [];
 
     function handle(cod) {
@@ -47,11 +45,11 @@
         cod = cod.trim();
         document.getElementById('inputBipe').value = '';
 
-        let jaTem = mesa.find(i => i.id === cod);
-        if(jaTem) { jaTem.qtd++; render(); return; }
+        let itemMesa = mesa.find(i => i.id === cod);
+        if(itemMesa) { itemMesa.qtd++; render(); return; }
 
-        let prod = db.find(p => p.id === cod);
-        if(prod) { mesa.push({...prod, qtd: 1}); render(); } 
+        let produtoDb = db.find(p => p.id === cod);
+        if(produtoDb) { mesa.push({...produtoDb, qtd: 1}); render(); } 
         else { cadastrar(cod); }
     }
 
@@ -61,41 +59,43 @@
             const d = await r.json();
             let n = (d.status === 1 && d.product.product_name) ? d.product.product_name : "PRODUTO NOVO";
             
-            let custo = prompt(`NOME: ${n}\n1. PREÇO DE CUSTO (Ex: 4.50):`, "4.00");
-            if(custo) {
-                let c = parseFloat(custo.replace(',','.'));
-                let margem = prompt(`2. MARGEM DE LUCRO (%)`, "50");
-                let sugerido = (c * (1 + (parseFloat(margem)/100))).toFixed(2);
+            let custoStr = prompt(`NOVO: ${n}\n\n1. PREÇO DE CUSTO (Ex: 5.50):`, "5.00");
+            if(custoStr) {
+                let custo = parseFloat(custoStr.replace(',','.'));
+                let margem = prompt(`2. MARGEM DE LUCRO DESEJADA (%)`, "50");
+                let m = parseFloat(margem) / 100;
+                let sugerido = (custo * (1 + m)).toFixed(2);
                 
-                let venda = prompt(`SUGESTÃO DE VENDA: R$ ${sugerido}\nDigite o PREÇO FINAL:`, sugerido);
-                if(venda) {
-                    let v = parseFloat(venda.replace(',','.'));
-                    let novo = { id: cod, nome: n, custo: c, preco: v };
+                let vendaStr = prompt(`SUGESTÃO DE VENDA: R$ ${sugerido}\n(Seu lucro: R$ ${(sugerido - custo).toFixed(2)})\n\nCONFIRMAR PREÇO FINAL:`, sugerido);
+                if(vendaStr) {
+                    let venda = parseFloat(vendaStr.replace(',','.'));
+                    let novo = { id: cod, nome: n, custo: custo, preco: venda };
                     db.push(novo);
-                    localStorage.setItem('b934_final', JSON.stringify(db));
+                    localStorage.setItem('b934_v4', JSON.stringify(db));
                     mesa.push({...novo, qtd: 1});
                     render();
                 }
             }
-        } catch(e) { alert("Erro de conexão."); }
+        } catch(e) { alert("Sem internet."); }
     }
 
     function render() {
         const c = document.getElementById('caixa');
         const t = document.getElementById('totalTxt');
         c.innerHTML = ''; let soma = 0;
-        if(mesa.length === 0) { c.innerHTML = '<div style="text-align:center; padding-top:50px; color:#475569;">Aguardando bipe...</div>'; t.innerText = "0,00"; return; }
+        if(mesa.length === 0) { c.innerHTML = '<div style="text-align:center; padding-top:50px; color:#64748b;">Aguardando bipe...</div>'; t.innerText = "0,00"; return; }
         
         mesa.forEach(i => {
-            let tot = i.preco * i.qtd; soma += tot;
+            let totalItem = i.preco * i.qtd; soma += totalItem;
+            let lucroItem = (i.preco - i.custo) * i.qtd;
             c.innerHTML += `<div class="row">
                 <div class="details">
                     <span class="name">${i.nome}</span>
-                    <span class="meta">${i.qtd}x R$ ${i.preco.toFixed(2)}</span><br>
-                    <span class="lucro-tag">Lucro: R$ ${((i.preco - i.custo) * i.qtd).toFixed(2)}</span>
+                    <span class="meta">${i.qtd}x de R$ ${i.preco.toFixed(2)}</span><br>
+                    <span class="lucro-tag">LUCRO: R$ ${lucroItem.toFixed(2)}</span>
                 </div>
-                <div class="total-p">R$ ${tot.toFixed(2)}</div>
-                <button onclick="mesa=mesa.filter(x=>x.id!=='${i.id}');render()" style="background:none; border:none; color:#ff4b2b; cursor:pointer;"><i class="fas fa-trash"></i></button>
+                <div class="total-p">R$ ${totalItem.toFixed(2)}</div>
+                <button onclick="mesa=mesa.filter(x=>x.id!=='${i.id}');render()" style="background:none; border:none; color:#ef4444; cursor:pointer;"><i class="fas fa-trash"></i></button>
             </div>`;
         });
         t.innerText = soma.toFixed(2).replace('.', ',');
@@ -103,10 +103,10 @@
 
     function enviarZap() {
         if(mesa.length === 0) return;
-        let m = "*BOTECO 934 - RECIBO*\n";
-        mesa.forEach(i => m += `${i.qtd}x ${i.nome} - R$ ${(i.preco*i.qtd).toFixed(2)}\n`);
-        m += "*TOTAL: R$ " + document.getElementById('totalTxt').innerText + "*";
-        window.open(`https://wa.me/?text=${encodeURIComponent(m)}`);
+        let msg = "*BOTECO 934 - RECIBO*\n----------------------------\n";
+        mesa.forEach(i => msg += `${i.qtd}x ${i.nome} - R$ ${(i.preco*i.qtd).toFixed(2)}\n`);
+        msg += "----------------------------\n*TOTAL: R$ " + document.getElementById('totalTxt').innerText + "*";
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
     }
     render();
 </script>
