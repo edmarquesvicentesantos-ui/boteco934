@@ -2,223 +2,239 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA ELITE V9 - BOTECO 934</title>
-    
+    <title>SISTEMA ELITE V11 - BOTECO 934</title>
     <style>
-        :root { --dark: #1a252f; --sidebar: #2c3e50; --accent: #f39c12; --success: #27ae60; --danger: #e74c3c; --bg: #dfe6e9; --font-padrao: 13px; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { margin: 0; display: flex; height: 100vh; background: var(--bg); font-size: var(--font-padrao); overflow: hidden; }
+        :root { --dark: #1a252f; --sidebar: #2c3e50; --accent: #f39c12; --success: #27ae60; --danger: #e74c3c; --info: #2980b9; --bg: #dfe6e9; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; font-size: 13px; }
+        body { margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
 
-        nav { width: 190px; background: var(--dark); color: white; display: flex; flex-direction: column; border-right: 2px solid var(--accent); }
-        .nav-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #2c3e50; font-weight: 600; }
-        .nav-item.active { background: var(--sidebar); color: var(--accent); border-left: 4px solid var(--accent); }
+        /* MENU LATERAL */
+        nav { width: 200px; background: var(--dark); color: white; display: flex; flex-direction: column; border-right: 2px solid var(--accent); }
+        .nav-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #34495e; font-weight: bold; }
+        .nav-item:hover, .nav-item.active { background: var(--sidebar); color: var(--accent); border-left: 4px solid var(--accent); }
 
         main { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .painel { background: white; padding: 15px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .painel { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
         
-        .cards-fin { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
-        .card { padding: 10px; border-radius: 4px; color: white; text-align: center; }
+        .cards-fin { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .card { padding: 10px; border-radius: 6px; color: white; text-align: center; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #eee; padding: 10px; text-align: left; border-bottom: 2px solid #ddd; }
+        td { padding: 10px; border-bottom: 1px solid #eee; }
+
+        input, select { padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; margin-bottom: 5px; }
+        .btn-acao { padding: 10px; border: none; border-radius: 4px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         
-        input { padding: 10px; border: 1px solid #ccc; border-radius: 4px; width: 100%; font-size: 14px; }
-        .btn-acao { padding: 12px; border: none; border-radius: 4px; color: white; font-weight: bold; cursor: pointer; width: 100%; }
-        
-        /* [TRAVA DO CAIXA] */
+        .mesa-btn { flex: 1; padding: 20px 5px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; min-width: 90px; }
         .caixa-bloqueado { filter: grayscale(1); pointer-events: none; opacity: 0.4; }
-        #aviso-caixa { background: #e74c3c; color: white; padding: 10px; text-align: center; font-weight: bold; border-radius: 4px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <nav>
-    <div style="padding:20px; color:var(--accent); font-weight:bold; text-align:center;">BOTECO 934</div>
-    <div class="nav-item active" onclick="ver('aba-vendas')">🛒 VENDAS / MESAS</div>
-    <div class="nav-item" onclick="ver('aba-estoque')">🧠 CALCULADORA / MIX</div>
-    <div class="nav-item" onclick="ver('aba-boticario')">🌸 O BOTICÁRIO</div>
-    <div class="nav-item" onclick="ver('aba-financeiro')">💸 CONTAS A PAGAR</div>
-    <button onclick="abrirCaixa()" style="background:var(--success); color:white; border:none; padding:12px; cursor:pointer; font-weight:bold; margin:15px; border-radius:4px; box-shadow: 0 4px 0 #1e8449;">🔓 ABRIR CAIXA</button>
+    <div style="padding:20px; color:var(--accent); font-weight:bold; text-align:center; font-size:18px;">BOTECO 934</div>
+    <div class="nav-item active" onclick="ver('aba-vendas')">🛒 FRENTE DE CAIXA</div>
+    <div class="nav-item" onclick="ver('aba-produtos')">📦 CADASTRO PRODUTOS</div>
+    <div class="nav-item" onclick="ver('aba-clientes')">👥 CADASTRO CLIENTES</div>
+    <div class="nav-item" onclick="ver('aba-estoque')">🧠 CALCULADORA MIX</div>
+    <div class="nav-item" onclick="ver('aba-financeiro')">💸 DESPESAS</div>
+    <button onclick="abrirCaixa()" style="background:var(--success); color:white; border:none; padding:12px; cursor:pointer; font-weight:bold; margin:15px; border-radius:4px;">🔓 ABRIR CAIXA</button>
 </nav>
 
 <main>
     <div class="cards-fin">
         <div class="card" style="background: #7f8c8d;">Troco Inicial<br><b id="res-troco">R$ 0,00</b></div>
-        <div class="card" style="background: #27ae60;">Vendas Brutas<br><b id="res-vendas">R$ 0,00</b></div>
-        <div class="card" style="background: #e74c3c;">Despesas/Pagos<br><b id="res-contas">R$ 0,00</b></div>
-        <div class="card" style="background: #2980b9;">Saldo Real<br><b id="res-saldo">R$ 0,00</b></div>
+        <div class="card" style="background: var(--success);">Vendas Brutas<br><b id="res-vendas">R$ 0,00</b></div>
+        <div class="card" style="background: var(--danger);">Despesas<br><b id="res-contas">R$ 0,00</b></div>
+        <div class="card" style="background: var(--info);">Saldo Real<br><b id="res-saldo">R$ 0,00</b></div>
     </div>
 
     <div id="aba-vendas" class="tab-content">
-        <div id="aviso-caixa">🚨 CAIXA FECHADO! CLIQUE EM "ABRIR CAIXA" PARA LIBERAR AS MESAS.</div>
-        
+        <div id="aviso-caixa" style="background:var(--danger); color:white; padding:10px; text-align:center; font-weight:bold; border-radius:4px; margin-bottom:10px;">🚨 CAIXA FECHADO! ABRA PARA OPERAR AS MESAS.</div>
         <div id="area-trabalho" class="caixa-bloqueado">
             <div class="painel">
-                <h2>📍 MESAS (CLIQUE PARA SELECIONAR)</h2>
-                <div id="grid-mesas" style="display:flex; gap:8px;"></div>
+                <h2>📍 SELECIONE A MESA (IDENTIFIQUE O CLIENTE)</h2>
+                <div id="grid-mesas" style="display:flex; gap:10px; flex-wrap: wrap;"></div>
             </div>
-            
             <div style="display:flex; gap:15px;">
                 <div class="painel" style="flex:1.2;">
-                    <h2>⚡ LANÇAR PRODUTO (ENTER PARA CONFIRMAR)</h2>
-                    <input type="text" id="barcode" placeholder="DIGITE O NOME OU BIPE O ITEM..." onkeypress="handleVenda(event)" style="background:#fff9c4; border:2px solid var(--accent)">
-                    <table style="width:100%; margin-top:15px;">
+                    <h2 id="titulo-mesa">🛒 AGUARDANDO MESA...</h2>
+                    <select id="select-produto" style="background:#fff9c4; font-weight:bold;">
+                        <option value="">Selecione um Produto Cadastrado...</option>
+                    </select>
+                    <button class="btn-acao" style="background:var(--accent); width:100%;" onclick="adicionarItem()">LANÇAR ITEM</button>
+                    <table>
+                        <thead><tr><th>Item</th><th style="text-align:right;">Total</th></tr></thead>
                         <tbody id="lista-venda"></tbody>
                     </table>
                 </div>
-                
-                <div class="painel" style="flex:0.8; border:2px dashed #333; background: #fdfdfd;">
-                    <h3 style="text-align:center;">CUPOM ATUAL</h3>
-                    <div id="cupom-itens" style="min-height:120px; font-family: monospace;"></div>
-                    <div style="font-size:24px; font-weight:bold; border-top:3px solid #000; padding-top:10px; color: #2c3e50;">
-                        TOTAL: <span id="total-venda">R$ 0,00</span>
+                <div class="painel" style="flex:0.8; border:2px solid #333;">
+                    <h3 id="cupom-nome" style="text-align:center;">CUPOM</h3>
+                    <div id="cupom-itens" style="min-height:100px; border-top: 1px dashed #ccc; padding-top:10px;"></div>
+                    <div style="font-size:20px; font-weight:bold; border-top:2px solid #000; padding-top:10px; margin: 10px 0;">TOTAL: <span id="total-venda">R$ 0,00</span></div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                        <button class="btn-acao" style="background:var(--success);" onclick="finalizar('DINHEIRO')">DINHEIRO</button>
+                        <button class="btn-acao" style="background:var(--info);" onclick="finalizar('PIX')">PIX</button>
+                        <button class="btn-acao" style="background:#8e44ad;" onclick="finalizar('CARTÃO')">CARTÃO</button>
+                        <button class="btn-acao" style="background:var(--danger);" onclick="finalizar('PENDURA')">PENDURA</button>
                     </div>
-                    <button class="btn-acao" style="background:var(--success); margin-top:15px;" onclick="finalizar('DINHEIRO')">PAGOU DINHEIRO</button>
-                    <button class="btn-acao" style="background:#3498db; margin-top:8px;" onclick="finalizar('PIX')">PAGOU PIX/CARTÃO</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="aba-estoque" class="tab-content" style="display:none">
+    <div id="aba-produtos" class="tab-content" style="display:none">
         <div class="painel">
-            <h2>🧠 INICIO CALCULADORA MIX INTELIGENTE</h2>
-            <div style="background:#f1f2f6; padding:20px; border:2px solid var(--accent); border-radius:8px; display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px; align-items:end;">
-                <div>
-                    <label><b>Custo Caixa (R$)</b></label>
-                    <input type="number" id="custo-cx" value="60.00" oninput="executarCalculo()">
-                </div>
-                <div>
-                    <label><b>Unidades</b></label>
-                    <input type="number" id="qtd-cx" value="24" oninput="executarCalculo()">
-                </div>
-                <div style="background:var(--dark); color:var(--accent); padding:10px; border-radius:4px; text-align:center; font-weight:bold;">
-                    Custo Unitário: <span id="unit-result">R$ 2,50</span>
-                </div>
+            <h2>📦 NOVO PRODUTO</h2>
+            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap:10px;">
+                <input type="text" id="p-nome" placeholder="Nome do Produto">
+                <input type="number" id="p-custo" placeholder="Custo R$">
+                <input type="number" id="p-venda" placeholder="Venda R$">
+                <button class="btn-acao" style="background:var(--success);" onclick="salvarProduto()">SALVAR</button>
             </div>
-            <table style="width:100%; margin-top:20px; border-collapse: collapse;">
-                <thead style="background:#eee;"><tr><th style="padding:10px;">Venda</th><th>Preço</th><th>Lucro</th><th>Margem</th></tr></thead>
-                <tbody id="tabela-sugestao" style="text-align:center;"></tbody>
+        </div>
+        <div class="painel">
+            <h2>LISTA DE PRODUTOS</h2>
+            <table>
+                <thead><tr><th>Nome</th><th>Custo</th><th>Venda</th><th>Lucro</th></tr></thead>
+                <tbody id="tabela-produtos"></tbody>
             </table>
         </div>
     </div>
 
-    <div id="aba-boticario" class="tab-content" style="display:none">
+    <div id="aba-clientes" class="tab-content" style="display:none">
         <div class="painel">
-            <h2>🌸 VENDAS O BOTICÁRIO</h2>
-            <p>Registre aqui suas vendas de cosméticos para separar o lucro do bar.</p>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
-                <input type="number" id="bot-venda" placeholder="Valor Revista R$">
-                <input type="number" id="bot-comissao" value="30" placeholder="Comissão %">
-                <button class="btn-acao" style="background:#00a859" onclick="alert('Venda registrada com sucesso!')">LANÇAR VENDA</button>
+            <h2>👥 NOVO CLIENTE</h2>
+            <div style="display:grid; grid-template-columns: 2fr 2fr 1fr; gap:10px;">
+                <input type="text" id="c-nome" placeholder="Nome do Cliente">
+                <input type="text" id="c-contato" placeholder="WhatsApp / Telefone">
+                <button class="btn-acao" style="background:var(--success);" onclick="salvarCliente()">CADASTRAR</button>
             </div>
+        </div>
+        <div class="painel">
+            <h2>LISTA DE CLIENTES</h2>
+            <table>
+                <thead><tr><th>Nome</th><th>Contato</th><th>Ações</th></tr></thead>
+                <tbody id="tabela-clientes"></tbody>
+            </table>
         </div>
     </div>
 
     <div id="aba-financeiro" class="tab-content" style="display:none">
-        <div class="painel">
-            <h2>💸 LANÇAR CONTAS PAGAS / DESPESAS</h2>
-            <div style="display:grid; grid-template-columns: 2fr 1fr 1fr; gap:10px;">
-                <input type="text" id="desc-conta" placeholder="Descrição (Ex: Gelo, Luz, Ambev)">
-                <input type="number" id="valor-conta" placeholder="Valor R$">
-                <button class="btn-acao" style="background:var(--danger)" onclick="registrarSaida()">PAGAR AGORA</button>
-            </div>
+        <div class="painel"><h2>💸 LANÇAR DESPESA</h2>
+            <input type="number" id="valor-despesa" placeholder="R$ 0,00">
+            <button class="btn-acao" style="background:var(--danger); width:100%;" onclick="registrarSaida()">PAGAR</button>
         </div>
+    </div>
+
+    <div id="aba-estoque" class="tab-content" style="display:none">
+        <div class="painel"><h2>🧠 MIX INTELIGENTE</h2><p>Use os custos cadastrados para calcular o lucro ideal.</p></div>
     </div>
 </main>
 
 <script>
     let fin = { troco: 0, vendas: 0, contas: 0 };
+    let produtos = [{n: "Cerveja Lata", c: 3.50, v: 6.00}];
+    let clientes = [{n: "Consumidor Final", t: "00"}];
     let mesas = {};
-    for(let i=1; i<=8; i++) mesas[i] = { ativa: false, total: 0, itens: [] };
+    for(let i=1; i<=8; i++) mesas[i] = { ativa: false, cliente: "", total: 0, itens: [] };
     let mesaSel = null;
 
-    // [ABRIR CAIXA]
     function abrirCaixa() {
-        let v = prompt("Digite o valor do seu fundo de troco (Dinheiro em caixa):");
-        if(v !== null && v !== "") {
+        let v = prompt("Fundo de Troco:");
+        if(v) {
             fin.troco = parseFloat(v);
             document.getElementById('res-troco').innerText = "R$ " + fin.troco.toFixed(2);
             document.getElementById('aviso-caixa').style.display = 'none';
             document.getElementById('area-trabalho').classList.remove('caixa-bloqueado');
             atualizarSaldo();
-            alert("Caixa aberto com sucesso! Boas vendas.");
         }
     }
 
-    // [CALCULADORA MIX]
-    function executarCalculo() {
-        let custoCx = parseFloat(document.getElementById('custo-cx').value) || 0;
-        let qtd = parseInt(document.getElementById('qtd-cx').value) || 1;
-        let unit = custoCx / qtd;
-        document.getElementById('unit-result').innerText = "R$ " + unit.toFixed(2);
-
-        let dados = [
-            { n: "Natural (40%)", p: unit * 1.4, c: unit },
-            { n: "Gelada (+1.50 Luz)", p: (unit * 1.4) + 1.5, c: unit },
-            { n: "Cx Fechada (20%)", p: custoCx * 1.2, c: custoCx }
-        ];
-
-        document.getElementById('tabela-sugestao').innerHTML = dados.map(d => {
-            let lucro = d.p - d.c;
-            return `<tr style="border-bottom:1px solid #eee;"><td style="padding:12px;"><b>${d.n}</b></td><td>R$ ${d.p.toFixed(2)}</td><td style="color:green; font-weight:bold;">R$ ${lucro.toFixed(2)}</td><td>${((lucro/d.p)*100).toFixed(0)}%</td></tr>`;
-        }).join('');
+    // --- LOGICA DE PRODUTOS ---
+    function salvarProduto() {
+        let nome = document.getElementById('p-nome').value;
+        let custo = parseFloat(document.getElementById('p-custo').value);
+        let venda = parseFloat(document.getElementById('p-venda').value);
+        if(!nome || !venda) return alert("Preencha nome e venda!");
+        produtos.push({n: nome, c: custo, v: venda});
+        atualizarListas();
     }
 
-    // [GERAL]
-    function ver(id) {
-        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-        document.getElementById(id).style.display = 'block';
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        event.currentTarget.classList.add('active');
-        if(id === 'aba-estoque') executarCalculo();
+    // --- LOGICA DE CLIENTES ---
+    function salvarCliente() {
+        let nome = document.getElementById('c-nome').value;
+        let zap = document.getElementById('c-contato').value;
+        if(!nome) return alert("Nome obrigatório!");
+        clientes.push({n: nome, t: zap});
+        atualizarListas();
     }
 
+    function atualizarListas() {
+        // Atualiza Tabela Produtos
+        document.getElementById('tabela-produtos').innerHTML = produtos.map(p => `<tr><td>${p.n}</td><td>R$ ${p.c.toFixed(2)}</td><td>R$ ${p.v.toFixed(2)}</td><td style="color:green">R$ ${(p.v-p.c).toFixed(2)}</td></tr>`).join('');
+        // Atualiza Tabela Clientes
+        document.getElementById('tabela-clientes').innerHTML = clientes.map(c => `<tr><td>${c.n}</td><td>${c.t}</td><td><button onclick="alert('Histórico em breve')">VER</button></td></tr>`).join('');
+        // Atualiza Select de Vendas
+        document.getElementById('select-produto').innerHTML = '<option value="">Selecione um Produto...</option>' + produtos.map((p, index) => `<option value="${index}">${p.n} - R$ ${p.v.toFixed(2)}</option>`).join('');
+    }
+
+    // --- LOGICA DE VENDAS ---
     function renderMesas() {
         const grid = document.getElementById('grid-mesas');
         grid.innerHTML = "";
         for(let i=1; i<=8; i++) {
+            let m = mesas[i];
             let b = document.createElement('button');
-            b.style = `flex:1; padding:15px 5px; border:none; border-radius:4px; color:white; font-weight:bold; cursor:pointer; background:${mesas[i].ativa ? '#e74c3c' : '#27ae60'}; ${mesaSel==i ? 'outline:4px solid #f39c12; transform:scale(1.05);' : ''}`;
-            b.innerHTML = `MESA ${i}<br>${mesas[i].ativa ? 'R$ '+mesas[i].total.toFixed(2) : 'LIVRE'}`;
-            b.onclick = () => { mesaSel = i; renderMesas(); renderCupom(); };
+            b.className = "mesa-btn";
+            b.style.background = m.ativa ? 'var(--danger)' : 'var(--success)';
+            if(mesaSel == i) b.style.boxShadow = "0 0 0 4px var(--accent)";
+            b.innerHTML = `MESA ${i}<br>${m.ativa ? m.cliente : 'LIVRE'}`;
+            b.onclick = () => {
+                if(!m.ativa) {
+                    let cIndex = prompt("Digite o nome do cliente ou selecione na lista:");
+                    if(!cIndex) return;
+                    m.ativa = true; m.cliente = cIndex;
+                }
+                mesaSel = i; renderMesas(); renderCupom();
+            };
             grid.appendChild(b);
         }
     }
 
-    function handleVenda(e) {
-        if(e.key === 'Enter') {
-            if(!mesaSel) { alert("Selecione uma mesa primeiro!"); return; }
-            mesas[mesaSel].ativa = true;
-            mesas[mesaSel].itens.push({n: "ITEM LANÇADO", p: 6.00});
-            mesas[mesaSel].total += 6.00;
-            renderMesas(); renderCupom();
-            document.getElementById('barcode').value = "";
-        }
+    function adicionarItem() {
+        let idx = document.getElementById('select-produto').value;
+        if(idx === "" || !mesaSel) return alert("Selecione a mesa e o produto!");
+        let prod = produtos[idx];
+        mesas[mesaSel].itens.push({n: prod.n, v: prod.v});
+        mesas[mesaSel].total += prod.v;
+        renderCupom(); renderMesas();
     }
 
     function renderCupom() {
         if(!mesaSel) return;
-        document.getElementById('cupom-itens').innerHTML = mesas[mesaSel].itens.map(i => `<div>1x ${i.n} ............. R$ ${i.p.toFixed(2)}</div>`).join('');
-        document.getElementById('total-venda').innerText = "R$ " + mesas[mesaSel].total.toFixed(2);
+        let m = mesas[mesaSel];
+        document.getElementById('titulo-mesa').innerText = `🛒 MESA ${mesaSel} - ${m.cliente}`;
+        document.getElementById('cupom-nome').innerText = `CLIENTE: ${m.cliente}`;
+        document.getElementById('cupom-itens').innerHTML = m.itens.map(i => `<div style="display:flex; justify-content:space-between;"><span>${i.n}</span> <b>R$ ${i.v.toFixed(2)}</b></div>`).join('');
+        document.getElementById('total-venda').innerText = "R$ " + m.total.toFixed(2);
     }
 
     function finalizar(tipo) {
         if(!mesaSel || !mesas[mesaSel].ativa) return;
+        alert(`RECIBO BOTECO 934\nCliente: ${mesas[mesaSel].cliente}\nTotal: R$ ${mesas[mesaSel].total.toFixed(2)}\nPGTO: ${tipo}`);
         fin.vendas += mesas[mesaSel].total;
         document.getElementById('res-vendas').innerText = "R$ " + fin.vendas.toFixed(2);
-        mesas[mesaSel] = { ativa: false, total: 0, itens: [] };
+        mesas[mesaSel] = { ativa: false, cliente: "", total: 0, itens: [] };
         mesaSel = null; renderMesas(); renderCupom(); atualizarSaldo();
-        alert("Venda Finalizada!");
     }
 
     function registrarSaida() {
-        let v = parseFloat(document.getElementById('valor-conta').value) || 0;
-        if(v > 0) {
-            fin.contas += v;
-            document.getElementById('res-contas').innerText = "R$ " + fin.contas.toFixed(2);
-            atualizarSaldo();
-            document.getElementById('valor-conta').value = "";
-            document.getElementById('desc-conta').value = "";
-            alert("Pagamento registrado!");
-        }
+        let v = parseFloat(document.getElementById('valor-despesa').value) || 0;
+        fin.contas += v;
+        document.getElementById('res-contas').innerText = "R$ " + fin.contas.toFixed(2);
+        atualizarSaldo();
     }
 
     function atualizarSaldo() {
@@ -226,7 +242,14 @@
         document.getElementById('res-saldo').innerText = "R$ " + s.toFixed(2);
     }
 
-    window.onload = () => { renderMesas(); executarCalculo(); };
+    function ver(id) {
+        document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+
+    window.onload = () => { renderMesas(); atualizarListas(); };
 </script>
 </body>
 </html>
