@@ -23,7 +23,82 @@
             grid.appendChild(btn);
         }
     }
+<style>
+    /* Grid de mesas pequenas e discretas */
+    .grid-mesas-mini {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr); /* Todas na mesma linha */
+        gap: 5px;
+        margin-bottom: 20px;
+    }
+    
+    .mesa-mini {
+        padding: 10px 5px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 10px;
+        transition: 0.3s;
+    }
 
+    /* O Cupom que expande */
+    .cupom-container {
+        display: none; /* Começa escondido */
+        background: #fff;
+        color: #000;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px dashed #ccc;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        font-family: 'Courier New', monospace; /* Estilo de impressora térmica */
+    }
+    
+    .cupom-container.ativo {
+        display: block;
+        animation: deslizar 0.4s ease-out;
+    }
+
+    @keyframes deslizar {
+        from { opacity: 0; transform: translateY(-20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<div class="painel">
+    <h2>📍 MESAS</h2>
+    <div id="grid-mini" class="grid-mesas-mini">
+        </div>
+
+    <div id="cupom-mesa" class="cupom-container">
+        <div style="text-align:center; border-bottom: 1px dashed #000; padding-bottom: 10px;">
+            <h3 id="cupom-titulo" style="margin:0">MESA 01</h3>
+            <p id="cupom-cliente" style="margin:5px 0">CLIENTE: CONSUMIDOR</p>
+        </div>
+        
+        <table style="width:100%; margin: 15px 0;">
+            <thead>
+                <tr style="border-bottom: 1px solid #000;">
+                    <th align="left">ITEM</th>
+                    <th align="right">VALOR</th>
+                </tr>
+            </thead>
+            <tbody id="cupom-itens">
+                </tbody>
+        </table>
+
+        <div style="border-top: 2px solid #000; padding-top: 10px; font-size: 20px; font-weight: bold; display: flex; justify-content: space-between;">
+            <span>TOTAL:</span>
+            <span id="cupom-total">R$ 0,00</span>
+        </div>
+        
+        <button onclick="fecharCupom()" style="margin-top: 20px; width: 100%; padding: 10px; background: #eee; border: 1px solid #ccc; cursor: pointer;">
+            ✖ VOLTAR AO MAPA
+        </button>
+    </div>
+</div>
     // Chame essa função ao carregar a página
     window.onload = () => {
         gerarMapa();
