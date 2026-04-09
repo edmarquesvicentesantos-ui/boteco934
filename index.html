@@ -2,43 +2,37 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA ELITE - BOTECO 934</title>
+    <title>SISTEMA ELITE V3 - BOTECO 934</title>
     <style>
         :root { --dark: #1a252f; --sidebar: #2c3e50; --accent: #f39c12; --success: #27ae60; --danger: #e74c3c; --bg: #dfe6e9; --font-padrao: 13px; }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { margin: 0; display: flex; height: 100vh; background: var(--bg); font-size: var(--font-padrao); overflow: hidden; }
 
-        /* Menu Lateral */
         nav { width: 180px; background: var(--dark); color: white; display: flex; flex-direction: column; border-right: 2px solid var(--accent); }
-        .nav-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #2c3e50; font-weight: 600; transition: 0.3s; }
-        .nav-item:hover, .nav-item.active { background: var(--sidebar); color: var(--accent); border-left: 4px solid var(--accent); }
+        .nav-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #2c3e50; font-weight: 600; }
+        .nav-item.active { background: var(--sidebar); color: var(--accent); border-left: 4px solid var(--accent); }
 
         main { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         .painel { background: white; padding: 12px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 10px; }
         h2 { font-size: 13px; margin: 0 0 10px 0; text-transform: uppercase; color: var(--dark); border-bottom: 1px solid #eee; padding-bottom: 5px; }
 
-        /* Cards Financeiros */
         .cards-fin { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 10px; }
         .card { padding: 10px; border-radius: 4px; color: white; text-align: center; }
 
-        /* Mesas */
         .grid-mesas { display: flex; gap: 5px; margin-bottom: 10px; }
         .mesa-btn { flex: 1; padding: 8px; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; font-size: 11px; }
         .livre { background: var(--success); }
         .ocupada { background: var(--danger); }
         .sel { outline: 3px solid var(--accent); transform: scale(1.05); }
 
-        /* Tabelas */
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
         th { text-align: left; padding: 8px; background: #f8f9fa; border-bottom: 2px solid #ddd; }
         td { padding: 7px 8px; border-bottom: 1px solid #eee; }
 
         input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 100%; }
-        .input-bipa { background: #fff9c4; border: 2px solid var(--accent); font-weight: bold; }
         .btn-grande { width: 100%; padding: 10px; border: none; border-radius: 4px; color: white; font-weight: bold; cursor: pointer; margin-top: 5px; }
         
-        .destaque-custo { background: #f1f2f6; padding: 15px; border-radius: 5px; text-align: center; border: 1px solid #ddd; }
-        .destaque-custo b { font-size: 18px; color: var(--success); }
+        .alerta-guerra { background: #fff3cd; border: 1px solid #ffeeba; padding: 10px; border-radius: 5px; color: #856404; font-weight: bold; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -47,8 +41,8 @@
     <div style="padding:20px; color:var(--accent); font-weight:bold; text-align:center;">BOTECO 934</div>
     <div class="nav-item active" onclick="ver('aba-vendas')">🛒 VENDAS</div>
     <div class="nav-item" onclick="ver('aba-estoque')">🗄️ ESTOQUE / MIX</div>
+    <div class="nav-item" onclick="ver('aba-inteligencia')">🧠 INTELIGÊNCIA</div>
     <div class="nav-item" onclick="ver('aba-boticario')">🌸 BOTICÁRIO</div>
-    <div class="nav-item" onclick="ver('aba-financeiro')">💰 FINANCEIRO</div>
 </nav>
 
 <main>
@@ -64,23 +58,23 @@
             <h2>📍 MAPA DE MESAS</h2>
             <div id="grid-mesas" class="grid-mesas"></div>
         </div>
-        <div style="display: flex; gap: 15px; margin-top: 10px;">
+        <div style="display: flex; gap: 15px;">
             <div class="painel" style="flex: 1.2;">
-                <h2>⚡ LANÇAMENTO (BIPE OU NOME)</h2>
+                <h2>⚡ LANÇAMENTO</h2>
                 <div style="display: flex; gap: 5px; margin-bottom: 10px;">
                     <input type="number" id="qtd" value="1" style="width: 50px; text-align: center;">
-                    <input type="text" id="barcode" class="input-bipa" placeholder="BIPE O CÓDIGO OU DIGITE O NOME..." onkeypress="handleVenda(event)">
+                    <input type="text" id="barcode" placeholder="BIPE OU DIGITE..." onkeypress="handleVenda(event)" style="background:#fff9c4; border:2px solid var(--accent)">
                 </div>
                 <table id="tab-venda">
                     <thead><tr><th>Item</th><th>Preço</th><th>Qtd</th><th>Total</th></tr></thead>
                     <tbody id="lista-venda"></tbody>
                 </table>
             </div>
-            <div class="painel" style="flex: 0.8; background: #fff; font-family: monospace; border: 1px dashed #000;">
-                <h3 style="text-align: center; margin: 0;">CUPOM FISCAL</h3>
-                <div id="cupom-itens" style="min-height: 150px; padding: 10px 0;"></div>
-                <div style="font-size: 20px; font-weight: bold; border-top: 2px solid #000; padding-top: 10px; display: flex; justify-content: space-between;">
-                    <span>TOTAL:</span><span id="total-venda">R$ 0,00</span>
+            <div class="painel" style="flex: 0.8; font-family: monospace; border: 1px dashed #000;">
+                <h3 style="text-align: center;">CUPOM</h3>
+                <div id="cupom-itens" style="min-height: 150px;"></div>
+                <div style="font-size: 18px; font-weight: bold; border-top: 2px solid #000; padding-top: 10px;">
+                    TOTAL: <span id="total-venda">R$ 0,00</span>
                 </div>
                 <button class="btn-grande" style="background:var(--success)" onclick="finalizar('DINHEIRO')">DINHEIRO</button>
                 <button class="btn-grande" style="background:#3498db" onclick="finalizar('PIX')">PIX / CARTÃO</button>
@@ -89,69 +83,52 @@
         </div>
     </div>
 
-    <div id="aba-estoque" class="tab-content" style="display:none">
+    <div id="aba-inteligencia" class="tab-content" style="display:none">
+        <div class="alerta-guerra">⚠️ ESTRATÉGIA: Você precisa vender R$ 150,00 hoje para cobrir os custos fixos!</div>
         <div class="painel">
-            <h2>🧠 CALCULADORA DE LUCRO REAL (MIX INTELIGENTE)</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
-                <div>
-                    <label>Custo da Caixa (R$)</label>
-                    <input type="number" id="custo-cx" value="60.00" oninput="calcMix()">
-                </div>
-                <div>
-                    <label>Quantidade de Itens</label>
-                    <input type="number" id="qtd-cx" value="24" oninput="calcMix()">
-                </div>
-                <div class="destaque-custo">
-                    <small>Custo por Unidade:</small><br>
-                    <b id="unit-cx">R$ 2,50</b>
-                </div>
-            </div>
-            
+            <h2>🥇 RANKING DE LUCRO (QUEM MANDA NO BAR)</h2>
             <table>
-                <thead>
-                    <tr>
-                        <th>TIPO DE VENDA</th>
-                        <th>PREÇO SUGERIDO</th>
-                        <th>LUCRO (R$)</th>
-                        <th>MARGEM (%)</th>
-                    </tr>
-                </thead>
-                <tbody id="body-mix">
-                    </tbody>
+                <thead><tr><th>Produto</th><th>Vendas</th><th>Lucro Total</th><th>Status</th></tr></thead>
+                <tbody>
+                    <tr><td>Cerveja Lata (Gelada)</td><td>42</td><td>R$ 105,00</td><td style="color:green">🔥 General</td></tr>
+                    <tr><td>Dose Pitú</td><td>15</td><td>R$ 37,50</td><td style="color:blue">🛡️ Soldado</td></tr>
+                    <tr><td>Cerveja Natural</td><td>2</td><td>R$ 2,00</td><td style="color:orange">💤 Recruta</td></tr>
+                </tbody>
             </table>
         </div>
-
         <div class="painel">
-            <h2>📦 ESTOQUE CADASTRADO</h2>
-            <table id="tab-estoque-real">
-                <thead><tr><th>ITEM</th><th>PREÇO</th><th>QTD</th><th>VALOR TOTAL</th></tr></thead>
-                <tbody id="lista-estoque-full"></tbody>
-            </table>
+            <h2>🚫 REGISTRAR QUEBRA / PERDA</h2>
+            <p>Sumiu ou quebrou? Registre aqui para não ser enganado pela matemática.</p>
+            <div style="display:flex; gap:10px;">
+                <select id="perda-item" style="flex:2; padding:8px;"><option>CERVEJA LATA</option></select>
+                <input type="number" placeholder="Qtd" style="flex:1;">
+                <button class="btn-grande" style="background:var(--danger); margin:0;">REGISTRAR PERDA</button>
+            </div>
         </div>
     </div>
 
-    <div id="aba-boticario" class="tab-content" style="display:none">
+    <div id="aba-estoque" class="tab-content" style="display:none">
         <div class="painel">
-            <h2>🌸 GESTÃO O BOTICÁRIO</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
-                <input type="number" id="bot-venda" placeholder="Valor Revista">
-                <input type="number" id="bot-comissao" value="30" placeholder="% Comissão">
-                <button class="btn-grande" style="background:#00a859">LANÇAR VENDA</button>
+            <h2>🧠 MIX INTELIGENTE</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <input type="number" id="custo-cx" value="60.00" oninput="calcMix()" placeholder="Custo Caixa">
+                <input type="number" id="qtd-cx" value="24" oninput="calcMix()" placeholder="Qtd Itens">
+                <div style="background:#f1f2f6; padding:10px; border-radius:5px; text-align:center;">Custo Unit: <b id="unit-cx">R$ 2,50</b></div>
             </div>
+            <table id="body-mix"></table>
         </div>
     </div>
 </main>
 
 <script>
-    const FONE_BOTECO = "5587992438359";
     const FONE_PESSOAL = "5587996806181";
-    let estoque = [{id: "123", n: "CERVEJA LATA", p: 6.00, q: 48}, {id: "456", n: "CERVEJA 600ML", p: 10.00, q: 4}];
+    let estoque = [{id: "123", n: "CERVEJA LATA", p: 6.00, q: 48}];
     let mesas = {};
     for(let i=1; i<=8; i++) mesas[i] = { ativa: false, itens: [], total: 0 };
     let mesaSel = null;
     let saldos = { dinheiro: 0, digital: 0, pendura: 0 };
 
-    function init() { renderMesas(); renderEstoque(); calcMix(); }
+    function init() { renderMesas(); calcMix(); }
 
     function ver(id) {
         document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
@@ -197,16 +174,15 @@
 
     function finalizar(tipo) {
         if(!mesaSel || !mesas[mesaSel].ativa) return;
-        let total = mesas[mesaSel].total;
-        if(tipo === 'DINHEIRO') saldos.dinheiro += total;
-        if(tipo === 'PIX') saldos.digital += total;
-        if(tipo === 'PENDURA') saldos.pendura += total;
+        let t = mesas[mesaSel].total;
+        if(tipo === 'DINHEIRO') saldos.dinheiro += t;
+        if(tipo === 'PIX') saldos.digital += t;
+        if(tipo === 'PENDURA') saldos.pendura += t;
         document.getElementById('res-din').innerText = "R$ " + saldos.dinheiro.toFixed(2);
         document.getElementById('res-digital').innerText = "R$ " + saldos.digital.toFixed(2);
         document.getElementById('res-pendura').innerText = "R$ " + saldos.pendura.toFixed(2);
         mesas[mesaSel] = { ativa: false, itens: [], total: 0 };
-        mesaSel = null;
-        renderMesas(); renderCupom();
+        mesaSel = null; renderMesas(); renderCupom();
     }
 
     function calcMix() {
@@ -214,27 +190,15 @@
         let q = parseInt(document.getElementById('qtd-cx').value) || 1;
         let unit = cx / q;
         document.getElementById('unit-cx').innerText = "R$ " + unit.toFixed(2);
-
-        const sugestoes = [
-            { t: "Unidade Natural", p: unit * 1.4, c: unit },
-            { t: "Unidade Gelada", p: (unit * 1.4) + 1.5, c: unit },
-            { t: "Caixa Natural", p: cx * 1.2, c: cx },
-            { t: "Caixa Gelada", p: (cx * 1.2) + 15, c: cx }
-        ];
-
-        document.getElementById('body-mix').innerHTML = sugestoes.map(s => {
-            let lucro = s.p - s.c;
-            let margem = (lucro / s.p) * 100;
-            return `<tr><td><b>${s.t}</b></td><td>R$ ${s.p.toFixed(2)}</td><td style="color:green">R$ ${lucro.toFixed(2)}</td><td>${margem.toFixed(0)}%</td></tr>`;
-        }).join('');
-    }
-
-    function renderEstoque() {
-        document.getElementById('lista-estoque-full').innerHTML = estoque.map(p => `<tr><td>${p.n}</td><td>R$ ${p.p.toFixed(2)}</td><td>${p.q}</td><td>R$ ${(p.p*p.q).toFixed(2)}</td></tr>`).join('');
+        let html = `<thead><tr><th>Venda</th><th>Preço</th><th>Lucro</th></tr></thead><tbody>`;
+        html += `<tr><td>Natural (30%)</td><td>R$ ${(unit*1.3).toFixed(2)}</td><td>R$ ${(unit*0.3).toFixed(2)}</td></tr>`;
+        html += `<tr><td>Gelada (+Luz)</td><td>R$ ${(unit*1.4+1.5).toFixed(2)}</td><td>R$ ${(unit*0.4+1.5).toFixed(2)}</td></tr>`;
+        html += `</tbody>`;
+        document.getElementById('body-mix').innerHTML = html;
     }
 
     function enviarFechamento() {
-        let msg = `*📊 BOTECO 934 - FECHAMENTO*%0A*Dinheiro:* R$ ${saldos.dinheiro.toFixed(2)}%0A*Pix/Cartão:* R$ ${saldos.digital.toFixed(2)}%0A*Pendura:* R$ ${saldos.pendura.toFixed(2)}`;
+        let msg = `*📊 RELATÓRIO ELITE BOTECO 934*%0A*Dinheiro:* R$ ${saldos.dinheiro.toFixed(2)}%0A*Digital:* R$ ${saldos.digital.toFixed(2)}%0A*Pendura:* R$ ${saldos.pendura.toFixed(2)}`;
         window.open(`https://wa.me/${FONE_PESSOAL}?text=${msg}`);
     }
 
