@@ -132,5 +132,111 @@
 
     window.onload = desenharMesas;
 </script>
+    <style>
+    /* DIVISÃO DA TELA: ESQUERDA (CUPOM) | DIREITA (PRODUTOS) */
+    .conteudo-vendas {
+        display: flex;
+        gap: 20px;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    /* COLUNA DO CUPOM (ESTILO SUPERMERCADO) */
+    .coluna-cupom {
+        flex: 1;
+        background: #fff;
+        border: 1px dashed #333;
+        display: flex;
+        flex-direction: column;
+        padding: 15px;
+        font-family: 'Courier New', monospace;
+        box-shadow: 5px 5px 15px rgba(0,0,0,0.05);
+    }
+
+    /* COLUNA DE LANÇAMENTO E BUSCA */
+    .coluna-lancamento {
+        flex: 1.5; /* Lado direito um pouco maior para a lista de itens */
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    /* TABELA DE PRODUTOS COMPACTA */
+    .tabela-compacta {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px; /* Fonte menor como você pediu */
+        background: white;
+    }
+    .tabela-compacta th { background: var(--sidebar); color: white; padding: 8px; text-align: left; }
+    .tabela-compacta td { padding: 6px 8px; border-bottom: 1px solid #eee; }
+
+    /* CAMPO DE BARCODE EM DESTAQUE */
+    .input-barcode {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border: 2px solid var(--accent);
+        background: #fff9c4;
+        font-weight: bold;
+    }
+</style>
+
+<main>
+    <div class="painel" style="margin-bottom: 15px; padding: 10px;">
+        <div id="grid-mesas" class="grid-mini"></div>
+    </div>
+
+    <div class="conteudo-vendas">
+        
+        <div id="area-cupom" class="coluna-cupom">
+            <div style="text-align: center; border-bottom: 2px double #000; padding-bottom: 10px;">
+                <h3 id="cupom-num" style="margin:0">MESA 00</h3>
+                <span id="cupom-cli" style="font-size: 12px;">CLIENTE: SELECIONE</span>
+            </div>
+            
+            <div id="cupom-lista" style="flex: 1; overflow-y: auto; padding: 10px 0;">
+                </div>
+
+            <div style="border-top: 2px solid #000; padding-top: 10px;">
+                <div style="display: flex; justify-content: space-between; font-size: 22px; font-weight: bold;">
+                    <span>TOTAL:</span>
+                    <span id="cupom-total">R$ 0,00</span>
+                </div>
+                <button class="btn-compact" style="background: var(--success); color: white; margin-top: 10px; width: 100%; font-size: 16px;">FECHAR E ENVIAR WHATSAPP</button>
+            </div>
+        </div>
+
+        <div class="coluna-lancamento">
+            <div class="painel">
+                <h2>⚡ LANÇAMENTO RÁPIDO (LEITOR)</h2>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="qtd" value="1" title="Qtd" style="width: 60px; text-align: center; font-weight: bold;">
+                    <input type="text" id="barcode" class="input-barcode" placeholder="PASSE O CÓDIGO DE BARRAS...">
+                </div>
+            </div>
+
+            <div class="painel" style="flex: 1; overflow-y: auto;">
+                <h2>📦 LISTA DE PREÇOS / ESTOQUE</h2>
+                <input type="text" placeholder="🔍 Buscar produto pelo nome..." style="margin-bottom: 10px;">
+                <table class="tabela-compacta">
+                    <thead>
+                        <tr>
+                            <th>PRODUTO</th>
+                            <th>PREÇO</th>
+                            <th>AÇÃO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>CERVEJA LATA 350ML</td><td>R$ 6,00</td><td><button>+</button></td></tr>
+                        <tr><td>CERVEJA 600ML</td><td>R$ 10,00</td><td><button>+</button></td></tr>
+                        <tr><td>DOSE PITÚ</td><td>R$ 3,00</td><td><button>+</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</main>
 </body>
 </html>
