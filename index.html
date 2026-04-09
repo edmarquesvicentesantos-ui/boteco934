@@ -2,250 +2,238 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDV Elite - Boteco 934</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <style>
-        body { background-color: #f0f2f5; color: #1c1e21; font-family: sans-serif; }
-        .sidebar { width: 240px; background: #1a252f; color: white; height: 100vh; position: fixed; z-index: 50; }
-        .main-content { margin-left: 240px; width: calc(100% - 240px); min-height: 100vh; }
-        .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.2s; }
-        .cupom { background: #fff; border: 1px dashed #000; font-family: 'Courier New', Courier, monospace; }
-        .mesa-card { transition: transform 0.2s; cursor: pointer; border-radius: 12px; }
-        .mesa-ocupada { border-top: 6px solid #ef4444; background: #fff; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @media (max-width: 768px) {
-            .sidebar { width: 60px; }
-            .menu-text { display: none; }
-            .main-content { margin-left: 60px; width: calc(100% - 60px); }
-        }
+        :root { --primary: #2c3e50; --accent: #f39c12; --success: #27ae60; --danger: #e74c3c; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; height: 100vh; background: var(--bg); color: #333; }
+        
+        /* MENU LATERAL */
+        nav { width: 220px; background: var(--primary); color: white; display: flex; flex-direction: column; padding: 20px 0; box-shadow: 2px 0 10px rgba(0,0,0,0.2); }
+        .logo { font-size: 22px; font-weight: bold; color: var(--accent); text-align: center; margin-bottom: 30px; border-bottom: 1px solid #3e5871; padding-bottom: 10px; }
+        .nav-btn { background: none; border: none; color: white; padding: 15px 25px; text-align: left; font-size: 16px; cursor: pointer; transition: 0.3s; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; gap: 10px; }
+        .nav-btn:hover { background: #3e5871; }
+        .nav-btn.active { background: var(--accent); color: var(--primary); }
+
+        /* AREA PRINCIPAL */
+        main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .secao { display: none; padding: 20px; height: 100%; box-sizing: border-box; overflow-y: auto; }
+        .secao.active { display: flex; gap: 15px; }
+
+        /* COMPONENTES DO PDV */
+        .painel { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        h2 { margin-top: 0; font-size: 16px; color: var(--primary); border-bottom: 2px solid var(--success); padding-bottom: 5px; text-transform: uppercase; }
+        
+        .grid-mesas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .mesa-card { padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; text-align: center; transition: 0.2s; }
+        .livre { background: var(--success); }
+        .ocupada { background: var(--danger); }
+        .selecionada { outline: 4px solid var(--accent); transform: scale(1.03); }
+
+        input, select { padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 14px; text-transform: uppercase; }
+        .carrinho { flex-grow: 1; border: 1px solid #eee; margin: 10px 0; border-radius: 4px; overflow-y: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f8f9fa; padding: 10px; text-align: left; font-size: 12px; }
+        td { padding: 10px; border-bottom: 1px solid #f1f1f1; font-size: 13px; }
+
+        .total-box { background: var(--primary); color: white; padding: 15px; text-align: center; border-radius: 4px; font-size: 24px; font-weight: bold; margin-top: auto; }
+        .btn-fechar { background: var(--success); color: white; border: none; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; }
+
+        /* CADASTRO */
+        .form-cadastro { max-width: 400px; display: flex; flex-direction: column; }
+        .btn-salvar { background: var(--primary); color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        
+        /* MODAL */
+        #modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; }
+        .modal-body { background: white; padding: 25px; border-radius: 12px; width: 380px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="sidebar p-4 shadow-xl">
-        <h2 class="text-xl font-bold mb-8 text-center menu-text border-b border-gray-700 pb-2 text-yellow-500 uppercase">Boteco 934</h2>
-        <nav class="space-y-2 text-sm font-bold">
-            <button onclick="mudar('mesas')" class="w-full p-3 rounded hover:bg-orange-600 flex items-center bg-orange-500"><span>🪑</span><span class="ml-3 menu-text">MESAS</span></button>
-            <button onclick="mudar('fiado')" class="w-full p-3 rounded hover:bg-red-600 flex items-center"><span>📝</span><span class="ml-3 menu-text">FIADO</span></button>
-            <button onclick="mudar('calc')" class="w-full p-3 rounded hover:bg-green-600 flex items-center"><span>🧮</span><span class="ml-3 menu-text">CALCULADORA</span></button>
-            <button onclick="mudar('relatorio')" class="w-full p-3 rounded hover:bg-gray-700 flex items-center"><span>📊</span><span class="ml-3 menu-text">CAIXA</span></button>
-        </nav>
+<nav>
+    <div class="logo">BOTECO 934</div>
+    <button class="nav-btn active" onclick="ver('vendas', this)">🪑 Mesas</button>
+    <button class="nav-btn" onclick="ver('cadastros', this)">📝 Cadastros</button>
+</nav>
+
+<main>
+    <div id="vendas" class="secao active">
+        <div class="painel" style="flex: 2;">
+            <h2>Mapa de Mesas</h2>
+            <div id="mapa" class="grid-mesas"></div>
+            <h2 id="mesa-titulo">Selecione uma mesa</h2>
+            <input type="text" placeholder="🔍 Buscar Produto..." oninput="buscaProd(this.value)">
+            <select id="lista-prod" size="5" ondblclick="addProd()"></select>
+            <div class="carrinho">
+                <table id="tab-itens">
+                    <thead><tr><th>QTD</th><th>ITEM</th><th>TOTAL</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div id="total-venda" class="total-box">TOTAL: R$ 0,00</div>
+        </div>
+
+        <div class="painel" style="flex: 1;">
+            <h2>Cliente</h2>
+            <input type="text" placeholder="🔍 Buscar Cliente..." oninput="buscaCli(this.value)">
+            <select id="lista-cli" size="4" onchange="setCli()"></select>
+            <input type="text" id="whats-cli" placeholder="WhatsApp">
+            <div id="status" style="background:#eee; padding:10px; margin:10px 0; text-align:center; font-weight:bold;">SISTEMA PRONTO</div>
+            <button class="btn-fechar" onclick="abrirPgto()">FINALIZAR CONTA</button>
+        </div>
     </div>
 
-    <main class="main-content p-4">
-        
-        <div id="mesas" class="section active">
-            <h1 class="text-2xl font-bold mb-4">Mapa de Mesas</h1>
-            <div id="grid-mesas" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
+    <div id="cadastros" class="secao">
+        <div class="painel form-cadastro">
+            <h2>Novo Produto</h2>
+            <input type="text" id="cad-p-nome" placeholder="Nome do Produto">
+            <input type="number" id="cad-p-preco" placeholder="Preço (0.00)" step="0.01">
+            <button class="btn-salvar" onclick="salvaProd()">Salvar Produto</button>
         </div>
-
-        <div id="detalhe-mesa" class="section">
-            <div class="flex justify-between items-center mb-4">
-                <button onclick="mudar('mesas')" class="bg-gray-800 text-white px-4 py-2 rounded font-bold text-xs uppercase">⬅ Voltar</button>
-                <h2 class="text-xl font-bold">Mesa <span id="span-num-mesa">0</span></h2>
-            </div>
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="cupom p-4 shadow-inner min-h-[400px]">
-                    <div class="text-center border-b border-black pb-2 mb-2">
-                        <h3 class="font-bold">BOTECO 934</h3>
-                        <p class="text-[10px]" id="cupom-cliente"></p>
-                    </div>
-                    <div id="lista-cupom" class="text-xs space-y-1"></div>
-                    <div class="border-t border-black mt-4 pt-2 text-sm space-y-1 font-bold">
-                        <div class="flex justify-between"><span>SUBTOTAL:</span><span id="cupom-subtotal">R$ 0,00</span></div>
-                        <div class="flex justify-between text-blue-600"><span>TAXA (10%):</span><span id="cupom-taxa">R$ 0,00</span></div>
-                        <div class="flex justify-between text-lg border-t border-dashed pt-1"><span>TOTAL:</span><span id="cupom-total">R$ 0,00</span></div>
-                    </div>
-                    <div class="text-center mt-6 text-[10px] italic">Obrigado por visitar o Boteco 934!</div>
-                </div>
-                <div class="space-y-4">
-                    <input id="input-barcode" type="text" placeholder="Bipar código de barras..." class="w-full p-3 border-2 border-orange-500 rounded-lg">
-                    <div id="lista-botoes-produtos" class="grid grid-cols-2 gap-2"></div>
-                    <button onclick="fecharContaFinal()" class="w-full bg-green-600 text-white p-4 rounded-xl font-bold shadow-lg">FECHAR CONTA</button>
-                </div>
-            </div>
+        <div class="painel form-cadastro">
+            <h2>Novo Cliente</h2>
+            <input type="text" id="cad-c-nome" placeholder="Nome do Cliente">
+            <input type="text" id="cad-c-fone" placeholder="Fone">
+            <button class="btn-salvar" style="background:var(--success)" onclick="salvaCli()">Salvar Cliente</button>
         </div>
+    </div>
+</main>
 
-        <div id="calc" class="section">
-            <h1 class="text-2xl font-bold mb-4 text-green-700 uppercase">Calculadora de Compra</h1>
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="bg-white p-4 rounded shadow">
-                    <h3 class="font-bold mb-2">Mix Inteligente (Preço/L)</h3>
-                    <input id="mix-preco" type="number" placeholder="Preço R$" class="w-full p-2 border mb-2 rounded">
-                    <input id="mix-ml" type="number" placeholder="ML (Ex: 350)" class="w-full p-2 border mb-2 rounded">
-                    <button onclick="calcularMix()" class="w-full bg-green-600 text-white p-2 rounded font-bold">CALCULAR LITRO</button>
-                    <div id="res-mix" class="mt-2 text-center text-green-700 font-bold"></div>
-                </div>
-                <div class="bg-white p-4 rounded shadow">
-                    <h3 class="font-bold mb-2">Custo da Dose</h3>
-                    <input id="dose-p" type="number" placeholder="Preço Garrafa R$" class="w-full p-2 border mb-2 rounded">
-                    <input id="dose-mlg" type="number" placeholder="ML Garrafa" class="w-full p-2 border mb-2 rounded">
-                    <input id="dose-mld" type="number" placeholder="ML Dose (Ex: 50)" class="w-full p-2 border mb-2 rounded">
-                    <button onclick="calcularDose()" class="w-full bg-blue-600 text-white p-2 rounded font-bold">CALCULAR CUSTO</button>
-                    <div id="res-dose" class="mt-2 text-center text-blue-800 font-bold"></div>
-                </div>
-            </div>
+<div id="modal">
+    <div class="modal-body">
+        <h2 id="m-cli">Pagamento</h2>
+        <div id="m-falta" style="font-size:32px; color:var(--danger); font-weight:bold;">R$ 0,00</div>
+        <input type="number" id="m-valor" placeholder="Valor Recebido" style="text-align:center; font-size:20px;">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+            <button onclick="pago('DINHEIRO')" style="background:#27ae60; color:white; padding:10px; border:none;">DINHEIRO</button>
+            <button onclick="pago('PIX')" style="background:#3498db; color:white; padding:10px; border:none;">PIX</button>
+            <button onclick="pago('CARTÃO')" style="background:#f1c40f; padding:10px; border:none;">CARTÃO</button>
+            <button onclick="pago('PENDURA')" style="background:#e67e22; color:white; padding:10px; border:none;">PENDURA</button>
         </div>
+        <div id="m-lista" style="text-align:left; margin-top:10px; font-size:13px;"></div>
+        <button id="btn-whats" class="btn-fechar" style="display:none; background:#25d366" onclick="finalizar()">ENVIAR WHATSAPP</button>
+        <button onclick="document.getElementById('modal').style.display='none'" style="margin-top:10px; border:none; background:none; cursor:pointer; color:gray;">CANCELAR</button>
+    </div>
+</div>
 
-        <div id="fiado" class="section">
-            <h1 class="text-2xl font-bold mb-4 text-red-600 uppercase">Pendura</h1>
-            <div class="bg-white p-4 rounded-xl shadow mb-6">
-                <input id="fiado-nome" type="text" placeholder="Nome do Cliente" class="w-full p-2 mb-2 border rounded">
-                <input id="fiado-tel" type="tel" placeholder="WhatsApp" class="w-full p-2 mb-2 border rounded">
-                <input id="fiado-v" type="number" placeholder="Valor R$" class="w-full p-2 mb-2 border rounded">
-                <button onclick="lancarFiado()" class="w-full bg-red-600 text-white p-2 rounded font-bold uppercase">Lançar no Fiado</button>
-            </div>
-            <div id="lista-fiado" class="space-y-2"></div>
-        </div>
+<script>
+    let prods = [{n:"CERVEJA LATA", p:6.00}, {n:"CERVEJA 600ML", p:10.00}];
+    let clis = [{n:"CONSUMIDOR", f:""}];
+    let mesas = {};
+    for(let i=1; i<=12; i++) mesas[i] = {ativa:false, cli:"", fone:"", itens:[], tot:0, pagos:[], falta:0};
+    let mSel = null;
 
-        <div id="relatorio" class="section">
-            <h1 class="text-2xl font-bold mb-4 uppercase">Caixa</h1>
-            <div id="total-geral" class="text-4xl font-bold text-green-600 mb-6 bg-white p-4 rounded shadow inline-block">R$ 0,00</div>
-            <div id="historico-vendas" class="bg-white p-4 rounded shadow space-y-2 max-h-96 overflow-y-auto"></div>
-        </div>
-    </main>
+    function ver(id, btn) {
+        document.querySelectorAll('.secao').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        btn.classList.add('active');
+    }
 
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAxjhzLPeqBqJ18S8m7lagxuvF9LX7OJks",
-            authDomain: "boteco934-afc3f.firebaseapp.com",
-            projectId: "boteco934-afc3f",
-            storageBucket: "boteco934-afc3f.firebasestorage.app",
-            messagingSenderId: "182023728304",
-            appId: "1:182023728304:web:040a13bb6f1c9fff35f75",
-            databaseURL: "https://boteco934-afc3f-default-rtdb.firebaseio.com/"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+    function salvaProd() {
+        let n = document.getElementById('cad-p-nome').value.toUpperCase();
+        let p = parseFloat(document.getElementById('cad-p-preco').value);
+        if(n && p) { prods.push({n,p}); alert("Salvo!"); buscaProd(""); }
+    }
 
-        let mesaAtiva = 0; let nomeAtivo = "";
+    function salvaCli() {
+        let n = document.getElementById('cad-c-nome').value.toUpperCase();
+        let f = document.getElementById('cad-c-fone').value;
+        if(n) { clis.push({n,f}); alert("Salvo!"); buscaCli(""); }
+    }
 
-        // PRODUTOS
-        const mercadorias = [
-            { n: 'Cerveja Lata', p: 6.00, barcode: '7891234567890' },
-            { n: 'Cerveja Garrafa', p: 12.00, barcode: '' },
-            { n: 'Dose Cana', p: 3.00, barcode: '' },
-            { n: 'Espetinho', p: 8.00, barcode: '' },
-            { n: 'Refrigerante', p: 5.00, barcode: '7891149200003' }
-        ].sort((a,b) => a.n.localeCompare(b.n));
-
-        function formatarNome(s) { return s.toLowerCase().replace(/(^\w{1})|(\s+\w{1})/g, l => l.toUpperCase()); }
-
-        function mudar(id) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        // CALCULADORA
-        function calcularMix() {
-            const p = parseFloat(document.getElementById('mix-preco').value);
-            const ml = parseFloat(document.getElementById('mix-ml').value);
-            if(p && ml) document.getElementById('res-mix').innerText = "R$ " + ((p/ml)*1000).toFixed(2) + " / Litro";
-        }
-        function calcularDose() {
-            const p = parseFloat(document.getElementById('dose-p').value);
-            const mlG = parseFloat(document.getElementById('dose-mlg').value);
-            const mlD = parseFloat(document.getElementById('dose-mld').value);
-            if(p && mlG && mlD) document.getElementById('res-dose').innerText = "Custo: R$ " + ((p/mlG)*mlD).toFixed(2);
-        }
-
-        // RENDER PRODUTOS
-        document.getElementById('lista-botoes-produtos').innerHTML = mercadorias.map(m => `
-            <button onclick="addAoCupom('${m.n}', ${m.p})" class="bg-white p-3 rounded shadow border font-bold text-xs uppercase hover:bg-orange-50">
-                ${m.n}<br><span class="text-blue-600">R$ ${m.p.toFixed(2)}</span>
-            </button>
-        `).join('');
-
-        function abrirPainelMesa(num, cliente) {
-            mesaAtiva = num;
-            nomeAtivo = cliente || formatarNome(prompt("Nome do Cliente:") || "CLIENTE");
-            if (!cliente) db.ref('mesas_ativas/' + num + '/cliente').set(nomeAtivo);
-            document.getElementById('span-num-mesa').innerText = num;
-            document.getElementById('cupom-cliente').innerText = "CLIENTE: " + nomeAtivo;
-            mudar('detalhe-mesa');
-            carregarCupom(num);
-        }
-
-        function addAoCupom(item, valor) {
-            db.ref('mesas_ativas/' + mesaAtiva + '/consumo').push({ item, valor, data: new Date().toLocaleTimeString() });
-        }
-
-        function carregarCupom(num) {
-            db.ref('mesas_ativas/' + num + '/consumo').on('value', snap => {
-                const lista = document.getElementById('lista-cupom');
-                lista.innerHTML = ''; let sub = 0; const agrupado = {};
-                snap.forEach(c => {
-                    const v = c.val(); agrupado[v.item] = (agrupado[v.item] || {q:0, t:0});
-                    agrupado[v.item].q++; agrupado[v.item].t += v.valor; sub += v.valor;
-                });
-                for(let i in agrupado) lista.innerHTML += `<div class="flex justify-between"><span>${agrupado[i].q}x ${i}</span><span>R$ ${agrupado[i].t.toFixed(2)}</span></div>`;
-                const tx = sub * 0.10;
-                document.getElementById('cupom-subtotal').innerText = "R$ "+sub.toFixed(2);
-                document.getElementById('cupom-taxa').innerText = "R$ "+tx.toFixed(2);
-                document.getElementById('cupom-total').innerText = "R$ "+(sub+tx).toFixed(2);
-                window.totalConta = sub + tx;
-            });
-        }
-
-        function fecharContaFinal() {
-            if(confirm("Fechar conta?")) {
-                db.ref('vendas_gerais').push({ item: `Mesa ${mesaAtiva} (${nomeAtivo})`, valor: window.totalConta, data: new Date().toLocaleString() });
-                db.ref('mesas_ativas/' + mesaAtiva).remove(); mudar('mesas');
-            }
-        }
-
-        // MAPA DE MESAS (ESCUTA)
-        db.ref('mesas_ativas').on('value', snap => {
-            const grid = document.getElementById('grid-mesas'); grid.innerHTML = '';
-            for (let i = 1; i <= 12; i++) {
-                const m = (snap.val() || {})[i]; let t = 0;
-                if(m && m.consumo) Object.values(m.consumo).forEach(v => t += v.valor);
-                grid.innerHTML += `<div onclick="abrirPainelMesa(${i}, '${m ? m.cliente : ''}')" class="mesa-card p-4 shadow border text-center ${m ? 'mesa-ocupada' : 'bg-white'}">
-                    <div class="text-[10px] font-bold text-gray-400">MESA ${i}</div>
-                    <div class="font-bold truncate text-sm">${m ? m.cliente : 'DISPONÍVEL'}</div>
-                    <div class="text-red-600 font-bold text-sm">${t > 0 ? 'R$ ' + t.toFixed(2) : '--'}</div>
-                </div>`;
+    function buscaProd(b) {
+        let s = document.getElementById('lista-prod'); s.innerHTML = "";
+        prods.sort((a,b)=>a.n.localeCompare(b.n)).forEach(p => {
+            if(p.n.includes(b.toUpperCase())) {
+                let o = new Option(`${p.n} - R$ ${p.p.toFixed(2)}`, p.p);
+                o.setAttribute('data-n', p.n); s.add(o);
             }
         });
+    }
 
-        // FIADO
-        function lancarFiado() {
-            const n = formatarNome(document.getElementById('fiado-nome').value.trim());
-            const t = document.getElementById('fiado-tel').value.trim();
-            const v = parseFloat(document.getElementById('fiado-v').value);
-            if(n && v) {
-                db.ref('fiado/'+n).transaction(a => {
-                    const at = a || { saldo: 0, telefone: t };
-                    return { saldo: (at.saldo || 0) + v, telefone: t || at.telefone || '' };
-                });
-                document.getElementById('fiado-nome').value = ''; document.getElementById('fiado-v').value = '';
+    function buscaCli(b) {
+        let s = document.getElementById('lista-cli'); s.innerHTML = "";
+        clis.sort((a,b)=>a.n.localeCompare(b.n)).forEach(c => {
+            if(c.n.includes(b.toUpperCase())) {
+                let o = new Option(c.n, c.n); o.setAttribute('data-f', c.f); s.add(o);
             }
+        });
+    }
+
+    function setCli() {
+        let s = document.getElementById('lista-cli');
+        document.getElementById('whats-cli').value = s.options[s.selectedIndex].getAttribute('data-f');
+    }
+
+    function desenhaMesas() {
+        let m = document.getElementById('mapa'); m.innerHTML = "";
+        for(let i=1; i<=12; i++) {
+            let b = document.createElement('button');
+            b.className = `mesa-card ${mesas[i].ativa ? 'ocupada' : 'livre'} ${mSel == i ? 'selecionada' : ''}`;
+            b.innerText = `MESA ${i}`; b.onclick = () => selMesa(i); m.appendChild(b);
         }
+    }
 
-        db.ref('fiado').on('value', snap => {
-            const l = document.getElementById('lista-fiado'); l.innerHTML = '';
-            const cls = []; snap.forEach(p => { if(p.val().saldo > 0) cls.push({n:p.key, v:p.val().saldo, t:p.val().telefone}); });
-            cls.sort((a,b) => a.n.localeCompare(b.n)).forEach(c => {
-                l.innerHTML += `<div class="bg-white p-3 rounded shadow flex justify-between items-center text-sm border-l-4 border-red-500">
-                    <span><b>${c.n}</b><br>R$ ${c.v.toFixed(2)}</span>
-                    <button onclick="window.open('https://api.whatsapp.com/send?phone=55${c.t}&text=Olá ${c.n}, seu saldo no Boteco 934 é R$ ${c.v.toFixed(2)}')" class="bg-green-500 text-white px-2 py-1 rounded text-[10px] font-bold">COBRAR</button>
-                </div>`;
-            });
-        });
+    function selMesa(id) {
+        if(!mesas[id].ativa) {
+            let c = document.getElementById('lista-cli').value;
+            if(!c) return alert("Selecione o Cliente!");
+            mesas[id].ativa = true; mesas[id].cli = c; mesas[id].fone = document.getElementById('whats-cli').value;
+        }
+        mSel = id; document.getElementById('mesa-titulo').innerText = `🛒 MESA ${id} - ${mesas[id].cli}`;
+        desenhaMesas(); atualizaCarrinho();
+    }
 
-        // CAIXA
-        db.ref('vendas_gerais').on('value', s => {
-            let t = 0; const h = document.getElementById('historico-vendas'); h.innerHTML = '';
-            s.forEach(v => {
-                t += v.val().valor;
-                h.insertAdjacentHTML('afterbegin', `<div class="flex justify-between border-b py-1"><span>${v.val().item}</span><b>R$ ${v.val().valor.toFixed(2)}</b></div>`);
-            });
-            document.getElementById('total-geral').innerText = 'R$ ' + t.toFixed(2);
-        });
-    </script>
+    function addProd() {
+        if(!mSel) return;
+        let s = document.getElementById('lista-prod');
+        mesas[mSel].itens.push({n: s.options[s.selectedIndex].getAttribute('data-n'), p: parseFloat(s.value)});
+        atualizaCarrinho();
+    }
+
+    function atualizaCarrinho() {
+        let t = document.querySelector('#tab-itens tbody'); t.innerHTML = "";
+        let tot = 0;
+        if(mSel) {
+            mesas[mSel].itens.forEach(i => { tot += i.p; t.innerHTML += `<tr><td>1x</td><td>${i.n}</td><td>R$ ${i.p.toFixed(2)}</td></tr>`; });
+            mesas[mSel].tot = tot; mesas[mSel].falta = tot - mesas[mSel].pagos.reduce((a,b)=>a+b.v, 0);
+        }
+        document.getElementById('total-venda').innerText = "TOTAL: R$ " + tot.toFixed(2);
+    }
+
+    function abrirPgto() {
+        if(!mSel || mesas[mSel].itens.length === 0) return;
+        document.getElementById('modal').style.display='flex';
+        document.getElementById('m-cli').innerText = mesas[mSel].cli;
+        atualizaModal();
+    }
+
+    function pago(t) {
+        let v = parseFloat(document.getElementById('m-valor').value);
+        if(!v) return;
+        mesas[mSel].pagos.push({t: t === 'PENDURA' ? 'PENDURA ('+mesas[mSel].cli+')' : t, v});
+        mesas[mSel].falta -= v; document.getElementById('m-valor').value = ""; atualizaModal();
+    }
+
+    function atualizaModal() {
+        let m = mesas[mSel];
+        document.getElementById('m-falta').innerText = "FALTA: R$ " + m.falta.toFixed(2);
+        document.getElementById('m-lista').innerHTML = m.pagos.map(p => `✅ ${p.t}: R$ ${p.v.toFixed(2)}<br>`).join('');
+        if(m.falta <= 0.01) document.getElementById('btn-whats').style.display='block';
+    }
+
+    function finalizar() {
+        let m = mesas[mSel]; let f = m.fone.replace(/\D/g,'');
+        if(f) {
+            let t = `*BOTECO 934*%0AMESA ${mSel} - ${m.cli}%0A%0A` + m.itens.map(i=>`• ${i.n}: R$ ${i.p.toFixed(2)}`).join('%0A') + `%0A%0ATOTAL: R$ ${m.tot.toFixed(2)}%0A` + m.pagos.map(p=>`✅ ${p.t}: R$ ${p.v.toFixed(2)}`).join('%0A');
+            window.open(`https://api.whatsapp.com/send?phone=55${f}&text=${t}`, '_blank');
+        }
+        mesas[mSel] = {ativa:false, cli:"", fone:"", itens:[], tot:0, pagos:[], falta:0};
+        mSel = null; document.getElementById('modal').style.display='none'; desenhaMesas(); atualizaCarrinho();
+    }
+
+    window.onload = () => { buscaProd(""); buscaCli(""); desenhaMesas(); };
+</script>
 </body>
 </html>
