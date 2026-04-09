@@ -8,10 +8,10 @@
         body { font-family: 'Segoe UI', sans-serif; background: #1a252f; color: #333; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         #container { display: flex; width: 100%; padding: 10px; gap: 10px; box-sizing: border-box; }
         .painel { background: #ecf0f1; padding: 15px; border-radius: 8px; flex: 1; display: flex; flex-direction: column; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        h2 { margin: 0 0 10px 0; border-bottom: 3px solid #27ae60; color: #2c3e50; font-size: 16px; text-transform: uppercase; }
+        h2 { margin: 0 0 10px 0; border-bottom: 3px solid #27ae60; color: #2c3e50; font-size: 14px; text-transform: uppercase; }
         
         #mapa-mesas { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 15px; }
-        .mesa { padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 11px; transition: 0.2s; }
+        .mesa { padding: 12px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 11px; }
         .mesa-livre { background: #27ae60; }
         .mesa-ocupada { background: #e74c3c; }
         .mesa-selecionada { border: 4px solid #f1c40f !important; transform: scale(1.05); }
@@ -23,14 +23,11 @@
         td { padding: 8px; border-bottom: 1px solid #eee; }
         
         .total-destaque { font-size: 26px; font-weight: bold; background: #2c3e50; color: white; padding: 12px; text-align: center; border-radius: 4px; }
-        .btn-abrir-fechamento { background: #27ae60; color: white; border: none; padding: 15px; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 4px; margin-top: 10px; width: 100%; }
+        .btn-acao { background: #27ae60; color: white; border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 4px; width: 100%; margin-top: 5px; }
 
-        /* MODAL DE PAGAMENTO DIVIDIDO */
         #modal-pagamento { display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; }
-        .modal-content { background: #fff; padding: 20px; border-radius: 8px; width: 420px; text-align: center; }
-        .valor-restante { font-size: 32px; color: #e74c3c; font-weight: bold; margin: 10px 0; }
-        .metodo-btn { padding: 12px; margin: 5px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; width: 45%; font-size: 12px; color: white; }
-        .btn-whatsapp { background: #25d366; color: white; padding: 15px; border: none; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px; display: none; }
+        .modal-content { background: #fff; padding: 20px; border-radius: 8px; width: 400px; text-align: center; }
+        .metodo-btn { padding: 10px; margin: 3px; border-radius: 4px; border: none; cursor: pointer; font-weight: bold; width: 45%; color: white; }
     </style>
 </head>
 <body>
@@ -41,7 +38,14 @@
         <div id="mapa-mesas"></div>
         <h2 id="titulo-mesa">🛒 SELECIONE UMA MESA</h2>
         <input type="text" id="busca-prod" placeholder="🔍 BUSCAR PRODUTO..." oninput="filtrarProdutos()">
-        <select id="select-produtos" size="8" ondblclick="addCarrinho()"></select>
+        <select id="select-produtos" size="6" ondblclick="addCarrinho()"></select>
+        
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="novo-p-nome" placeholder="NOME NOVO PROD." style="font-size:10px;">
+            <input type="number" id="novo-p-preco" placeholder="R$" style="width:70px; font-size:10px;">
+            <button onclick="cadastrarProdutoRapido()" style="background:#3498db; color:white; border:none; padding:5px; border-radius:4px; cursor:pointer;">+</button>
+        </div>
+
         <div class="carrinho-area">
             <table id="tabela-itens">
                 <thead><tr><th>QTD</th><th>ITEM</th><th>TOTAL</th></tr></thead>
@@ -51,167 +55,61 @@
         <div class="total-destaque" id="display-total">TOTAL: R$ 0,00</div>
     </div>
 
-    <div class="painel" style="max-width: 380px;">
+    <div class="painel" style="max-width: 350px;">
         <h2>👤 CLIENTE</h2>
         <input type="text" id="busca-cli" placeholder="🔍 BUSCAR CLIENTE..." oninput="filtrarClientes()">
-        <select id="select-clientes" size="5" onchange="atualizarDadosCliente()"></select>
-        <input type="text" id="whatsapp-cliente" placeholder="📱 WHATSAPP (EX: 87999999999)">
-        <div id="info-status" style="background: #d1d8e0; padding: 10px; border-radius: 4px; margin: 10px 0; font-weight: bold; text-align: center;">AGUARDANDO SELEÇÃO</div>
-        <button class="btn-abrir-fechamento" onclick="abrirModal()">FECHAR CONTA / ABATER</button>
+        <select id="select-clientes" size="5" onchange="puxarWhats()"></select>
+        
+        <div style="display:flex; gap:5px;">
+            <input type="text" id="novo-c-nome" placeholder="NOME NOVO CLIENTE" style="font-size:10px;">
+            <button onclick="cadastrarClienteRapido()" style="background:#3498db; color:white; border:none; padding:5px; border-radius:4px; cursor:pointer;">+</button>
+        </div>
+
+        <input type="text" id="whatsapp-cliente" placeholder="📱 WHATSAPP (DDD+NUM)">
+        <div id="info-status" style="background:#d1d8e0; padding:10px; margin:10px 0; text-align:center; font-weight:bold;">BOTECO 934</div>
+        <button class="btn-acao" style="background:#27ae60; font-size:18px;" onclick="abrirModal()">FECHAR CONTA</button>
     </div>
 </div>
 
 <div id="modal-pagamento">
     <div class="modal-content">
-        <h2 id="nome-cliente-modal">FECHANDO CONTA</h2>
-        <div class="valor-restante" id="falta-modal">FALTA: R$ 0,00</div>
-        
-        <div id="area-abatimento">
-            <input type="number" id="valor-abatimento" placeholder="VALOR RECEBIDO (R$)" step="0.01" style="font-size: 20px; text-align: center;">
-            <div style="display: flex; flex-wrap: wrap; justify-content: center;">
-                <button class="metodo-btn" style="background: #2ecc71;" onclick="registrarAbatimento('DINHEIRO')">💵 DINHEIRO</button>
-                <button class="metodo-btn" style="background: #3498db;" onclick="registrarAbatimento('PIX')">📱 PIX</button>
-                <button class="metodo-btn" style="background: #f1c40f; color: black;" onclick="registrarAbatimento('CARTÃO')">💳 CARTÃO</button>
-                <button class="metodo-btn" style="background: #e67e22;" onclick="registrarAbatimento('PENDURA')">📝 PENDURA</button>
-            </div>
+        <h2 id="cli-modal">CLIENTE</h2>
+        <div id="falta-modal" style="font-size:32px; color:red; font-weight:bold;">R$ 0,00</div>
+        <input type="number" id="valor-abate" placeholder="VALOR RECEBIDO" style="text-align:center; font-size:20px;">
+        <div style="display:flex; flex-wrap:wrap; justify-content:center;">
+            <button class="metodo-btn" style="background:#2ecc71" onclick="abater('DINHEIRO')">DINHEIRO</button>
+            <button class="metodo-btn" style="background:#3498db" onclick="abater('PIX')">PIX</button>
+            <button class="metodo-btn" style="background:#f1c40f; color:black;" onclick="abater('CARTÃO')">CARTÃO</button>
+            <button class="metodo-btn" style="background:#e67e22" onclick="abater('PENDURA')">PENDURA</button>
         </div>
-
-        <hr>
-        <div id="lista-pagos" style="text-align: left; font-size: 13px; margin-bottom: 10px; background: #f9f9f9; padding: 5px;"></div>
-        
-        <button id="btn-whats-final" class="btn-whatsapp" onclick="finalizarComWhatsApp()">✅ ENVIAR WHATSAPP E FINALIZAR</button>
-        <button id="btn-cancelar-modal" onclick="fecharModal()" style="background:#95a5a6; color:white; padding:10px; border:none; width:100%; cursor:pointer; border-radius:4px;">VOLTAR</button>
+        <div id="lista-pagos" style="text-align:left; margin:10px 0; background:#f9f9f9; padding:5px;"></div>
+        <button id="btn-whats-final" class="btn-acao" style="background:#25d366; display:none;" onclick="finalizarComZap()">ENVIAR WHATSAPP E FECHAR</button>
+        <button onclick="fecharModal()" style="border:none; background:none; color:gray; cursor:pointer;">CANCELAR</button>
     </div>
 </div>
 
 <script>
-    let produtos = [{ nome: "CERVEJA LATA", preco: 6.00 }, { nome: "CERVEJA 600ML", preco: 10.00 }, { nome: "REFRIGERANTE 2L", preco: 12.00 }, { nome: "DOSES CANA", preco: 4.00 }];
-    let clientes = [{ nome: "ADRIANO SILVA", fone: "87988001122" }, { nome: "MARIA SOUZA", fone: "87988112233" }, { nome: "CONSUMIDOR", fone: "" }];
-    
+    let produtos = [{nome:"CERVEJA LATA", preco:6.00}, {nome:"CERVEJA 600ML", preco:10.00}];
+    let clientes = [{nome:"CONSUMIDOR", fone:""}];
     let mesas = {};
-    for(let i=1; i<=12; i++) { mesas[i] = { aberta: false, cliente: "", fone: "", itens: [], total: 0, pagos: [], falta: 0 }; }
-    let mesaSelecionada = null;
+    for(let i=1; i<=12; i++) mesas[i] = {ativa:false, cliente:"", fone:"", itens:[], total:0, pagos:[], falta:0};
+    let mesaAtual = null;
 
-    function iniciar() { gerarMesas(); filtrarProdutos(); filtrarClientes(); }
-
-    function atualizarDadosCliente() {
-        const s = document.getElementById('select-clientes');
-        const fone = s.options[s.selectedIndex].getAttribute('data-fone');
-        document.getElementById('whatsapp-cliente').value = fone || "";
+    function cadastrarProdutoRapido() {
+        const n = document.getElementById('novo-p-nome').value.toUpperCase();
+        const p = parseFloat(document.getElementById('novo-p-preco').value);
+        if(!n || !p) return;
+        produtos.push({nome:n, preco:p});
+        document.getElementById('novo-p-nome').value=""; document.getElementById('novo-p-preco').value="";
+        filtrarProdutos();
     }
 
-    function gerarMesas() {
-        const div = document.getElementById('mapa-mesas');
-        div.innerHTML = "";
-        for(let i=1; i<=12; i++) {
-            let btn = document.createElement('button');
-            btn.className = `mesa ${mesas[i].aberta ? 'mesa-ocupada' : 'mesa-livre'} ${mesaSelecionada == i ? 'mesa-selecionada' : ''}`;
-            btn.innerText = `MESA ${i.toString().padStart(2, '0')}`;
-            btn.onclick = () => selecionarMesa(i);
-            div.appendChild(btn);
-        }
-    }
-
-    function selecionarMesa(id) {
-        if (!mesas[id].aberta) {
-            const cli = document.getElementById('select-clientes').value;
-            const fone = document.getElementById('whatsapp-cliente').value;
-            if (!cli) { alert("⚠️ SELECIONE O CLIENTE PRIMEIRO!"); return; }
-            mesas[id].aberta = true; mesas[id].cliente = cli; mesas[id].fone = fone;
-        }
-        mesaSelecionada = id;
-        document.getElementById('titulo-mesa').innerText = `🛒 MESA ${id} - ${mesas[id].cliente}`;
-        document.getElementById('info-status').innerText = `MESA ${id} ATIVA`;
-        gerarMesas(); atualizarTelaCarrinho();
-    }
-
-    function addCarrinho() {
-        if (!mesaSelecionada) return;
-        const s = document.getElementById('select-produtos');
-        if (s.selectedIndex === -1) return;
-        const nome = s.options[s.selectedIndex].getAttribute('data-nome');
-        const preco = parseFloat(s.value);
-        let m = mesas[mesaSelecionada];
-        let item = m.itens.find(i => i.nome === nome);
-        if (item) item.qtd++; else m.itens.push({ nome, preco, qtd: 1 });
-        atualizarTelaCarrinho();
-    }
-
-    function atualizarTelaCarrinho() {
-        const corpo = document.querySelector('#tabela-itens tbody');
-        corpo.innerHTML = ""; let total = 0;
-        if(mesaSelecionada) {
-            mesas[mesaSelecionada].itens.forEach(i => {
-                let sub = i.preco * i.qtd; total += sub;
-                corpo.innerHTML += `<tr><td>${i.qtd}x</td><td>${i.nome}</td><td>R$ ${sub.toFixed(2)}</td></tr>`;
-            });
-            mesas[mesaSelecionada].total = total;
-            let totalPago = mesas[mesaSelecionada].pagos.reduce((acc, p) => acc + p.valor, 0);
-            mesas[mesaSelecionada].falta = total - totalPago;
-        }
-        document.getElementById('display-total').innerText = "TOTAL: R$ " + total.toFixed(2);
-    }
-
-    function abrirModal() {
-        if (!mesaSelecionada || mesas[mesaSelecionada].itens.length === 0) return;
-        document.getElementById('modal-pagamento').style.display = 'flex';
-        document.getElementById('nome-cliente-modal').innerText = "CLIENTE: " + mesas[mesaSelecionada].cliente;
-        atualizarModal();
-    }
-
-    function fecharModal() { document.getElementById('modal-pagamento').style.display = 'none'; }
-
-    function atualizarModal() {
-        let m = mesas[mesaSelecionada];
-        document.getElementById('falta-modal').innerText = "FALTA: R$ " + m.falta.toFixed(2);
-        document.getElementById('lista-pagos').innerHTML = m.pagos.map(p => `<div>✅ ${p.tipo}: R$ ${p.valor.toFixed(2)}</div>`).join('');
-        
-        if (m.falta <= 0.01) {
-            document.getElementById('area-abatimento').style.display = 'none';
-            document.getElementById('btn-whats-final').style.display = 'block';
-        } else {
-            document.getElementById('area-abatimento').style.display = 'block';
-            document.getElementById('btn-whats-final').style.display = 'none';
-        }
-    }
-
-    function registrarAbatimento(tipo) {
-        let input = document.getElementById('valor-abatimento');
-        let v = parseFloat(input.value);
-        if (!v || v <= 0) return;
-        let m = mesas[mesaSelecionada];
-        let label = tipo === 'PENDURA' ? `PENDURA (${m.cliente})` : tipo;
-        m.pagos.push({ tipo: label, valor: v });
-        m.falta -= v;
-        input.value = "";
-        atualizarModal();
-    }
-
-    function finalizarComWhatsApp() {
-        let m = mesas[mesaSelecionada];
-        let fone = m.fone.replace(/\D/g, '');
-        
-        // 1. WhatsApp (Sempre tenta abrir primeiro)
-        if (fone) {
-            let msg = `*--- BOTECO 934 ---*%0A*CLIENTE:* ${m.cliente}%0A%0A*ITENS:*%0A`;
-            m.itens.forEach(i => { msg += `• ${i.qtd}x ${i.nome} - R$ ${(i.qtd*i.preco).toFixed(2)}%0A`; });
-            msg += `%0A*TOTAL: R$ ${m.total.toFixed(2)}*%0A*PAGAMENTOS:*%0A`;
-            m.pagos.forEach(p => { msg += `- ${p.tipo}: R$ ${p.valor.toFixed(2)}%0A`; });
-            window.open(`https://api.whatsapp.com/send?phone=55${fone}&text=${msg}`, '_blank');
-        }
-
-        // 2. Impressão
-        const win = window.open('', '', 'width=350,height=600');
-        let itensTxt = m.itens.map(i => `<tr><td>${i.qtd}x</td><td>${i.nome}</td><td align="right">R$ ${(i.qtd*i.preco).toFixed(2)}</td></tr>`).join('');
-        let pagosTxt = m.pagos.map(p => `${p.tipo}: R$ ${p.valor.toFixed(2)}<br>`).join('');
-        win.document.write(`<html><body style="font-family:monospace;width:280px;padding:10px;"><center><strong>BOTECO 934</strong><br>${new Date().toLocaleString()}<br>---</center><table width="100%">${itensTxt}</table>---<br>TOTAL: R$ ${m.total.toFixed(2)}<br>${pagosTxt}<br><center>CLIENTE: ${m.cliente}</center></body></html>`);
-        win.document.close(); win.print(); win.close();
-
-        // 3. Finaliza Sistema
-        mesas[mesaSelecionada] = { aberta: false, cliente: "", fone: "", itens: [], total: 0, pagos: [], falta: 0 };
-        mesaSelecionada = null;
-        fecharModal(); gerarMesas(); atualizarTelaCarrinho();
-        document.getElementById('whatsapp-cliente').value = "";
+    function cadastrarClienteRapido() {
+        const n = document.getElementById('novo-c-nome').value.toUpperCase();
+        if(!n) return;
+        clientes.push({nome:n, fone:""});
+        document.getElementById('novo-c-nome').value="";
+        filtrarClientes();
     }
 
     function filtrarProdutos() {
@@ -219,7 +117,8 @@
         const s = document.getElementById('select-produtos'); s.innerHTML = "";
         produtos.sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(p => {
             if(p.nome.includes(b)) {
-                let o = document.createElement('option'); o.text = `${p.nome} - R$ ${p.preco.toFixed(2)}`; o.value = p.preco; o.setAttribute('data-nome', p.nome); s.add(o);
+                let o = document.createElement('option'); o.text = `${p.nome} - R$ ${p.preco.toFixed(2)}`;
+                o.value = p.preco; o.setAttribute('data-nome', p.nome); s.add(o);
             }
         });
     }
@@ -229,11 +128,103 @@
         const s = document.getElementById('select-clientes'); s.innerHTML = "";
         clientes.sort((a,b)=>a.nome.localeCompare(b.nome)).forEach(c => {
             if(c.nome.includes(b)) {
-                let o = document.createElement('option'); o.text = c.nome; o.value = c.nome; o.setAttribute('data-fone', c.fone); s.add(o);
+                let o = document.createElement('option'); o.text = c.nome;
+                o.value = c.nome; o.setAttribute('data-fone', c.fone); s.add(o);
             }
         });
     }
-    window.onload = iniciar;
+
+    function puxarWhats() {
+        const s = document.getElementById('select-clientes');
+        document.getElementById('whatsapp-cliente').value = s.options[s.selectedIndex].getAttribute('data-fone');
+    }
+
+    function gerarMesas() {
+        const d = document.getElementById('mapa-mesas'); d.innerHTML = "";
+        for(let i=1; i<=12; i++) {
+            let b = document.createElement('button');
+            b.className = `mesa ${mesas[i].ativa ? 'mesa-ocupada' : 'mesa-livre'} ${mesaAtual == i ? 'mesa-selecionada' : ''}`;
+            b.innerText = `MESA ${i}`; b.onclick = () => selecionarMesa(i);
+            d.appendChild(b);
+        }
+    }
+
+    function selecionarMesa(id) {
+        if(!mesas[id].ativa) {
+            const c = document.getElementById('select-clientes').value;
+            if(!c) return alert("Selecione o cliente!");
+            mesas[id].ativa = true; mesas[id].cliente = c; 
+            mesas[id].fone = document.getElementById('whatsapp-cliente').value;
+        }
+        mesaAtual = id;
+        document.getElementById('titulo-mesa').innerText = `🛒 MESA ${id} - ${mesas[id].cliente}`;
+        gerarMesas(); atualizarCarrinho();
+    }
+
+    function addCarrinho() {
+        if(!mesaAtual) return;
+        const s = document.getElementById('select-produtos');
+        const n = s.options[s.selectedIndex].getAttribute('data-nome');
+        const p = parseFloat(s.value);
+        mesas[mesaAtual].itens.push({nome:n, preco:p});
+        atualizarCarrinho();
+    }
+
+    function atualizarCarrinho() {
+        const t = document.querySelector('#tabela-itens tbody'); t.innerHTML = "";
+        let tot = 0;
+        if(mesaAtual) {
+            mesas[mesaAtual].itens.forEach(i => {
+                tot += i.preco;
+                t.innerHTML += `<tr><td>1x</td><td>${i.nome}</td><td>R$ ${i.preco.toFixed(2)}</td></tr>`;
+            });
+            mesas[mesaAtual].total = tot;
+            mesas[mesaAtual].falta = tot - mesas[mesaAtual].pagos.reduce((a,b)=>a+b.valor,0);
+        }
+        document.getElementById('display-total').innerText = "TOTAL: R$ " + tot.toFixed(2);
+    }
+
+    function abrirModal() {
+        if(!mesaAtual || mesas[mesaAtual].itens.length === 0) return;
+        document.getElementById('modal-pagamento').style.display='flex';
+        document.getElementById('cli-modal').innerText = mesas[mesaAtual].cliente;
+        atualizarModal();
+    }
+
+    function fecharModal() { document.getElementById('modal-pagamento').style.display='none'; }
+
+    function abater(tipo) {
+        const v = parseFloat(document.getElementById('valor-abate').value);
+        if(!v) return;
+        let l = tipo === 'PENDURA' ? `PENDURA (${mesas[mesaAtual].cliente})` : tipo;
+        mesas[mesaAtual].pagos.push({tipo:l, valor:v});
+        mesas[mesaAtual].falta -= v;
+        document.getElementById('valor-abate').value = "";
+        atualizarModal();
+    }
+
+    function atualizarModal() {
+        const m = mesas[mesaAtual];
+        document.getElementById('falta-modal').innerText = "FALTA: R$ " + m.falta.toFixed(2);
+        document.getElementById('lista-pagos').innerHTML = m.pagos.map(p => `<div>✅ ${p.tipo}: R$ ${p.valor.toFixed(2)}</div>`).join('');
+        if(m.falta <= 0.01) document.getElementById('btn-whats-final').style.display='block';
+    }
+
+    function finalizarComZap() {
+        const m = mesas[mesaAtual];
+        const f = m.fone.replace(/\D/g,'');
+        if(f) {
+            let tx = `*BOTECO 934*%0AMESA ${mesaAtual} - ${m.cliente}%0A%0A`;
+            m.itens.forEach(i => tx += `• ${i.nome}: R$ ${i.preco.toFixed(2)}%0A`);
+            tx += `%0ATOTAL: R$ ${m.total.toFixed(2)}%0A`;
+            m.pagos.forEach(p => tx += `✅ ${p.tipo}: R$ ${p.valor.toFixed(2)}%0A`);
+            window.open(`https://api.whatsapp.com/send?phone=55${f}&text=${tx}`, '_blank');
+        }
+        mesas[mesaAtual] = {ativa:false, cliente:"", fone:"", itens:[], total:0, pagos:[], falta:0};
+        mesaAtual = null; fecharModal(); gerarMesas(); atualizarCarrinho();
+    }
+
+    window.onload = () => { filtrarProdutos(); filtrarClientes(); gerarMesas(); };
 </script>
 </body>
 </html>
