@@ -67,4 +67,108 @@
                         <select id="dose-ml" onchange="calcular()">
                             <option value="50">50 ml (Padrão)</option>
                             <option value="60">60 ml (Generosa)</option>
-                            <option value="70
+                            <option value="70">70 ml (Dose Dupla/Especial)</option>
+                        </select>
+                    </div>
+
+                    <label><b>Preço de Venda Unitário/Dose (R$):</b></label>
+                    <input type="number" id="v-venda" placeholder="Por quanto vai vender?" oninput="calcular()">
+
+                    <label id="lbl-extra"><b>Custo de Gelo/Energia (Opcional):</b></label>
+                    <input type="number" id="c-extra" placeholder="0.00" value="0" oninput="calcular()">
+                </div>
+
+                <div class="res-card">
+                    <h3 style="text-align:center; margin-top:0; border-bottom: 2px solid var(--accent); padding-bottom: 10px;">ANÁLISE ELITE</h3>
+                    
+                    <div class="secao-titulo">CUSTO REAL</div>
+                    <div class="linha-res"><span id="txt-custo-unid">Custo p/ Unidade:</span> <span id="res-custo">R$ 0,00</span></div>
+                    
+                    <div class="secao-titulo">LUCRO NO BOLSO</div>
+                    <div class="linha-res"><span>Lucro por Venda:</span> <span id="res-lucro" class="destaque-valor">R$ 0,00</span></div>
+                    <div class="linha-res"><span id="txt-lucro-total">Lucro p/ Grade:</span> <span id="res-total">R$ 0,00</span></div>
+                    
+                    <div class="secao-titulo">DESEMPENHO</div>
+                    <div class="linha-res"><span>Margem de Lucro:</span> <span id="res-margem">0%</span></div>
+                    <div id="box-rendimento" class="linha-res" style="display:none; color:var(--accent);">
+                        <span>Doses por Garrafa:</span> <span id="res-rend">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    let modoAtual = 'grade';
+
+    function mudarModo(modo) {
+        modoAtual = modo;
+        const btnGrade = document.getElementById('btn-grade');
+        const btnDose = document.getElementById('btn-dose');
+        const camposDose = document.getElementById('campos-dose');
+        const boxRend = document.getElementById('box-rendimento');
+        
+        // Labels
+        const lblCusto = document.getElementById('lbl-custo');
+        const lblQtd = document.getElementById('lbl-qtd');
+        const txtCustoUnid = document.getElementById('txt-custo-unid');
+        const txtLucroTotal = document.getElementById('txt-lucro-total');
+
+        if(modo === 'dose') {
+            btnDose.style.background = "var(--info)"; btnDose.style.color = "white";
+            btnGrade.style.background = "#ecf0f1"; btnGrade.style.color = "var(--dark)";
+            camposDose.style.display = "block";
+            boxRend.style.display = "flex";
+            
+            lblCusto.innerHTML = "<b>Custo da Garrafa (R$):</b>";
+            lblQtd.innerHTML = "<b>ML da Garrafa (Total):</b>";
+            document.getElementById('c-qtd').placeholder = "Ex: 750 ou 1000";
+            txtCustoUnid.innerText = "Custo p/ Dose:";
+            txtLucroTotal.innerText = "Lucro Total Garrafa:";
+        } else {
+            btnGrade.style.background = "var(--info)"; btnGrade.style.color = "white";
+            btnDose.style.background = "#ecf0f1"; btnDose.style.color = "var(--dark)";
+            camposDose.style.display = "none";
+            boxRend.style.display = "none";
+            
+            lblCusto.innerHTML = "<b>Custo da Compra (R$):</b>";
+            lblQtd.innerHTML = "<b>Qtd de Itens na Grade:</b>";
+            document.getElementById('c-qtd').placeholder = "Ex: 12 ou 24";
+            txtCustoUnid.innerText = "Custo p/ Unidade:";
+            txtLucroTotal.innerText = "Lucro p/ Grade:";
+        }
+        calcular();
+    }
+
+    function calcular() {
+        const custoTotal = parseFloat(document.getElementById('c-total').value) || 0;
+        const qtdOuML = parseFloat(document.getElementById('c-qtd').value) || 1;
+        const precoVenda = parseFloat(document.getElementById('v-venda').value) || 0;
+        const extra = parseFloat(document.getElementById('c-extra').value) || 0;
+
+        let custoIndividual = 0;
+        let rendimento = 0;
+
+        if(modoAtual === 'dose') {
+            const doseML = parseFloat(document.getElementById('dose-ml').value);
+            const custoPorML = custoTotal / qtdOuML;
+            custoIndividual = (custoPorML * doseML) + (extra / (qtdOuML / doseML));
+            rendimento = Math.floor(qtdOuML / doseML);
+            document.getElementById('res-rend').innerText = rendimento + " doses";
+        } else {
+            custoIndividual = (custoTotal / qtdOuML) + (extra / qtdOuML);
+        }
+
+        const lucroUnitario = precoVenda - custoIndividual;
+        const lucroTotal = modoAtual === 'dose' ? lucroUnitario * rendimento : lucroUnitario * qtdOuML;
+        const margem = (lucroUnitario / (precoVenda || 1)) * 100;
+
+        document.getElementById('res-custo').innerText = "R$ " + custoIndividual.toFixed(2);
+        document.getElementById('res-lucro').innerText = "R$ " + lucroUnitario.toFixed(2);
+        document.getElementById('res-total').innerText = "R$ " + lucroTotal.toFixed(2);
+        document.getElementById('res-margem').innerText = isFinite(margem) ? margem.toFixed(1) + "%" : "0%";
+    }
+</script>
+</body>
+</html>
