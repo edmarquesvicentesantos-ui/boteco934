@@ -6,54 +6,175 @@
     <title>BOTECO 934 | PDV ELITE</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --gold: #ffd700; --accent: #25d366; --bg: #0f172a; --card: rgba(255, 255, 255, 0.05); }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: white; margin: 0; padding: 15px; display: flex; flex-direction: column; height: 95vh; }
+        :root { --gold: #ffd700; --green: #2ecc71; --bg: #0f172a; --card: rgba(255, 255, 255, 0.05); }
         
-        /* Header Glassmorphism */
-        .header { background: var(--card); backdrop-filter: blur(10px); padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); text-align: center; margin-bottom: 15px; }
-        .header h1 { margin: 0; color: var(--gold); letter-spacing: 2px; font-size: 24px; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg); color: white; margin: 0; padding: 15px;
+            display: flex; flex-direction: column; height: 100vh; box-sizing: border-box;
+        }
 
-        /* Input de Bipe Profissional */
-        .search-box { position: relative; margin-bottom: 20px; }
-        #inputBipe { width: 100%; padding: 18px; border-radius: 12px; border: none; background: var(--card); color: var(--gold); font-size: 18px; text-align: center; outline: none; border: 1px solid rgba(255,255,255,0.1); box-sizing: border-box; }
-        #inputBipe::placeholder { color: rgba(255,255,255,0.3); }
+        /* Header Estilo Glass */
+        .header { 
+            background: var(--card); backdrop-filter: blur(10px); 
+            padding: 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);
+            text-align: center; margin-bottom: 15px;
+        }
+        .header h1 { margin: 0; color: var(--gold); letter-spacing: 3px; font-size: 26px; text-shadow: 0 0 10px rgba(255,215,0,0.3); }
 
-        .main-content { display: grid; grid-template-columns: 1fr 350px; gap: 20px; flex: 1; overflow: hidden; }
-        @media (max-width: 900px) { .main-content { grid-template-columns: 1fr; overflow-y: auto; } }
+        /* Input de Bipe */
+        .search-area { margin-bottom: 20px; }
+        #inputBipe { 
+            width: 100%; padding: 20px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1);
+            background: var(--card); color: var(--gold); font-size: 20px; text-align: center;
+            outline: none; transition: 0.3s; box-sizing: border-box;
+        }
+        #inputBipe:focus { border-color: var(--gold); box-shadow: 0 0 15px rgba(255,215,0,0.2); }
 
-        /* Lista de Produtos */
-        .product-list { background: var(--card); border-radius: 15px; padding: 15px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
-        .item { display: flex; align-items: center; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; margin-bottom: 10px; animation: slideIn 0.3s ease; }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+        .main-layout { display: grid; grid-template-columns: 1fr 350px; gap: 20px; flex: 1; min-height: 0; }
+        @media (max-width: 900px) { .main-layout { grid-template-columns: 1fr; } }
+
+        /* Lista de Itens */
+        .list-container { 
+            background: var(--card); border-radius: 15px; padding: 15px; 
+            border: 1px solid rgba(255,255,255,0.1); overflow-y: auto;
+        }
+        .product-item { 
+            display: flex; align-items: center; background: rgba(255,255,255,0.03); 
+            padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--gold);
+        }
+        .product-info { flex: 1; padding-left: 15px; }
+        .product-name { display: block; font-weight: bold; text-transform: uppercase; font-size: 14px; margin-bottom: 4px; }
+        .product-meta { color: #94a3b8; font-size: 13px; }
+        .product-total { color: var(--green); font-weight: bold; font-size: 16px; margin-right: 15px; }
+
+        /* Painel de Fechamento */
+        .summary-panel { 
+            background: var(--card); border-radius: 15px; padding: 25px; 
+            border: 1px solid rgba(255,255,255,0.1); height: fit-content; text-align: center;
+        }
+        .total-label { font-size: 14px; text-transform: uppercase; color: #94a3b8; }
+        .total-price { font-size: 45px; font-weight: 900; color: var(--green); margin: 15px 0; }
         
-        .item-img { width: 50px; height: 50px; border-radius: 8px; margin-right: 15px; object-fit: contain; background: white; }
-        .item-info { flex: 1; }
-        .item-name { display: block; font-weight: bold; text-transform: uppercase; font-size: 14px; }
-        .item-price { color: var(--gold); font-size: 13px; }
-        
-        /* Resumo e Botões */
-        .summary-card { background: var(--card); border-radius: 15px; padding: 25px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center; align-items: center; height: fit-content; }
-        .total-label { font-size: 14px; color: rgba(255,255,255,0.6); text-transform: uppercase; }
-        .total-value { font-size: 48px; font-weight: 900; color: var(--accent); margin: 10px 0; }
-        
-        .btn-whatsapp { width: 100%; padding: 18px; border-radius: 12px; border: none; background: var(--accent); color: white; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .btn-whatsapp:active { transform: scale(0.98); }
-        
-        .empty-msg { text-align: center; color: rgba(255,255,255,0.2); margin-top: 100px; }
-        .btn-remove { background: none; border: none; color: #ff4b2b; cursor: pointer; font-size: 18px; padding: 10px; }
+        .btn-whatsapp { 
+            width: 100%; padding: 18px; border-radius: 12px; border: none;
+            background: #25d366; color: white; font-weight: bold; font-size: 16px;
+            cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .btn-whatsapp:hover { background: #1eb954; transform: translateY(-2px); }
+
+        .btn-delete { background: none; border: none; color: #ef4444; cursor: pointer; padding: 5px; font-size: 18px; }
+        .empty-state { text-align: center; color: #475569; margin-top: 100px; font-style: italic; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h1>BOTECO 934</h1>
+    <div class="header"><h1>BOTECO 934</h1></div>
+
+    <div class="search-area">
+        <input type="text" id="inputBipe" placeholder="AGUARDANDO BIPE..." onkeypress="if(event.key === 'Enter') processar(this.value)" autofocus>
     </div>
 
-    <div class="search-box">
-        <input type="text" id="inputBipe" placeholder="Aguardando Bipe..." onkeypress="if(event.key === 'Enter') processarBipe(this.value)" autofocus>
+    <div class="main-layout">
+        <div class="list-container" id="lista">
+            <div class="empty-state">Nenhum produto na mesa...</div>
+        </div>
+
+        <div class="summary-panel">
+            <span class="total-label">Subtotal da Mesa</span>
+            <div class="total-price">R$ <span id="totalMesa">0,00</span></div>
+            <button class="btn-whatsapp" onclick="gerarRecibo()">
+                <i class="fab fa-whatsapp"></i> ENVIAR RECIBO
+            </button>
+        </div>
     </div>
 
-    <div class="main-content">
-        <div class="product-list" id="carrinho">
-            <div class="empty-msg">
-                <i class
+<script>
+    // Banco de dados salvo no navegador
+    let estoque = JSON.parse(localStorage.getItem('b934_estoque')) || [];
+    let mesa = [];
+
+    function processar(codigo) {
+        if (!codigo) return;
+        codigo = codigo.trim();
+        document.getElementById('inputBipe').value = '';
+
+        // 1. Verifica se já está na mesa (TRAVA DE REPETIÇÃO)
+        let existe = mesa.find(i => i.id === codigo);
+        if (existe) {
+            existe.qtd++;
+            renderizar();
+            return;
+        }
+
+        // 2. Busca no estoque local
+        let prod = estoque.find(p => p.id === codigo);
+        if (prod) {
+            mesa.push({...prod, qtd: 1});
+            renderizar();
+        } else {
+            // 3. Se for novo, busca na web e pede preço
+            cadastrarNovo(codigo);
+        }
+    }
+
+    async function cadastrarNovo(codigo) {
+        try {
+            const res = await fetch(`https://world.openfoodfacts.org/api/v2/product/${codigo}.json`);
+            const data = await res.json();
+            let nome = (data.status === 1 && data.product.product_name) ? data.product.product_name : "PRODUTO NOVO";
+            
+            let preco = prompt(`Novo item detectado: ${nome}\nDigite o preço de venda:`, "6.00");
+            if (preco) {
+                let novo = { id: codigo, nome: nome, preco: parseFloat(preco.replace(',','.')) };
+                estoque.push(novo);
+                localStorage.setItem('b934_estoque', JSON.stringify(estoque));
+                mesa.push({...novo, qtd: 1});
+                renderizar();
+            }
+        } catch (e) { alert("Erro de conexão. Verifique a internet."); }
+    }
+
+    function remover(id) {
+        mesa = mesa.filter(i => i.id !== id);
+        renderizar();
+    }
+
+    function renderizar() {
+        const lista = document.getElementById('lista');
+        const totalTxt = document.getElementById('totalMesa');
+        lista.innerHTML = '';
+        let soma = 0;
+
+        if (mesa.length === 0) {
+            lista.innerHTML = '<div class="empty-state">Nenhum produto na mesa...</div>';
+            totalTxt.innerText = "0,00";
+            return;
+        }
+
+        mesa.forEach(item => {
+            let totalItem = item.preco * item.qtd;
+            soma += totalItem;
+            lista.innerHTML += `
+                <div class="product-item">
+                    <div class="product-info">
+                        <span class="product-name">${item.nome}</span>
+                        <span class="product-meta">${item.qtd}x R$ ${item.preco.toFixed(2)}</span>
+                    </div>
+                    <div class="product-total">R$ ${totalItem.toFixed(2)}</div>
+                    <button class="btn-delete" onclick="remover('${item.id}')"><i class="fas fa-trash"></i></button>
+                </div>`;
+        });
+        totalTxt.innerText = soma.toFixed(2).replace('.', ',');
+    }
+
+    function gerarRecibo() {
+        if (mesa.length === 0) return;
+        let msg = "*BOTECO 934 - RECIBO*\n----------------------------\n";
+        mesa.forEach(i => msg += `${i.qtd}x ${i.nome} - R$ ${(i.preco * i.qtd).toFixed(2)}\n`);
+        msg += "----------------------------\n*TOTAL: R$ " + document.getElementById('totalMesa').innerText + "*";
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+    }
+</script>
+</body>
+</html>
