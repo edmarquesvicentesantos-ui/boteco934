@@ -1,101 +1,40 @@
-<div class="nav-item" onclick="trocarAba('calc', this)">🧮 Calculadora</div>
-
-<div id="calc" class="aba">
-    <div class="painel" style="max-width: 400px; margin: auto; background: #2c3e50;">
-        <h2 style="color: #f39c12; border-bottom-color: #f39c12;">CALCULADORA BOTECO 934</h2>
-        <input type="text" id="calc-display" readonly 
-               style="background: #1a252f; color: #2ecc71; font-size: 32px; text-align: right; height: 60px; border: none; margin-bottom: 15px;">
-        <div class="nav-item" onclick="trocarAba('calc', this)">🧮 Calculadora</div>
-
-<div id="calc" class="aba">
-    <div class="painel" style="max-width: 400px; margin: auto; background: #2c3e50;">
-        <h2 style="color: #f39c12; border-bottom-color: #f39c12;">CALCULADORA BOTECO 934</h2>
-        <input type="text" id="calc-display" readonly 
-               style="background: #1a252f; color: #2ecc71; font-size: 32px; text-align: right; height: 60px; border: none; margin-bottom: 15px;">
-        
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
-            <button onclick="calcClear()" style="background:#e74c3c; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold;">C</button>
-            <button onclick="calcAdd('/')" style="background:#34495e; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold;">/</button>
-            <button onclick="calcAdd('*')" style="background:#34495e; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold;">*</button>
-            <button onclick="calcAdd('-')" style="background:#34495e; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold;">-</button>
-            
-            <button onclick="calcAdd('7')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">7</button>
-            <button onclick="calcAdd('8')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">8</button>
-            <button onclick="calcAdd('9')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">9</button>
-            <button onclick="calcAdd('+')" style="background:#34495e; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold; grid-row: span 2;">+</button>
-            
-            <button onclick="calcAdd('4')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">4</button>
-            <button onclick="calcAdd('5')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">5</button>
-            <button onclick="calcAdd('6')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">6</button>
-            
-            <button onclick="calcAdd('1')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">1</button>
-            <button onclick="calcAdd('2')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">2</button>
-            <button onclick="calcAdd('3')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">3</button>
-            <button onclick="calcRes()" style="background:#27ae60; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold; grid-row: span 2;">=</button>
-            
-            <button onclick="calcAdd('0')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold; grid-column: span 2;">0</button>
-            <button onclick="calcAdd('.')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">.</button>
-        </div>
+<nav style="width: 260px; background: #1a252f; color: white; height: 100vh; display: flex; flex-direction: column;">
+    <div style="padding: 20px; text-align: center; color: #f39c12; font-size: 22px; font-weight: bold; border-bottom: 1px solid #2c3e50;">
+        BOTECO 934
     </div>
-</div>
 
-<script>
-    // FUNÇÕES DA CALCULADORA
-    function calcAdd(val) {
-        document.getElementById('calc-display').value += val;
-    }
-    function calcClear() {
-        document.getElementById('calc-display').value = "";
-    }
-    function calcRes() {
-        try {
-            let res = eval(document.getElementById('calc-display').value);
-            document.getElementById('calc-display').value = res;
-        } catch(e) {
-            document.getElementById('calc-display').value = "ERRO";
-        }
-    }
-</script>
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
-            <button onclick="calcClear()" style="background:#e74c3c; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold;">C</button>
-            <button onclick="calcAdd('/')" style="background:#34495e; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold;">/</button>
-            <button onclick="calcAdd('*')" style="background:#34495e; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold;">*</button>
-            <button onclick="calcAdd('-')" style="background:#34495e; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold;">-</button>
-            
-            <button onclick="calcAdd('7')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">7</button>
-            <button onclick="calcAdd('8')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">8</button>
-            <button onclick="calcAdd('9')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">9</button>
-            <button onclick="calcAdd('+')" style="background:#34495e; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold; grid-row: span 2;">+</button>
-            
-            <button onclick="calcAdd('4')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">4</button>
-            <button onclick="calcAdd('5')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">5</button>
-            <button onclick="calcAdd('6')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">6</button>
-            
-            <button onclick="calcAdd('1')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">1</button>
-            <button onclick="calcAdd('2')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">2</button>
-            <button onclick="calcAdd('3')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">3</button>
-            <button onclick="calcRes()" style="background:#27ae60; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold; grid-row: span 2;">=</button>
-            
-            <button onclick="calcAdd('0')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold; grid-column: span 2;">0</button>
-            <button onclick="calcAdd('.')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">.</button>
-        </div>
+    <div style="flex-grow: 1; padding: 10px;">
+        <p style="font-size: 10px; color: #7f8c8d; margin-left: 10px;">MOVIMENTO</p>
+        <button onclick="ver('vendas')" class="btn-nav active">🛒 VENDAS</button>
+        <button onclick="ver('cadastros')" class="btn-nav">📦 CADASTROS</button>
+
+        <p style="font-size: 10px; color: #7f8c8d; margin-left: 10px; margin-top: 20px;">CONTROLES</p>
+        <button onclick="ver('fiado')" class="btn-nav">📝 FIADO (PENDURA)</button>
+        <button onclick="ver('caixa')" class="btn-nav">💰 FECHAR CAIXA</button>
+
+        <p style="font-size: 10px; color: #7f8c8d; margin-left: 10px; margin-top: 20px;">APOIO</p>
+        <button onclick="ver('calc')" class="btn-nav">🧮 CALCULADORA</button>
     </div>
-</div>
 
-<script>
-    // FUNÇÕES DA CALCULADORA
-    function calcAdd(val) {
-        document.getElementById('calc-display').value += val;
+    <div style="padding: 15px; background: #2c3e50; font-size: 12px; text-align: center;">
+        SISTEMA ELITE V2
+    </div>
+</nav>
+
+<style>
+    .btn-nav {
+        width: 100%;
+        padding: 18px;
+        margin-bottom: 8px;
+        background: #2c3e50;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        text-align: left;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
     }
-    function calcClear() {
-        document.getElementById('calc-display').value = "";
-    }
-    function calcRes() {
-        try {
-            let res = eval(document.getElementById('calc-display').value);
-            document.getElementById('calc-display').value = res;
-        } catch(e) {
-            document.getElementById('calc-display').value = "ERRO";
-        }
-    }
-</script>
+    .btn-nav:hover { background: #3e5871; padding-left: 25px; }
+    .btn-nav.active { background: #f39c12; color: #1a252f; }
+</style>
