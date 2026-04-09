@@ -82,7 +82,142 @@
         </div>
     </div>
 </main>
+<style>
+    /* Redução Geral de Fontes e Espaços */
+    :root { 
+        --font-base: 12px; 
+        --font-titulo: 13px; 
+        --padding-box: 10px; 
+    }
 
+    body { font-size: var(--font-base); }
+
+    /* Títulos Menores e Discretos */
+    h2 { 
+        font-size: var(--font-titulo); 
+        margin: 0 0 8px 0; 
+        color: var(--sidebar); 
+        border-left: 3px solid var(--accent); 
+        padding-left: 8px; 
+        text-transform: uppercase;
+    }
+
+    /* Tabelas e Listas de Produtos */
+    .tabela-elite {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11px; /* Fonte bem pequena para caber tudo */
+    }
+    .tabela-elite th { 
+        background: #f1f2f6; 
+        color: #2c3e50; 
+        padding: 5px; 
+        text-align: left; 
+        border-bottom: 2px solid #dfe6e9;
+    }
+    .tabela-elite td { 
+        padding: 4px 5px; 
+        border-bottom: 1px solid #f1f2f6; 
+    }
+
+    /* Inputs Compactos */
+    input[type="text"], input[type="number"], select {
+        padding: 6px;
+        font-size: 12px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+
+    /* Campo de Barcode - O único que continua visível mas sem exagero */
+    .barcode-compacto {
+        background: #fff9c4;
+        border: 2px solid var(--accent);
+        font-weight: bold;
+        width: 100%;
+        padding: 8px;
+    }
+
+    /* Ajuste do Cupom Fiscal */
+    .coluna-cupom {
+        flex: 0.8; /* Diminuí a largura do cupom */
+        background: #fff;
+        border: 1px solid #ccc;
+        padding: 10px;
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+    }
+</style>
+
+<main>
+    <div style="background: white; padding: 8px; border-radius: 5px; margin-bottom: 10px; display: flex; gap: 5px; overflow-x: auto;">
+        <button class="mesa-mini">M1</button>
+        <button class="mesa-mini">M2</button>
+        <button class="mesa-mini">M3</button>
+        <button class="mesa-mini">M4</button>
+        <button class="mesa-mini">M5</button>
+        <button class="mesa-mini">M6</button>
+        <button class="mesa-mini">M7</button>
+        <button class="mesa-mini">M8</button>
+    </div>
+
+    <div class="conteudo-vendas">
+        
+        <div class="coluna-cupom">
+            <div style="text-align:center; border-bottom: 1px dashed #000; margin-bottom: 10px;">
+                <b id="cupom-num">MESA 01</b><br>
+                <span style="font-size: 9px;">BOTECO 934 - PDV ELITE</span>
+            </div>
+            
+            <div id="cupom-itens" style="height: 250px; overflow-y: auto;">
+                <div style="display:flex; justify-content:space-between;">
+                    <span>1x CERV LATA</span>
+                    <span>6,00</span>
+                </div>
+            </div>
+
+            <div style="border-top: 1px solid #000; padding-top: 5px; margin-top: 10px;">
+                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size: 16px;">
+                    <span>TOTAL:</span>
+                    <span>R$ 6,00</span>
+                </div>
+                <button style="width:100%; margin-top:10px; background:var(--success); color:white; border:none; padding:8px; cursor:pointer; font-weight:bold;">FECHAR (F2)</button>
+            </div>
+        </div>
+
+        <div class="coluna-lancamento">
+            <div class="painel" style="padding: 10px;">
+                <h2>LANÇAR</h2>
+                <div style="display: flex; gap: 5px;">
+                    <input type="number" id="qtd" value="1" style="width: 45px;">
+                    <input type="text" class="barcode-compacto" placeholder="CÓDIGO DE BARRAS">
+                </div>
+            </div>
+
+            <div class="painel" style="flex: 1; padding: 10px;">
+                <h2>ESTOQUE / PREÇOS</h2>
+                <input type="text" placeholder="Filtrar..." style="width: 100%; margin-bottom: 8px;">
+                
+                <table class="tabela-elite">
+                    <thead>
+                        <tr>
+                            <th>DESCRIÇÃO</th>
+                            <th>PREÇO</th>
+                            <th>ESTOQUE</th>
+                            <th>AÇÃO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>CERVEJA LATA 350ML</td><td>6,00</td><td>48</td><td><button>+</button></td></tr>
+                        <tr><td>CERVEJA 600ML</td><td>10,00</td><td>24</td><td><button>+</button></td></tr>
+                        <tr><td>CACHAÇA DOSE</td><td>3,00</td><td>--</td><td><button>+</button></td></tr>
+                        <tr><td>REFRI LATA</td><td>5,00</td><td>12</td><td><button>+</button></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</main>
 <script>
     let mesas = {};
     for(let i=1; i<=8; i++) mesas[i] = { ativa: false, itens: [], cli: "CONSUMIDOR", total: 0 };
