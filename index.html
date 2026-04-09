@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BOTECO 934 | MIX INTELIGENTE</title>
+    <title>BOTECO 934 | MARGEM DE LUCRO</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { --gold: #ffd700; --green: #2ecc71; --bg: #0f172a; --card: rgba(255, 255, 255, 0.05); }
@@ -18,8 +18,8 @@
         .item-img { width: 45px; height: 45px; border-radius: 5px; object-fit: contain; background: white; margin-right: 12px; }
         .item-details { flex: 1; }
         .item-name { display: block; font-weight: bold; text-transform: uppercase; font-size: 13px; }
-        .item-meta { color: #94a3b8; font-size: 11px; }
-        .item-lucro { color: var(--green); font-size: 11px; font-weight: bold; display: block; }
+        .item-meta { color: #94a3b8; font-size: 12px; }
+        .item-lucro { color: var(--green); font-size: 11px; font-weight: bold; }
         .item-total { color: var(--green); font-weight: bold; margin: 0 10px; font-size: 16px; }
         .resumo-venda { background: var(--card); border-radius: 15px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); height: fit-content; text-align: center; }
         .total-v { font-size: 42px; font-weight: 900; color: var(--green); margin: 10px 0; }
@@ -28,18 +28,18 @@
     </style>
 </head>
 <body>
-    <div class="header"><h1>BOTECO 934 | MIX INTELIGENTE</h1></div>
+    <div class="header"><h1>BOTECO 934 | PDV LUCRO</h1></div>
     <input type="text" id="inputBipe" placeholder="BIPE O PRODUTO..." onkeypress="if(event.key === 'Enter') handleBipe(this.value)" autofocus>
     <div class="main-layout">
         <div class="lista-venda" id="caixa"></div>
         <div class="resumo-venda">
-            <span style="color:#94a3b8; font-size:12px;">TOTAL DA MESA</span>
+            <span style="color:#94a3b8; font-size:12px;">VALOR TOTAL</span>
             <div class="total-v">R$ <span id="totalTxt">0,00</span></div>
             <button class="btn-zap" onclick="enviarZap()"><i class="fab fa-whatsapp"></i> ENVIAR RECIBO</button>
         </div>
     </div>
 <script>
-    let db = JSON.parse(localStorage.getItem('b934_db_v3')) || [];
+    let db = JSON.parse(localStorage.getItem('b934_db_lucro')) || [];
     let mesa = [];
     const fallImg = "https://cdn-icons-png.flaticon.com/512/3121/3121784.png";
 
@@ -63,43 +63,41 @@
             let n = (d.status === 1 && d.product.product_name) ? d.product.product_name : "Produto Novo";
             let f = (d.status === 1 && d.product.image_url) ? d.product.image_url : fallImg;
             
-            let custo = prompt(`NOVO ITEM: ${n}\n\n1. Qual o PREÇO DE CUSTO?`, "4.00");
+            let custo = prompt(`Novo item: ${n}\nPreço de CUSTO:`, "4.00");
             if(custo) {
+                let margem = prompt(`Margem de Lucro desejada (%):`, "50");
                 let c = parseFloat(custo.replace(',','.'));
-                let margem = prompt(`2. Qual a MARGEM DE LUCRO desejada? (%)`, "50");
                 let m = parseFloat(margem) / 100;
-                let sugerido = (c * (1 + m)).toFixed(2);
+                let sugerido = c * (1 + m);
                 
-                // Aqui está a mágica: O sistema já sugere a venda com lucro
-                let venda = prompt(`SUGESTÃO DE VENDA: R$ ${sugerido}\n(Seu lucro será de R$ ${(sugerido - c).toFixed(2)} por unidade)\n\nDigite o PREÇO DE VENDA final:`, sugerido);
+                let venda = prompt(`Preço Sugerido: R$ ${sugerido.toFixed(2)}\nPreço de VENDA Final:`, sugerido.toFixed(2));
                 
                 if(venda) {
-                    let v = parseFloat(venda.replace(',','.'));
-                    let novo = { id: cod, nome: n, foto: f, custo: c, preco: v };
+                    let novo = { id: cod, nome: n, foto: f, custo: c, preco: parseFloat(venda.replace(',','.')) };
                     db.push(novo);
-                    localStorage.setItem('b934_db_v3', JSON.stringify(db));
+                    localStorage.setItem('b934_db_lucro', JSON.stringify(db));
                     mesa.push({...novo, qtd: 1});
                     render();
                 }
             }
-        } catch(e) { alert("Erro ao buscar produto."); }
+        } catch(e) { alert("Erro ao buscar."); }
     }
 
     function render() {
         const c = document.getElementById('caixa');
         const t = document.getElementById('totalTxt');
         c.innerHTML = ''; let soma = 0;
-        if(mesa.length === 0) { c.innerHTML = '<div style="text-align:center;color:#475569;margin-top:50px;">Aguardando venda...</div>'; t.innerText="0,00"; return; }
+        if(mesa.length === 0) { c.innerHTML = '<div style="text-align:center;color:#475569;margin-top:50px;">Bipe para vender!</div>'; t.innerText="0,00"; return; }
         
         mesa.forEach(i => {
             let tot = i.preco * i.qtd; soma += tot;
-            let lucroTotal = (i.preco - i.custo) * i.qtd;
+            let lucroUnit = i.preco - i.custo;
             c.innerHTML += `<div class="item-row">
                 <img src="${i.foto}" class="item-img" onerror="this.src='${fallImg}'">
                 <div class="item-details">
                     <span class="item-name">${i.nome}</span>
                     <span class="item-meta">${i.qtd}x R$ ${i.preco.toFixed(2)}</span>
-                    <span class="item-lucro">Lucro Total: R$ ${lucroTotal.toFixed(2)}</span>
+                    <span class="item-lucro">Lucro: R$ ${(lucroUnit * i.qtd).toFixed(2)}</span>
                 </div>
                 <div class="item-total">R$ ${tot.toFixed(2)}</div>
                 <button class="btn-del" onclick="mesa=mesa.filter(x=>x.id!=='${i.id}');render()"><i class="fas fa-trash"></i></button>
@@ -112,7 +110,7 @@
         if(mesa.length === 0) return;
         let m = "*BOTECO 934 - RECIBO*\n----------------------------\n";
         mesa.forEach(i => m += `${i.qtd}x ${i.nome} - R$ ${(i.preco*i.qtd).toFixed(2)}\n`);
-        m += "----------------------------\n*TOTAL DA MESA: R$ " + document.getElementById('totalTxt').innerText + "*";
+        m += "----------------------------\n*TOTAL: R$ " + document.getElementById('totalTxt').innerText + "*";
         window.open(`https://wa.me/?text=${encodeURIComponent(m)}`);
     }
     render();
