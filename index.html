@@ -5,7 +5,57 @@
         <h2 style="color: #f39c12; border-bottom-color: #f39c12;">CALCULADORA BOTECO 934</h2>
         <input type="text" id="calc-display" readonly 
                style="background: #1a252f; color: #2ecc71; font-size: 32px; text-align: right; height: 60px; border: none; margin-bottom: 15px;">
+        <div class="nav-item" onclick="trocarAba('calc', this)">🧮 Calculadora</div>
+
+<div id="calc" class="aba">
+    <div class="painel" style="max-width: 400px; margin: auto; background: #2c3e50;">
+        <h2 style="color: #f39c12; border-bottom-color: #f39c12;">CALCULADORA BOTECO 934</h2>
+        <input type="text" id="calc-display" readonly 
+               style="background: #1a252f; color: #2ecc71; font-size: 32px; text-align: right; height: 60px; border: none; margin-bottom: 15px;">
         
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+            <button onclick="calcClear()" style="background:#e74c3c; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold;">C</button>
+            <button onclick="calcAdd('/')" style="background:#34495e; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold;">/</button>
+            <button onclick="calcAdd('*')" style="background:#34495e; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold;">*</button>
+            <button onclick="calcAdd('-')" style="background:#34495e; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold;">-</button>
+            
+            <button onclick="calcAdd('7')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">7</button>
+            <button onclick="calcAdd('8')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">8</button>
+            <button onclick="calcAdd('9')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">9</button>
+            <button onclick="calcAdd('+')" style="background:#34495e; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold; grid-row: span 2;">+</button>
+            
+            <button onclick="calcAdd('4')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">4</button>
+            <button onclick="calcAdd('5')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">5</button>
+            <button onclick="calcAdd('6')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">6</button>
+            
+            <button onclick="calcAdd('1')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">1</button>
+            <button onclick="calcAdd('2')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">2</button>
+            <button onclick="calcAdd('3')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">3</button>
+            <button onclick="calcRes()" style="background:#27ae60; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold; grid-row: span 2;">=</button>
+            
+            <button onclick="calcAdd('0')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold; grid-column: span 2;">0</button>
+            <button onclick="calcAdd('.')" style="background:#ecf0f1; padding:20px; border:none; border-radius:5px; font-weight:bold;">.</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // FUNÇÕES DA CALCULADORA
+    function calcAdd(val) {
+        document.getElementById('calc-display').value += val;
+    }
+    function calcClear() {
+        document.getElementById('calc-display').value = "";
+    }
+    function calcRes() {
+        try {
+            let res = eval(document.getElementById('calc-display').value);
+            document.getElementById('calc-display').value = res;
+        } catch(e) {
+            document.getElementById('calc-display').value = "ERRO";
+        }
+    }
+</script>
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
             <button onclick="calcClear()" style="background:#e74c3c; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold;">C</button>
             <button onclick="calcAdd('/')" style="background:#34495e; color:white; padding:20px; border:none; border-radius:5px; font-weight:bold;">/</button>
