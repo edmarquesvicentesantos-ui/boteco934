@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA ELITE V20 - BOTECO 934</title>
+    <title>SISTEMA ELITE V21 - BOTECO 934</title>
     <style>
         :root { 
             --dark: #1a252f; --sidebar: #2c3e50; --accent: #f39c12; 
@@ -12,29 +12,26 @@
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
 
-        /* MENU LATERAL FIXO */
         aside { width: 250px; background: var(--dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; border-right: 5px solid var(--accent); }
         .header-loja { padding: 25px; text-align: center; font-size: 20px; font-weight: bold; color: var(--accent); border-bottom: 2px solid var(--sidebar); }
         .menu-btn { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #34495e; font-weight: bold; transition: 0.3s; }
         .menu-btn:hover, .menu-btn.active { background: var(--sidebar); color: var(--accent); border-left: 8px solid var(--accent); }
 
-        /* PRINCIPAL */
         main { flex-grow: 1; display: flex; flex-direction: column; min-width: 0; }
         .topo { background: white; padding: 15px; display: flex; gap: 15px; border-bottom: 1px solid #ddd; }
         .stat { flex: 1; padding: 10px; border-radius: 8px; color: white; text-align: center; font-weight: bold; }
         .conteudo { flex-grow: 1; padding: 20px; overflow-y: auto; }
         .painel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
 
-        /* ELEMENTOS FORMULÁRIO */
         input, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; }
         .btn-acao { padding: 15px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; }
         
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* RESULTADOS CALCULADORA */
         .resultado-card { background: #f8f9fa; border: 2px solid var(--sidebar); padding: 15px; border-radius: 10px; margin-top: 10px; }
         .linha-res { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dotted #ccc; font-weight: bold; }
+        .destaque-lucro { font-size: 18px; color: var(--success); }
     </style>
 </head>
 <body>
@@ -47,7 +44,7 @@
     <div class="menu-btn" onclick="ver('aba-boticario', this)">🌸 BOTICÁRIO</div>
     <div class="menu-btn" onclick="ver('aba-despesas', this)">💸 DESPESAS</div>
     <div style="margin-top: auto; padding: 20px;">
-        <button onclick="alert('Sistema Pronto!')" style="width:100%; padding:15px; background:var(--success); color:white; border:none; border-radius:8px; font-weight:bold;">SISTEMA ONLINE</button>
+        <button onclick="alert('Sistema Atualizado!')" style="width:100%; padding:15px; background:var(--success); color:white; border:none; border-radius:8px; font-weight:bold;">SISTEMA ONLINE</button>
     </div>
 </aside>
 
@@ -62,40 +59,44 @@
         
         <div id="aba-calculadora" class="tab-content active">
             <div class="painel">
-                <h2 style="margin-top:0; color:var(--dark);">🧠 CALCULADORA DE MIX E DOSES</h2>
+                <h2 style="margin-top:0; color:var(--dark);">🧠 CALCULADORA DE MIX (UNID / DOSE / GRADE)</h2>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div>
-                        <label><b>O que quer calcular?</b></label>
+                        <label><b>O que quer calcular hoje?</b></label>
                         <select id="calc-tipo" onchange="mudarCampos()">
                             <option value="unidade">UNIDADE (Cerveja/Refri)</option>
                             <option value="dose">DOSE (Whisky/Cachaça)</option>
+                            <option value="grade">GRADE / FARDO (Custo p/ Unid.)</option>
                         </select>
 
-                        <label><b>Custo Total (Caixa ou Garrafa):</b></label>
+                        <label id="label-custo"><b>Custo Total (R$):</b></label>
                         <input type="number" id="calc-custo" placeholder="0.00">
 
-                        <label id="label-qtd"><b>Qtd de Itens na Caixa (Unid):</b></label>
-                        <input type="number" id="calc-qtd" placeholder="Ex: 12">
+                        <label id="label-qtd"><b>Qtd de Itens na Caixa/Grade:</b></label>
+                        <input type="number" id="calc-qtd" placeholder="Ex: 12 ou 24">
 
                         <div id="campos-dose" style="display:none">
                             <label><b>Tamanho da Dose (ml):</b></label>
                             <input type="number" id="dose-tamanho" placeholder="Ex: 50">
                         </div>
 
-                        <label><b>Preço de Venda Unitário/Dose:</b></label>
+                        <label id="label-venda"><b>Preço de Venda Unitário (R$):</b></label>
                         <input type="number" id="calc-venda" placeholder="0.00">
 
-                        <button class="btn-acao" style="background:var(--accent)" onclick="calcularTudo()">CALCULAR LUCRO REAL</button>
+                        <button class="btn-acao" style="background:var(--accent)" onclick="calcularTudo()">CALCULAR AGORA</button>
                     </div>
 
                     <div class="resultado-card">
-                        <h3 style="text-align:center; margin-top:0; color:var(--info)">RESULTADOS</h3>
+                        <h3 style="text-align:center; margin-top:0; color:var(--info)">RESULTADOS DO MIX</h3>
                         <div id="res-display">
-                            <div class="linha-res"><span>Custo Unitário:</span> <span id="res-unid">R$ 0,00</span></div>
-                            <div class="linha-res"><span>Lucro por Item:</span> <span id="res-lucro" style="color:green">R$ 0,00</span></div>
-                            <div class="linha-res"><span>Margem %:</span> <span id="res-margem">0%</span></div>
-                            <div id="res-extra" class="linha-res" style="display:none"><span>Rendimento:</span> <span id="res-rend">0 doses</span></div>
+                            <div class="linha-res"><span>Custo p/ Unidade:</span> <span id="res-unid">R$ 0,00</span></div>
+                            <div class="linha-res"><span>Lucro Real:</span> <span id="res-lucro" class="destaque-lucro">R$ 0,00</span></div>
+                            <div class="linha-res"><span>Margem de Lucro:</span> <span id="res-margem">0%</span></div>
+                            <div id="res-extra" class="linha-res" style="display:none"><span>Total de Doses:</span> <span id="res-rend">0</span></div>
+                        </div>
+                        <div style="margin-top: 15px; font-size: 13px; color: #666; font-style: italic;">
+                            * Use para calcular fardos de Coca-Cola, Grades de Cerveja ou Garrafas de Dose.
                         </div>
                     </div>
                 </div>
@@ -103,11 +104,7 @@
         </div>
 
         <div id="aba-vendas" class="tab-content">
-            <div class="painel"><h2>🛒 FRENTE DE CAIXA</h2><p>Módulo de vendas ativo.</p></div>
-        </div>
-
-        <div id="aba-produtos" class="tab-content">
-            <div class="painel"><h2>📦 ESTOQUE</h2><p>Gerencie seus produtos aqui.</p></div>
+            <div class="painel"><h2>🛒 FRENTE DE CAIXA</h2><p>Módulo de vendas operacional.</p></div>
         </div>
 
     </div>
@@ -119,14 +116,23 @@
         const camposDose = document.getElementById('campos-dose');
         const labelQtd = document.getElementById('label-qtd');
         const extra = document.getElementById('res-extra');
+        const labelCusto = document.getElementById('label-custo');
 
         if(tipo === 'dose') {
             camposDose.style.display = 'block';
+            labelCusto.innerHTML = "<b>Custo da Garrafa (R$):</b>";
             labelQtd.innerHTML = "<b>Tamanho da Garrafa (ml):</b>";
             document.getElementById('calc-qtd').placeholder = "Ex: 1000";
             extra.style.display = 'flex';
+        } else if(tipo === 'grade') {
+            camposDose.style.display = 'none';
+            labelCusto.innerHTML = "<b>Custo do Fardo/Grade (R$):</b>";
+            labelQtd.innerHTML = "<b>Qtd de Produtos no Fardo:</b>";
+            document.getElementById('calc-qtd').placeholder = "Ex: 6, 12 ou 24";
+            extra.style.display = 'none';
         } else {
             camposDose.style.display = 'none';
+            labelCusto.innerHTML = "<b>Custo Total (R$):</b>";
             labelQtd.innerHTML = "<b>Qtd de Itens na Caixa:</b>";
             document.getElementById('calc-qtd').placeholder = "Ex: 12";
             extra.style.display = 'none';
@@ -143,14 +149,15 @@
         let lucro = 0;
         let margem = 0;
 
-        if(tipo === 'unidade') {
-            custoUnid = custoTotal / qtdOuMl;
-        } else {
+        if(tipo === 'dose') {
             const tamanhoDose = parseFloat(document.getElementById('dose-tamanho').value) || 1;
             const custoML = custoTotal / qtdOuMl;
             custoUnid = custoML * tamanhoDose;
             const rendimento = qtdOuMl / tamanhoDose;
             document.getElementById('res-rend').innerText = Math.floor(rendimento) + " doses";
+        } else {
+            // Unidade ou Grade usam a mesma lógica de divisão por quantidade
+            custoUnid = custoTotal / qtdOuMl;
         }
 
         lucro = precoVenda - custoUnid;
