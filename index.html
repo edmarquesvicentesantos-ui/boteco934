@@ -2,131 +2,95 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PDV Elite - Boteco 934</title>
     <style>
-        :root { 
-            --dark: #1a252f; 
-            --sidebar: #2c3e50; 
-            --accent: #f39c12; 
-            --success: #27ae60; 
-            --danger: #e74c3c; 
-            --bg: #dfe6e9;
-            --font-padrao: 13px; /* Harmonizado com sua lateral */
-        }
-
+        :root { --dark: #1a252f; --sidebar: #2c3e50; --accent: #f39c12; --success: #27ae60; --danger: #e74c3c; --bg: #dfe6e9; --font-padrao: 13px; }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        
         body { margin: 0; display: flex; height: 100vh; background: var(--bg); font-size: var(--font-padrao); overflow: hidden; }
 
-        /* MENU LATERAL ESTREITO */
-        nav { width: 190px; background: var(--dark); color: white; display: flex; flex-direction: column; overflow-y: auto; border-right: 2px solid var(--accent); }
-        .logo-area { padding: 15px; text-align: center; color: var(--accent); font-weight: bold; font-size: 16px; border-bottom: 1px solid #2c3e50; }
-        .nav-label { font-size: 10px; color: #7f8c8d; padding: 15px 15px 5px; text-transform: uppercase; font-weight: bold; }
-        .nav-item { padding: 12px 15px; cursor: pointer; transition: 0.2s; border-left: 4px solid transparent; font-weight: 600; }
-        .nav-item:hover { background: #3e5871; }
-        .nav-item.active { background: var(--sidebar); border-left-color: var(--accent); color: var(--accent); }
+        /* Navegação Lateral Harmonizada */
+        nav { width: 180px; background: var(--dark); color: white; display: flex; flex-direction: column; border-right: 2px solid var(--accent); }
+        .nav-item { padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #2c3e50; font-weight: 600; font-size: 13px; }
+        .nav-item.active { background: var(--sidebar); color: var(--accent); }
 
-        /* ÁREA PRINCIPAL */
-        main { flex: 1; display: flex; flex-direction: column; padding: 15px; gap: 15px; overflow-y: auto; }
-        .painel { background: white; padding: 12px; border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        h2 { font-size: var(--font-padrao); margin: 0 0 10px 0; text-transform: uppercase; color: var(--dark); border-bottom: 1px solid #eee; padding-bottom: 5px; }
-
-        /* MESAS COMPACTAS NO TOPO */
-        .grid-mesas { display: flex; gap: 6px; flex-wrap: wrap; }
-        .mesa-btn { flex: 1; min-width: 60px; padding: 10px; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; font-size: 11px; }
+        /* Layout Principal */
+        main { flex: 1; display: flex; flex-direction: column; padding: 15px; gap: 10px; overflow-y: auto; }
+        .painel { background: white; padding: 10px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        
+        .grid-mesas { display: flex; gap: 5px; margin-bottom: 10px; }
+        .mesa-btn { flex: 1; padding: 10px; border: none; border-radius: 4px; color: white; cursor: pointer; font-weight: bold; font-size: 11px; }
         .livre { background: var(--success); }
         .ocupada { background: var(--danger); }
-        .mesa-sel { outline: 3px solid var(--accent); transform: scale(1.05); }
+        .sel { outline: 3px solid var(--accent); }
 
-        /* CONTEÚDO DIVIDIDO */
-        .venda-container { display: flex; gap: 15px; flex: 1; min-height: 0; }
-        
-        /* LADO ESQUERDO: CUPOM FISCAL */
-        .coluna-cupom { flex: 0.8; background: #fff; border: 1px solid #ccc; display: flex; flex-direction: column; padding: 15px; font-family: 'Courier New', monospace; }
-        .cupom-header { text-align: center; border-bottom: 1px dashed #000; padding-bottom: 8px; margin-bottom: 10px; }
-        .cupom-lista { flex: 1; overflow-y: auto; font-size: 12px; }
-        .cupom-item { display: flex; justify-content: space-between; margin-bottom: 4px; }
-        .cupom-total { border-top: 2px solid #000; padding-top: 8px; font-size: 18px; font-weight: bold; display: flex; justify-content: space-between; font-family: sans-serif; }
+        .venda-container { display: flex; gap: 15px; flex: 1; }
+        .coluna-cupom { flex: 0.8; background: #fff; border: 1px solid #ccc; padding: 15px; font-family: 'Courier New', monospace; font-size: 12px; }
+        .coluna-dados { flex: 1.2; display: flex; flex-direction: column; gap: 10px; }
 
-        /* LADO DIREITO: LANÇAMENTO E LISTA */
-        .coluna-dados { flex: 1.2; display: flex; flex-direction: column; gap: 15px; }
-        
-        /* TABELA DE PRODUTOS */
+        /* Tabela Compacta */
         table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        th { text-align: left; padding: 8px; background: #f8f9fa; border-bottom: 2px solid #dee2e6; }
-        td { padding: 6px 8px; border-bottom: 1px solid #eee; }
+        th { text-align: left; padding: 5px; background: #f8f9fa; border-bottom: 1px solid #dee2e6; }
+        td { padding: 5px; border-bottom: 1px solid #eee; }
 
-        /* INPUTS */
-        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: var(--font-padrao); }
-        .input-bipa { background: #fff9c4; border: 2px solid var(--accent); font-weight: bold; width: 100%; }
-
-        /* BOTÃO FECHAR */
-        .btn-acao { background: var(--success); color: white; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
+        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; width: 100%; }
+        .input-bipa { background: #fff9c4; border: 2px solid var(--accent); font-weight: bold; }
+        .btn-pgto { padding: 10px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; flex: 1; font-size: 11px; }
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="logo-area">BOTECO 934</div>
-    <div class="nav-label">Movimento</div>
-    <div class="nav-item active" onclick="aba('vendas')">🛒 VENDAS</div>
-    <div class="nav-item" onclick="aba('cadastros')">📝 CADASTROS</div>
-    
-    <div class="nav-label">Controles</div>
-    <div class="nav-item" onclick="aba('estoque')">🗄️ ESTOQUE</div>
-    <div class="nav-item" onclick="aba('financeiro')">💰 FINANCEIRO</div>
-    <div class="nav-item" onclick="aba('fiado')">📓 PENDURA</div>
-    
-    <div class="nav-label">Parcerias</div>
-    <div class="nav-item" style="color: #00a859;" onclick="aba('boticario')">🌸 BOTICÁRIO</div>
-    
-    <div class="nav-label">Apoio</div>
-    <div class="nav-item" onclick="aba('calc')">🧮 CALCULADORA</div>
+    <div style="padding:15px; color:var(--accent); font-weight:bold; text-align:center;">BOTECO 934</div>
+    <div class="nav-item active">🛒 VENDAS</div>
+    <div class="nav-item">🗄️ ESTOQUE</div>
+    <div class="nav-item">💰 FINANCEIRO</div>
+    <div class="nav-item" style="color:#00a859;">🌸 BOTICÁRIO</div>
+    <div class="nav-item">🧮 CALCULADORA</div>
 </nav>
 
-<main id="tela-vendas">
+<main>
     <div class="painel">
-        <h2>📍 MAPA DE MESAS</h2>
         <div id="grid-mesas" class="grid-mesas"></div>
     </div>
 
     <div class="venda-container">
         <div class="coluna-cupom" id="cupom-fiscal">
-            <div class="cupom-header">
-                <b id="cupom-nome-mesa">SELECIONE UMA MESA</b><br>
+            <div style="text-align:center; border-bottom:1px dashed #000; padding-bottom:5px; margin-bottom:10px;">
+                <b id="cupom-mesa">MESA 00</b><br>
                 <small id="cupom-cliente">CLIENTE: CONSUMIDOR</small>
             </div>
-            <div id="cupom-lista" class="cupom-lista">
-                </div>
-            <div class="cupom-total">
-                <span>TOTAL:</span>
-                <span id="txt-total">R$ 0,00</span>
+            <div id="cupom-itens" style="min-height:180px;"></div>
+            <div style="border-top:2px solid #000; padding-top:5px; font-weight:bold; font-size:16px;">
+                TOTAL: <span id="txt-total">R$ 0,00</span>
             </div>
-            <button class="btn-acao" onclick="fecharVenda()">FECHAR CONTA (F2)</button>
         </div>
 
         <div class="coluna-dados">
             <div class="painel">
-                <h2>⚡ LANÇAR ITEM (LEITOR)</h2>
-                <div style="display: flex; gap: 8px;">
-                    <input type="number" id="qtd" value="1" style="width: 50px; text-align: center;" title="Quantidade">
-                    <input type="text" id="barcode" class="input-bipa" placeholder="BIPE O CÓDIGO DE BARRAS..." onkeypress="verificarBip(event)">
+                <h2 style="font-size:12px; margin:0 0 8px 0;">⚡ LANÇAR / BUSCAR PRODUTO</h2>
+                <div style="display:flex; gap:5px;">
+                    <input type="number" id="qtd" value="1" style="width:45px; text-align:center;">
+                    <input type="text" id="barcode" class="input-bipa" placeholder="BIPE OU DIGITE O NOME..." onkeypress="handleSearch(event)">
+                </div>
+                <p style="font-size:10px; color:#7f8c8d; margin-top:5px;">*Se não achar no estoque, buscarei no Google automaticamente.</p>
+            </div>
+
+            <div class="painel">
+                <h2 style="font-size:12px; margin:0 0 8px 0;">👤 CLIENTE E PAGAMENTO</h2>
+                <div style="display:flex; gap:5px; margin-bottom:10px;">
+                    <input type="text" id="nome-cliente" placeholder="NOME DO CLIENTE" style="flex:1.5;">
+                    <input type="text" id="fone-cliente" placeholder="FONE (DDD+NÚMERO)" style="flex:1;">
+                </div>
+                <div style="display:flex; gap:5px;">
+                    <button class="btn-pgto" style="background:#2ecc71;" onclick="finalizar('DINHEIRO')">DINHEIRO</button>
+                    <button class="btn-pgto" style="background:#3498db;" onclick="finalizar('PIX')">PIX</button>
+                    <button class="btn-pgto" style="background:#e67e22;" onclick="finalizar('PENDURA')">PENDURA</button>
                 </div>
             </div>
 
-            <div class="painel" style="flex: 1; overflow-y: auto;">
-                <h2>📦 PRODUTOS EM ESTOQUE</h2>
-                <input type="text" id="busca" placeholder="Filtrar por nome..." style="width:100%; margin-bottom:10px;" oninput="filtrar()">
-                <table id="tabela-prods">
-                    <thead>
-                        <tr>
-                            <th>DESCRIÇÃO</th>
-                            <th>PREÇO</th>
-                            <th>ESTOQUE</th>
-                            <th>ADD</th>
-                        </tr>
-                    </thead>
+            <div class="painel" style="flex:1; overflow-y:auto;">
+                <table id="tab-estoque">
+                    <thead><tr><th>ITEM</th><th>PREÇO</th><th>ESTOQUE</th></tr></thead>
                     <tbody id="lista-estoque"></tbody>
                 </table>
             </div>
@@ -135,104 +99,97 @@
 </main>
 
 <script>
-    // Dados iniciais
-    let prods = [
-        {id: "123", n: "CERVEJA LATA 350ML", p: 6.00, e: 48},
-        {id: "456", n: "CERVEJA 600ML", p: 10.00, e: 24},
-        {id: "789", n: "COCA-COLA LATA", p: 5.00, e: 12}
+    let estoque = [
+        {id: "78901234", n: "CERVEJA LATA 350ML", p: 6.00, q: 48},
+        {id: "78905678", n: "DOSE PITÚ", p: 3.50, q: 100}
     ];
 
     let mesas = {};
-    for(let i=1; i<=8; i++) mesas[i] = { ativa: false, itens: [], total: 0 };
-    let mesaAtiva = null;
+    for(let i=1; i<=8; i++) mesas[i] = { ativa: false, itens: [], total: 0, cliente: "CONSUMIDOR", fone: "" };
+    let mesaSel = null;
 
-    // Inicia o sistema
-    function init() {
-        renderMesas();
-        renderEstoque();
-    }
+    function init() { renderMesas(); renderEstoque(); }
 
     function renderMesas() {
         const grid = document.getElementById('grid-mesas');
         grid.innerHTML = "";
         for(let i=1; i<=8; i++) {
-            let btn = document.createElement('button');
-            btn.className = `mesa-btn ${mesas[i].ativa ? 'ocupada' : 'livre'} ${mesaAtiva == i ? 'mesa-sel' : ''}`;
-            btn.innerHTML = `M${i}<br>${mesas[i].ativa ? 'R$ '+mesas[i].total.toFixed(2) : 'LIVRE'}`;
-            btn.onclick = () => selMesa(i);
-            grid.appendChild(btn);
+            let b = document.createElement('button');
+            b.className = `mesa-btn ${mesas[i].ativa ? 'ocupada' : 'livre'} ${mesaSel == i ? 'sel' : ''}`;
+            b.innerHTML = `M${i}<br>${mesas[i].ativa ? 'R$'+mesas[i].total.toFixed(2) : 'LIVRE'}`;
+            b.onclick = () => { mesaSel = i; renderMesas(); renderCupom(); };
+            grid.appendChild(b);
         }
     }
 
-    function selMesa(id) {
-        mesaAtiva = id;
-        document.getElementById('cupom-nome-mesa').innerText = "MESA " + id.toString().padStart(2, '0');
-        document.getElementById('barcode').focus();
-        renderMesas();
-        renderCupom();
-    }
-
     function renderCupom() {
-        const lista = document.getElementById('cupom-lista');
-        if(!mesaAtiva) { lista.innerHTML = ""; return; }
-        
-        let m = mesas[mesaAtiva];
-        lista.innerHTML = "";
-        m.total = 0;
-        
-        m.itens.forEach((it, index) => {
-            m.total += it.p;
-            lista.innerHTML += `
-                <div class="cupom-item">
-                    <span>1x ${it.n}</span>
-                    <span>${it.p.toFixed(2)}</span>
-                </div>`;
-        });
+        if(!mesaSel) return;
+        let m = mesas[mesaSel];
+        document.getElementById('cupom-mesa').innerText = "MESA " + mesaSel;
+        document.getElementById('cupom-cliente').innerText = "CLIENTE: " + m.cliente;
+        document.getElementById('cupom-itens').innerHTML = m.itens.map(it => `
+            <div style="display:flex; justify-content:space-between; margin-bottom:3px;">
+                <span>${it.qtd}x ${it.n}</span><span>${(it.qtd * it.p).toFixed(2)}</span>
+            </div>
+        `).join('');
         document.getElementById('txt-total').innerText = "R$ " + m.total.toFixed(2);
     }
 
-    function verificarBip(e) {
+    function handleSearch(e) {
         if(e.key === 'Enter') {
-            let code = document.getElementById('barcode').value;
-            let qtd = parseInt(document.getElementById('qtd').value);
-            let p = prods.find(x => x.id === code);
-            
-            if(p && mesaAtiva) {
-                mesas[mesaAtiva].ativa = true;
-                for(let i=0; i<qtd; i++) mesas[mesaAtiva].itens.push({n: p.n, p: p.p});
-                document.getElementById('barcode').value = "";
-                document.getElementById('qtd').value = "1";
-                renderCupom();
-                renderMesas();
+            if(!mesaSel) return alert("Selecione a mesa!");
+            let val = document.getElementById('barcode').value;
+            let p = estoque.find(x => x.id === val || x.n.toLowerCase().includes(val.toLowerCase()));
+
+            if(p) {
+                addProduto(p);
             } else {
-                alert("MESA NÃO SELECIONADA OU PRODUTO NÃO ENCONTRADO!");
+                // Busca Externa Simbolizada
+                let buscar = confirm("Produto não encontrado no estoque. Deseja buscar '" + val + "' na internet para cadastrar?");
+                if(buscar) window.open("https://www.google.com/search?q=preço+produto+barcode+" + val);
             }
         }
     }
 
+    function addProduto(p) {
+        let q = parseInt(document.getElementById('qtd').value);
+        mesas[mesaSel].ativa = true;
+        mesas[mesaSel].itens.push({n: p.n, p: p.p, qtd: q});
+        mesas[mesaSel].total += (p.p * q);
+        p.q -= q;
+        document.getElementById('barcode').value = "";
+        renderCupom(); renderMesas(); renderEstoque();
+    }
+
+    function finalizar(tipo) {
+        if(!mesaSel || !mesas[mesaSel].ativa) return alert("Mesa vazia!");
+        
+        let m = mesas[mesaSel];
+        m.cliente = document.getElementById('nome-cliente').value || "Consumidor";
+        m.fone = document.getElementById('fone-cliente').value;
+
+        let recibo = `*BOTECO 934 - RECIBO*%0A---------------------------%0A*MESA:* ${mesaSel}%0A*CLIENTE:* ${m.cliente}%0A---------------------------%0A`;
+        m.itens.forEach(it => recibo += `${it.qtd}x ${it.n} - R$ ${(it.qtd*it.p).toFixed(2)}%0A`);
+        recibo += `---------------------------%0A*TOTAL: R$ ${m.total.toFixed(2)}*%0A*PGTO:* ${tipo}%0A%0A_Obrigado pela preferência!_`;
+
+        if(m.fone) {
+            let link = `https://wa.me/55${m.fone}?text=${recibo}`;
+            window.open(link);
+        } else if(tipo === 'PENDURA') {
+            alert("Favor informar o Fone para registrar o Pendura no WhatsApp!");
+            return;
+        }
+
+        alert("VENDA FINALIZADA COM SUCESSO!");
+        mesas[mesaSel] = { ativa: false, itens: [], total: 0, cliente: "CONSUMIDOR", fone: "" };
+        mesaSel = null;
+        renderMesas(); renderCupom();
+    }
+
     function renderEstoque() {
-        const corpo = document.getElementById('lista-estoque');
-        corpo.innerHTML = prods.map(p => `
-            <tr>
-                <td>${p.n}</td>
-                <td>R$ ${p.p.toFixed(2)}</td>
-                <td>${p.e}</td>
-                <td><button onclick="addManual('${p.id}')">+</button></td>
-            </tr>
+        document.getElementById('lista-estoque').innerHTML = estoque.map(p => `
+            <tr><td>${p.n}</td><td>R$ ${p.p.toFixed(2)}</td><td>${p.q}</td></tr>
         `).join('');
-    }
-
-    function addManual(id) {
-        if(!mesaAtiva) return alert("Selecione uma mesa!");
-        let p = prods.find(x => x.id === id);
-        mesas[mesaAtiva].ativa = true;
-        mesas[mesaAtiva].itens.push({n: p.n, p: p.p});
-        renderCupom();
-        renderMesas();
-    }
-
-    function aba(nome) {
-        alert("Aba " + nome.toUpperCase() + " integrada ao layout!");
     }
 
     window.onload = init;
