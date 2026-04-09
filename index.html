@@ -2,28 +2,39 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>SISTEMA ELITE V19 - BOTECO 934 (DOSES)</title>
+    <title>SISTEMA ELITE V20 - BOTECO 934</title>
     <style>
-        :root { --dark: #1a252f; --sidebar: #2c3e50; --accent: #f39c12; --success: #27ae60; --danger: #c0392b; --info: #2980b9; --bg: #f1f2f6; }
+        :root { 
+            --dark: #1a252f; --sidebar: #2c3e50; --accent: #f39c12; 
+            --success: #27ae60; --danger: #c0392b; --info: #2980b9; 
+            --bg: #f1f2f6; 
+        }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { margin: 0; display: flex; height: 100vh; background: var(--bg); overflow: hidden; }
 
+        /* MENU LATERAL FIXO */
         aside { width: 250px; background: var(--dark); color: white; display: flex; flex-direction: column; flex-shrink: 0; border-right: 5px solid var(--accent); }
         .header-loja { padding: 25px; text-align: center; font-size: 20px; font-weight: bold; color: var(--accent); border-bottom: 2px solid var(--sidebar); }
-        .menu-btn { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #34495e; font-weight: bold; }
-        .menu-btn.active { background: var(--sidebar); color: var(--accent); border-left: 8px solid var(--accent); }
+        .menu-btn { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #34495e; font-weight: bold; transition: 0.3s; }
+        .menu-btn:hover, .menu-btn.active { background: var(--sidebar); color: var(--accent); border-left: 8px solid var(--accent); }
 
-        main { flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
+        /* PRINCIPAL */
+        main { flex-grow: 1; display: flex; flex-direction: column; min-width: 0; }
+        .topo { background: white; padding: 15px; display: flex; gap: 15px; border-bottom: 1px solid #ddd; }
+        .stat { flex: 1; padding: 10px; border-radius: 8px; color: white; text-align: center; font-weight: bold; }
         .conteudo { flex-grow: 1; padding: 20px; overflow-y: auto; }
         .painel { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+
+        /* ELEMENTOS FORMULÁRIO */
+        input, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; }
+        .btn-acao { padding: 15px; border: none; border-radius: 6px; color: white; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; }
         
-        input { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #ddd; border-radius: 6px; font-size: 16px; }
-        .btn-calc { background: var(--accent); color: white; border: none; padding: 15px; width: 100%; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px; }
-        
-        .res-box { background: #f8f9fa; border: 2px solid var(--sidebar); padding: 15px; border-radius: 10px; margin-top: 15px; }
-        .res-linha { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; font-size: 15px; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+
+        /* RESULTADOS CALCULADORA */
+        .resultado-card { background: #f8f9fa; border: 2px solid var(--sidebar); padding: 15px; border-radius: 10px; margin-top: 10px; }
+        .linha-res { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dotted #ccc; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -31,91 +42,122 @@
 <aside>
     <div class="header-loja">BOTECO 934</div>
     <div class="menu-btn" onclick="ver('aba-vendas', this)">🛒 VENDAS</div>
-    <div class="menu-btn active" onclick="ver('aba-calculadora', this)">🥃 CALC. DE DOSES</div>
     <div class="menu-btn" onclick="ver('aba-produtos', this)">📦 ESTOQUE</div>
+    <div class="menu-btn active" onclick="ver('aba-calculadora', this)">🧠 CALCULADORA MIX</div>
+    <div class="menu-btn" onclick="ver('aba-boticario', this)">🌸 BOTICÁRIO</div>
     <div class="menu-btn" onclick="ver('aba-despesas', this)">💸 DESPESAS</div>
     <div style="margin-top: auto; padding: 20px;">
-        <button onclick="alert('Caixa Pronto!')" style="width:100%; padding:15px; background:var(--success); color:white; border:none; border-radius:8px; font-weight:bold;">SISTEMA ATIVO</button>
+        <button onclick="alert('Sistema Pronto!')" style="width:100%; padding:15px; background:var(--success); color:white; border:none; border-radius:8px; font-weight:bold;">SISTEMA ONLINE</button>
     </div>
 </aside>
 
 <main>
+    <div class="topo">
+        <div class="stat" style="background:var(--info)">VENDAS: <span id="res-vendas">R$ 0,00</span></div>
+        <div class="stat" style="background:var(--danger)">SAÍDAS: <span id="res-contas">R$ 0,00</span></div>
+        <div class="stat" style="background:var(--success)">SALDO: <span id="res-saldo">R$ 0,00</span></div>
+    </div>
+
     <div class="conteudo">
         
         <div id="aba-calculadora" class="tab-content active">
             <div class="painel">
-                <h2 style="color:var(--dark); margin-top:0;">🥃 CALCULADORA DE DOSES (LUCRO REAL)</h2>
+                <h2 style="margin-top:0; color:var(--dark);">🧠 CALCULADORA DE MIX E DOSES</h2>
+                
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    
                     <div>
-                        <label><b>Custo da Garrafa (R$):</b></label>
-                        <input type="number" id="dose-custo-garrafa" placeholder="Ex: 120.00" step="0.01">
-                        
-                        <label><b>Tamanho da Garrafa (ml):</b></label>
-                        <input type="number" id="dose-ml-total" placeholder="Ex: 750 ou 1000">
-                        
-                        <label><b>Tamanho da Dose Servida (ml):</b></label>
-                        <input type="number" id="dose-tamanho" placeholder="Ex: 50">
-                        
-                        <label><b>Preço que deseja cobrar (R$):</b></label>
-                        <input type="number" id="dose-preco-venda" placeholder="Ex: 15.00">
-                        
-                        <button class="btn-calc" onclick="calcularDose()">CALCULAR LUCRO DA DOSE</button>
+                        <label><b>O que quer calcular?</b></label>
+                        <select id="calc-tipo" onchange="mudarCampos()">
+                            <option value="unidade">UNIDADE (Cerveja/Refri)</option>
+                            <option value="dose">DOSE (Whisky/Cachaça)</option>
+                        </select>
+
+                        <label><b>Custo Total (Caixa ou Garrafa):</b></label>
+                        <input type="number" id="calc-custo" placeholder="0.00">
+
+                        <label id="label-qtd"><b>Qtd de Itens na Caixa (Unid):</b></label>
+                        <input type="number" id="calc-qtd" placeholder="Ex: 12">
+
+                        <div id="campos-dose" style="display:none">
+                            <label><b>Tamanho da Dose (ml):</b></label>
+                            <input type="number" id="dose-tamanho" placeholder="Ex: 50">
+                        </div>
+
+                        <label><b>Preço de Venda Unitário/Dose:</b></label>
+                        <input type="number" id="calc-venda" placeholder="0.00">
+
+                        <button class="btn-acao" style="background:var(--accent)" onclick="calcularTudo()">CALCULAR LUCRO REAL</button>
                     </div>
 
-                    <div id="resultado-dose" class="res-box">
-                        <h3 style="text-align:center; margin-top:0; color:var(--info);">RESULTADO DO MIX</h3>
-                        <div class="res-linha"><span>Custo por ML:</span> <b id="res-ml">R$ 0,00</b></div>
-                        <div class="res-linha"><span>Custo da Dose:</span> <b id="res-custo-dose">R$ 0,00</b></div>
-                        <div class="res-linha"><span>Doses por Garrafa:</span> <b id="res-qtd-doses">0</b></div>
-                        <div class="res-linha"><span>Lucro por Dose:</span> <b id="res-lucro-dose" style="color:green">R$ 0,00</b></div>
-                        <div class="res-linha"><span>Margem de Lucro:</span> <b id="res-margem">0%</b></div>
-                        
-                        <div style="margin-top:15px; padding:10px; background:#fff3cd; border-radius:5px; font-size:12px; border:1px solid #ffeeba;">
-                            <b>Dica Elite:</b> Se o lucro estiver baixo, tente diminuir a dose para 40ml ou aumentar o preço de venda.
+                    <div class="resultado-card">
+                        <h3 style="text-align:center; margin-top:0; color:var(--info)">RESULTADOS</h3>
+                        <div id="res-display">
+                            <div class="linha-res"><span>Custo Unitário:</span> <span id="res-unid">R$ 0,00</span></div>
+                            <div class="linha-res"><span>Lucro por Item:</span> <span id="res-lucro" style="color:green">R$ 0,00</span></div>
+                            <div class="linha-res"><span>Margem %:</span> <span id="res-margem">0%</span></div>
+                            <div id="res-extra" class="linha-res" style="display:none"><span>Rendimento:</span> <span id="res-rend">0 doses</span></div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
 
         <div id="aba-vendas" class="tab-content">
-            <div class="painel">
-                <h2>🛒 FRENTE DE CAIXA</h2>
-                <p>Módulo de vendas ativo e integrado ao estoque.</p>
-            </div>
+            <div class="painel"><h2>🛒 FRENTE DE CAIXA</h2><p>Módulo de vendas ativo.</p></div>
         </div>
 
         <div id="aba-produtos" class="tab-content">
-            <div class="painel">
-                <h2>📦 ESTOQUE</h2>
-                <p>Gerencie seus produtos e preços aqui.</p>
-            </div>
+            <div class="painel"><h2>📦 ESTOQUE</h2><p>Gerencie seus produtos aqui.</p></div>
         </div>
 
     </div>
 </main>
 
 <script>
-    function calcularDose() {
-        let custoGarrafa = parseFloat(document.getElementById('dose-custo-garrafa').value) || 0;
-        let mlTotal = parseFloat(document.getElementById('dose-ml-total').value) || 1;
-        let tamanhoDose = parseFloat(document.getElementById('dose-tamanho').value) || 1;
-        let precoVenda = parseFloat(document.getElementById('dose-preco-venda').value) || 0;
+    function mudarCampos() {
+        const tipo = document.getElementById('calc-tipo').value;
+        const camposDose = document.getElementById('campos-dose');
+        const labelQtd = document.getElementById('label-qtd');
+        const extra = document.getElementById('res-extra');
 
-        // Cálculos
-        let custoML = custoGarrafa / mlTotal;
-        let custoDose = custoML * tamanhoDose;
-        let qtdDoses = mlTotal / tamanhoDose;
-        let lucroDose = precoVenda - custoDose;
-        let margem = (lucroDose / precoVenda) * 100;
+        if(tipo === 'dose') {
+            camposDose.style.display = 'block';
+            labelQtd.innerHTML = "<b>Tamanho da Garrafa (ml):</b>";
+            document.getElementById('calc-qtd').placeholder = "Ex: 1000";
+            extra.style.display = 'flex';
+        } else {
+            camposDose.style.display = 'none';
+            labelQtd.innerHTML = "<b>Qtd de Itens na Caixa:</b>";
+            document.getElementById('calc-qtd').placeholder = "Ex: 12";
+            extra.style.display = 'none';
+        }
+    }
 
-        // Exibição
-        document.getElementById('res-ml').innerText = "R$ " + custoML.toFixed(4);
-        document.getElementById('res-custo-dose').innerText = "R$ " + custoDose.toFixed(2);
-        document.getElementById('res-qtd-doses').innerText = Math.floor(qtdDoses) + " doses";
-        document.getElementById('res-lucro-dose').innerText = "R$ " + lucroDose.toFixed(2);
+    function calcularTudo() {
+        const tipo = document.getElementById('calc-tipo').value;
+        const custoTotal = parseFloat(document.getElementById('calc-custo').value) || 0;
+        const qtdOuMl = parseFloat(document.getElementById('calc-qtd').value) || 1;
+        const precoVenda = parseFloat(document.getElementById('calc-venda').value) || 0;
+
+        let custoUnid = 0;
+        let lucro = 0;
+        let margem = 0;
+
+        if(tipo === 'unidade') {
+            custoUnid = custoTotal / qtdOuMl;
+        } else {
+            const tamanhoDose = parseFloat(document.getElementById('dose-tamanho').value) || 1;
+            const custoML = custoTotal / qtdOuMl;
+            custoUnid = custoML * tamanhoDose;
+            const rendimento = qtdOuMl / tamanhoDose;
+            document.getElementById('res-rend').innerText = Math.floor(rendimento) + " doses";
+        }
+
+        lucro = precoVenda - custoUnid;
+        margem = (lucro / precoVenda) * 100;
+
+        document.getElementById('res-unid').innerText = "R$ " + custoUnid.toFixed(2);
+        document.getElementById('res-lucro').innerText = "R$ " + lucro.toFixed(2);
         document.getElementById('res-margem').innerText = isFinite(margem) ? margem.toFixed(1) + "%" : "0%";
     }
 
