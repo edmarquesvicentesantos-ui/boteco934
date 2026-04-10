@@ -1,0 +1,15 @@
+def calcular_precos(custo_caixa, qtd_unidades, margem_desejada):
+    custo_unidade = custo_caixa / qtd_unidades
+    
+    # Markup Real (Inverso da Margem sobre Venda)
+    # Fórmula: Preço = Custo / (1 - Margem)
+    preco_venda_base = custo_unidade / (1 - (margem_desejada / 100))
+    
+    precos = {
+        "unidade_natural": preco_venda_base,
+        "unidade_gelada": preco_venda_base * 1.15, # Ex: 15% a mais pela luz
+        "caixa_natural": (preco_venda_base * 0.90) * qtd_unidades, # 10% desc no volume
+        "caixa_gelada": (preco_venda_base * 1.05) * qtd_unidades,
+        "lucro_real_unidade": preco_venda_base - custo_unidade
+    }
+    return precos
