@@ -1,0 +1,14 @@
+# Inicia o repositório local
+git init
+
+# Adiciona os arquivos
+git add .
+
+# Cria o primeiro registro
+git commit -m "Estrutura inicial PDV: Precificação detalhada e Firebase"
+
+# Conecta ao seu repositório no GitHub (substitua pelo seu link)
+git remote add origin https://github.com/SEU_USUARIO/NOME_DO_REPOSITORIO.git
+
+# Envia os arquivos
+git push -u origin main
