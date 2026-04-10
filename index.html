@@ -3,77 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boteco 934 - Gestão Integrada</title>
+    <title>BOTECO 934 | Gestão Integrada</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
-<body class="bg-gray-50 min-h-screen pb-20">
+<body class="bg-gray-100 min-h-screen pb-20">
 
     <nav class="bg-blue-900 text-white p-4 shadow-xl mb-6">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-xl font-bold tracking-tight">BOTECO 934 | PDV</h1>
-            <span id="statusConexao" class="text-xs bg-green-500 px-2 py-1 rounded">Online</span>
+            <span class="text-xs bg-green-500 px-2 py-1 rounded">Sistema Conectado</span>
         </div>
     </nav>
 
     <main class="container mx-auto px-4 space-y-8">
         
-        <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <h2 class="text-lg font-bold mb-4 text-gray-800 flex items-center">
-                <span class="mr-2">💰</span> Calculadora de Margem e Doses
-            </h2>
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+            <h2 class="text-lg font-bold mb-4 text-gray-800 flex items-center">💰 Precificação de Bebidas e Doses</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="bg-gray-50 p-3 rounded-lg">
-                    <label class="block text-xs font-semibold text-gray-500 uppercase">Custo Caixa/Garrafa</label>
-                    <input type="number" id="custoEntrada" step="0.01" class="w-full bg-transparent text-lg font-bold focus:outline-none" placeholder="0.00">
+                <div class="bg-gray-50 p-3 rounded-lg border">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase">Custo Caixa/Garrafa (R$)</label>
+                    <input type="number" id="custoEntrada" step="0.01" class="w-full bg-transparent text-lg font-bold outline-none" placeholder="0.00">
                 </div>
-                <div class="bg-gray-50 p-3 rounded-lg">
+                <div class="bg-gray-50 p-3 rounded-lg border">
                     <label class="block text-xs font-semibold text-gray-500 uppercase">Unidades/Pack</label>
-                    <input type="number" id="qtdUnidades" class="w-full bg-transparent text-lg font-bold focus:outline-none" value="1">
+                    <input type="number" id="qtdUnidades" class="w-full bg-transparent text-lg font-bold outline-none" value="1">
                 </div>
-                <div class="bg-gray-50 p-3 rounded-lg">
-                    <label class="block text-xs font-semibold text-gray-500 uppercase">Margem Alvo %</label>
-                    <input type="number" id="markupAlvo" class="w-full bg-transparent text-lg font-bold focus:outline-none" value="50">
+                <div class="bg-gray-50 p-3 rounded-lg border">
+                    <label class="block text-xs font-semibold text-gray-500 uppercase">Margem Lucro Alvo %</label>
+                    <input type="number" id="markupAlvo" class="w-full bg-transparent text-lg font-bold outline-none" value="50">
                 </div>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="text-xs text-gray-400 uppercase border-b">
+                <table class="w-full text-left border-collapse">
+                    <thead class="text-xs text-gray-400 uppercase border-b bg-gray-50">
                         <tr>
-                            <th class="py-2">Tipo</th>
-                            <th>Custo Un.</th>
-                            <th>Venda Sugerida</th>
-                            <th>Lucro R$</th>
+                            <th class="p-3">Tipo de Venda</th>
+                            <th class="p-3">Custo Un.</th>
+                            <th class="p-3">Venda Sugerida</th>
+                            <th class="p-3">Lucro Líquido</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaPrecos" class="text-sm">
+                    <tbody id="tabelaPrecos" class="text-sm divide-y">
                         </tbody>
                 </table>
             </div>
         </section>
 
-        <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <h2 class="text-lg font-bold mb-4 text-gray-800 flex items-center">
-                <span class="mr-2">🍻</span> Mapa de Mesas (Pendura Controlada)
-            </h2>
-            <div id="containerMesas" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 text-center">
+        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+            <h2 class="text-lg font-bold mb-4 text-gray-800 flex items-center">🍻 Controle de Mesas</h2>
+            <div id="containerMesas" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
                 </div>
         </section>
 
     </main>
 
-    <div id="modalMesa" class="hidden fixed inset-0 bg-blue-900/40 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-            <h3 id="modalTitulo" class="text-xl font-bold mb-1">Mesa</h3>
-            <p class="text-gray-500 text-sm mb-4">Cadastre o cliente para liberar a mesa.</p>
-            
-            <input type="text" id="nomeCliente" class="w-full border-2 border-gray-100 p-3 rounded-xl mb-4 focus:border-blue-500 outline-none" placeholder="Nome do Cliente ou WhatsApp">
-            
+    <div id="modalMesa" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm">
+            <h3 id="modalTitulo" class="text-xl font-bold mb-1 italic">Abrir Mesa</h3>
+            <p class="text-gray-500 text-sm mb-4 italic">Identifique o cliente para liberar a comanda.</p>
+            <input type="text" id="nomeCliente" class="w-full border-2 p-3 rounded-xl mb-4 outline-none focus:border-blue-600" placeholder="Nome ou WhatsApp">
             <div class="flex gap-2">
-                <button onclick="fecharModal()" class="flex-1 py-3 text-gray-400 font-semibold">Cancelar</button>
-                <button onclick="salvarMesa()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-200">Abrir Mesa</button>
+                <button onclick="fecharModal()" class="flex-1 py-3 text-gray-400 font-bold">Cancelar</button>
+                <button onclick="salvarMesa()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold">Abrir Agora</button>
             </div>
         </div>
     </div>
