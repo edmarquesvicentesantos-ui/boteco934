@@ -1,0 +1,29 @@
+-- Tabela de Produtos com Alerta de Estoque
+CREATE TABLE produtos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    preco_custo DECIMAL(10,2),
+    margem_lucro DECIMAL(5,2), -- Ex: 30.00 para 30%
+    preco_venda DECIMAL(10,2),
+    estoque_atual INTEGER DEFAULT 0,
+    estoque_minimo INTEGER DEFAULT 5, -- Gatilho para o alerta
+    barcode TEXT UNIQUE
+);
+
+-- Tabela de Mesas vinculada ao Cliente
+CREATE TABLE mesas (
+    id INTEGER PRIMARY KEY,
+    numero_mesa INTEGER UNIQUE,
+    status TEXT DEFAULT 'Livre', -- Livre, Ocupada
+    cliente_id INTEGER,
+    FOREIGN KEY (cliente_id) REFERENCES clientes(id)
+);
+
+-- Controle de Pendura e Crédito
+CREATE TABLE clientes (
+    id INTEGER PRIMARY KEY,
+    nome TEXT NOT NULL,
+    whatsapp TEXT,
+    limite_pendura DECIMAL(10,2) DEFAULT 0.00,
+    saldo_devedor DECIMAL(10,2) DEFAULT 0.00
+);
