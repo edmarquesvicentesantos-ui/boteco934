@@ -1,119 +1,55 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BOTECO 934 | MIX INTELIGENTE</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root { --gold: #ffd700; --green: #2ecc71; --bg: #0b0f19; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: white; margin: 0; padding: 10px; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .header { text-align: center; padding: 10px; border-bottom: 2px solid var(--gold); margin-bottom: 10px; }
-        #inputBipe { width: 100%; padding: 20px; border-radius: 10px; border: 2px solid #334155; background: #1e293b; color: var(--gold); font-size: 20px; text-align: center; outline: none; box-sizing: border-box; }
-        #inputBipe:focus { border-color: var(--gold); }
-        .main { display: grid; grid-template-columns: 1fr 300px; gap: 10px; flex: 1; min-height: 0; }
-        @media (max-width: 800px) { .main { grid-template-columns: 1fr; } }
-        .lista { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 10px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.1); }
-        .row { display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 5px solid var(--gold); }
-        .details { flex: 1; }
-        .name { display: block; font-weight: bold; text-transform: uppercase; font-size: 14px; color: #f8fafc; }
-        .meta { color: #94a3b8; font-size: 12px; }
-        .lucro-tag { color: var(--green); font-weight: bold; font-size: 12px; }
-        .total-p { color: var(--green); font-weight: bold; font-size: 18px; margin: 0 15px; }
-        .resumo { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
-        .btn-zap { width: 100%; padding: 18px; border-radius: 10px; border: none; background: #25d366; color: white; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; }
-        <nav style="display: flex; justify-content: space-around; background: rgba(255,255,255,0.05); padding: 10px; margin-bottom: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
-    <a href="index.html" style="color: var(--gold); text-decoration: none; font-weight: bold; font-size: 12px;"><i class="fas fa-calculator"></i> VENDAS</a>
-    <a href="estoque.html" style="color: white; text-decoration: none; font-weight: bold; font-size: 12px;"><i class="fas fa-boxes"></i> ESTOQUE</a>
-    <a href="clientes.html" style="color: white; text-decoration: none; font-weight: bold; font-size: 12px;"><i class="fas fa-users"></i> CLIENTES</a>
-</nav>
-    </style>
-</head>
-<body>
-    <div class="header"><h2 style="margin:0; color:var(--gold);">BOTECO 934 | MIX INTELIGENTE</h2></div>
-    <input type="text" id="inputBipe" placeholder="BIPE O PRODUTO AGORA..." onkeypress="if(event.key === 'Enter') handle(this.value)" autofocus>
-    <div class="main">
-        <div class="lista" id="caixa"><div style="text-align:center; padding-top:50px; color:#64748b;">Aguardando o primeiro bipe...</div></div>
-        <div class="resumo">
-            <span style="color:#94a3b8">TOTAL ACUMULADO</span>
-            <div style="font-size: 45px; font-weight: 900; color: var(--green); margin: 10px 0;">R$ <span id="totalTxt">0,00</span></div>
-            <button class="btn-zap" onclick="enviarZap()"><i class="fab fa-whatsapp"></i> ENVIAR RECIBO</button>
-            <button onclick="localStorage.clear(); location.reload();" style="background:none; border:none; color:#475569; font-size:11px; margin-top:25px; cursor:pointer; text-decoration:underline;">LIMPAR MEMÓRIA DO CAIXA</button>
+<div class="container">
+    <h2>Cadastro de Produto: Destilados e Bebidas</h2>
+    
+    <div class="grid-form">
+        <div class="input-group">
+            <label>Custo da Caixa (R$)</label>
+            <input type="number" id="custoCaixa" oninput="calcularTudo()" step="0.01">
+        </div>
+        <div class="input-group">
+            <label>Qtd Unidades na Caixa</label>
+            <input type="number" id="qtdUnidades" oninput="calcularTudo()">
+        </div>
+        <div class="input-group">
+            <label>Markup Desejado (%)</label>
+            <input type="number" id="markup" oninput="calcularTudo()" value="50">
         </div>
     </div>
-<script>
-    let db = JSON.parse(localStorage.getItem('b934_v4')) || [];
-    let mesa = [];
 
-    function handle(cod) {
-        if(!cod) return;
-        cod = cod.trim();
-        document.getElementById('inputBipe').value = '';
+    <hr>
 
-        let itemMesa = mesa.find(i => i.id === cod);
-        if(itemMesa) { itemMesa.qtd++; render(); return; }
-
-        let produtoDb = db.find(p => p.id === cod);
-        if(produtoDb) { mesa.push({...produtoDb, qtd: 1}); render(); } 
-        else { cadastrar(cod); }
-    }
-
-    async function cadastrar(cod) {
-        try {
-            const r = await fetch(`https://world.openfoodfacts.org/api/v2/product/${cod}.json`);
-            const d = await r.json();
-            let n = (d.status === 1 && d.product.product_name) ? d.product.product_name : "PRODUTO NOVO";
-            
-            let custoStr = prompt(`NOVO: ${n}\n\n1. PREÇO DE CUSTO (Ex: 5.50):`, "5.00");
-            if(custoStr) {
-                let custo = parseFloat(custoStr.replace(',','.'));
-                let margem = prompt(`2. MARGEM DE LUCRO DESEJADA (%)`, "50");
-                let m = parseFloat(margem) / 100;
-                let sugerido = (custo * (1 + m)).toFixed(2);
-                
-                let vendaStr = prompt(`SUGESTÃO DE VENDA: R$ ${sugerido}\n(Seu lucro: R$ ${(sugerido - custo).toFixed(2)})\n\nCONFIRMAR PREÇO FINAL:`, sugerido);
-                if(vendaStr) {
-                    let venda = parseFloat(vendaStr.replace(',','.'));
-                    let novo = { id: cod, nome: n, custo: custo, preco: venda };
-                    db.push(novo);
-                    localStorage.setItem('b934_v4', JSON.stringify(db));
-                    mesa.push({...novo, qtd: 1});
-                    render();
-                }
-            }
-        } catch(e) { alert("Sem internet."); }
-    }
-
-    function render() {
-        const c = document.getElementById('caixa');
-        const t = document.getElementById('totalTxt');
-        c.innerHTML = ''; let soma = 0;
-        if(mesa.length === 0) { c.innerHTML = '<div style="text-align:center; padding-top:50px; color:#64748b;">Aguardando bipe...</div>'; t.innerText = "0,00"; return; }
-        
-        mesa.forEach(i => {
-            let totalItem = i.preco * i.qtd; soma += totalItem;
-            let lucroItem = (i.preco - i.custo) * i.qtd;
-            c.innerHTML += `<div class="row">
-                <div class="details">
-                    <span class="name">${i.nome}</span>
-                    <span class="meta">${i.qtd}x de R$ ${i.preco.toFixed(2)}</span><br>
-                    <span class="lucro-tag">LUCRO: R$ ${lucroItem.toFixed(2)}</span>
-                </div>
-                <div class="total-p">R$ ${totalItem.toFixed(2)}</div>
-                <button onclick="mesa=mesa.filter(x=>x.id!=='${i.id}');render()" style="background:none; border:none; color:#ef4444; cursor:pointer;"><i class="fas fa-trash"></i></button>
-            </div>`;
-        });
-        t.innerText = soma.toFixed(2).replace('.', ',');
-    }
-
-    function enviarZap() {
-        if(mesa.length === 0) return;
-        let msg = "*BOTECO 934 - RECIBO*\n----------------------------\n";
-        mesa.forEach(i => msg += `${i.qtd}x ${i.nome} - R$ ${(i.preco*i.qtd).toFixed(2)}\n`);
-        msg += "----------------------------\n*TOTAL: R$ " + document.getElementById('totalTxt').innerText + "*";
-        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
-    }
-    render();
-</script>
-</body>
-</html>
+    <div class="resultados">
+        <h3>Sugestões de Venda e Margens</h3>
+        <table border="1" id="tabelaPrecos">
+            <thead>
+                <tr>
+                    <th>Modalidade</th>
+                    <th>Custo Un./Dose</th>
+                    <th>Preço Sugerido</th>
+                    <th>Lucro Real (R$)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Unidade Natural</td>
+                    <td id="c-un-nat">-</td>
+                    <td><input type="number" id="p-un-nat"></td>
+                    <td id="l-un-nat">-</td>
+                </tr>
+                <tr>
+                    <td>Unidade Gelada (+15%)</td>
+                    <td id="c-un-gel">-</td>
+                    <td><input type="number" id="p-un-gel"></td>
+                    <td id="l-un-gel">-</td>
+                </tr>
+                <tr>
+                    <td>Dose (Destilados)</td>
+                    <td id="c-dose">-</td>
+                    <td><input type="number" id="p-dose"></td>
+                    <td id="l-dose">-</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <button onclick="salvarNoFirebase()">Salvar Produto e Preços</button>
+</div>
