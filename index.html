@@ -3,90 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BOTECO 934 | Gestão Integrada</title>
+    <title>Sistema Boteco 934 - Gestão & PDV</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/fi/edmarquesvicentesantos-uiboteco934/público/index.htmlrebasejs/10.7.1/firebase-firestore-compat.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen pb-20">
+<body class="bg-gray-100 min-h-screen">
 
-    <nav class="bg-blue-900 text-white p-4 shadow-xl mb-6">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold tracking-tight">BOTECO 934 | PDV</h1>
-            <span class="text-xs bg-green-500 px-2 py-1 rounded">Sistema Conectado</span>
-        </div>
+    <nav class="bg-blue-800 text-white p-4 shadow-lg">
+        <h1 class="text-xl font-bold">Boteco 934 - Cadastro Inteligente</h1>
     </nav>
 
-    <main class="container mx-auto px-4 space-y-8">
-        
-        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-            <h2 class="text-lg font-bold mb-4 text-gray-800 flex items-center">💰 Precificação de Bebidas e Doses</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div class="bg-gray-50 p-3 rounded-lg border">
-                    <label class="block text-xs font-semibold text-gray-500 uppercase">Custo Caixa/Garrafa (R$)</label>
-                    <input type="number" id="custoEntrada" step="0.01" class="w-full bg-transparent text-lg font-bold outline-none" placeholder="0.00">
+    <main class="container mx-auto p-4 max-w-4xl">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2">Precificação Detalhada</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Custo da Caixa (R$)</label>
+                    <input type="number" id="custoCaixa" step="0.01" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm border p-2 focus:ring-blue-500" placeholder="0,00">
                 </div>
-                <div class="bg-gray-50 p-3 rounded-lg border">
-                    <label class="block text-xs font-semibold text-gray-500 uppercase">Unidades/Pack</label>
-                    <input type="number" id="qtdUnidades" class="w-full bg-transparent text-lg font-bold outline-none" value="1">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Unidades por Caixa</label>
+                    <input type="number" id="qtdUnidades" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm border p-2" value="1">
                 </div>
-                <div class="bg-gray-50 p-3 rounded-lg border">
-                    <label class="block text-xs font-semibold text-gray-500 uppercase">Margem Lucro Alvo %</label>
-                    <input type="number" id="markupAlvo" class="w-full bg-transparent text-lg font-bold outline-none" value="50">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Markup Alvo (%)</label>
+                    <input type="number" id="markupDesejado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm border p-2" value="50">
                 </div>
             </div>
 
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead class="text-xs text-gray-400 uppercase border-b bg-gray-50">
+                <table class="min-w-full bg-white border">
+                    <thead class="bg-gray-50">
                         <tr>
-                            <th class="p-3">Tipo de Venda</th>
-                            <th class="p-3">Custo Un.</th>
-                            <th class="p-3">Venda Sugerida</th>
-                            <th class="p-3">Lucro Líquido</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Modalidade</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Custo Real</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Preço Sugerido</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Lucro (R$)</th>
                         </tr>
                     </thead>
-                    <tbody id="tabelaPrecos" class="text-sm divide-y">
+                    <tbody id="corpoTabela" class="divide-y divide-gray-200">
                         </tbody>
                 </table>
             </div>
-        </section>
 
-        <section class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
-            <h2 class="text-lg font-bold mb-4 text-gray-800 flex items-center">🍻 Controle de Mesas</h2>
-            <div id="containerMesas" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-                </div>
-        </section>
-
-    </main>
-
-    <div id="modalMesa" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <h3 id="modalTitulo" class="text-xl font-bold mb-1 italic">Abrir Mesa</h3>
-            <p class="text-gray-500 text-sm mb-4 italic">Identifique o cliente para liberar a comanda.</p>
-            <input type="text" id="nomeCliente" class="w-full border-2 p-3 rounded-xl mb-4 outline-none focus:border-blue-600" placeholder="Nome ou WhatsApp">
-            <div class="flex gap-2">
-                <button onclick="fecharModal()" class="flex-1 py-3 text-gray-400 font-bold">Cancelar</button>
-                <button onclick="salvarMesa()" class="flex-1 bg-blue-600 text-white py-3 rounded-xl font-bold">Abrir Agora</button>
+            <div class="mt-6 flex justify-end">
+                <button id="btnSalvar" class="bg-green-600 text-white px-6 py-2 rounded shadow hover:bg-green-700 transition">
+                    Salvar Produto no Firebase
+                </button>
             </div>
         </div>
-    </div>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    </main>
 
-    <script src="app.js"></script>
-
-    <script>
-        // Teste de diagnóstico: Se isso não aparecer no console (F12), o app.js não carregou
-        window.onload = function() {
-            console.log("Sistema do Boteco 934 iniciado!");
-            if (typeof firebase === 'undefined') {
-                alert("Erro: As bibliotecas do Google não carregaram. Verifique sua internet.");
-            }
-        };
-    </script>
-</body>
-</html>
     <script src="app.js"></script>
 </body>
 </html>
