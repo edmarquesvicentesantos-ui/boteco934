@@ -50,6 +50,31 @@
                 </tr>
             </tbody>
         </table>
+    </div> 
+    <section class="mt-10 bg-white p-6 rounded-lg shadow-md">
+    <h2 class="text-2xl font-semibold mb-4 border-b pb-2">Controle de Mesas</h2>
+    
+    <div id="gridMesas" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div onclick="abrirModalMesa(1)" id="mesa-1" class="cursor-pointer p-4 rounded-lg border-2 border-green-500 bg-green-50 text-center">
+            <span class="block font-bold text-lg">Mesa 01</span>
+            <span class="text-sm text-green-700">Livre</span>
+        </div>
     </div>
+</section>
+
+<div id="modalMesa" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md">
+        <h3 id="tituloModal" class="text-xl font-bold mb-4">Abrir Mesa</h3>
+        
+        <label class="block text-sm font-medium mb-1">Cliente (Obrigatório)</label>
+        <input type="text" id="nomeCliente" class="w-full border p-2 rounded mb-3" placeholder="Nome ou WhatsApp">
+        
+        <div class="flex justify-between mt-4">
+            <button onclick="fecharModal()" class="text-gray-500">Cancelar</button>
+            <button onclick="confirmarAbertura()" class="bg-blue-600 text-white px-4 py-2 rounded">Abrir Comanda</button>
+        </div>
+    </div>
+</div>
     <button onclick="salvarNoFirebase()">Salvar Produto e Preços</button>
 </div>
+ 
