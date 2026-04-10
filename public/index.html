@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Boteco 934 - Gestão & PDV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <nav class="bg-blue-800 text-white p-4 shadow-lg">
+        <h1 class="text-xl font-bold">Boteco 934 - Cadastro Inteligente</h1>
+    </nav>
+
+    <main class="container mx-auto p-4 max-w-4xl">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-2">Precificação Detalhada</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Custo da Caixa (R$)</label>
+                    <input type="number" id="custoCaixa" step="0.01" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm border p-2 focus:ring-blue-500" placeholder="0,00">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Unidades por Caixa</label>
+                    <input type="number" id="qtdUnidades" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm border p-2" value="1">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Markup Alvo (%)</label>
+                    <input type="number" id="markupDesejado" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm border p-2" value="50">
+                </div>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Modalidade</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Custo Real</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Preço Sugerido</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Lucro (R$)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpoTabela" class="divide-y divide-gray-200">
+                        </tbody>
+                </table>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+                <button id="btnSalvar" class="bg-green-600 text-white px-6 py-2 rounded shadow hover:bg-green-700 transition">
+                    Salvar Produto no Firebase
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
