@@ -7,7 +7,7 @@
     <style>
         :root { --primary: #1a252f; --success: #27ae60; --danger: #e74c3c; --accent: #f1c40f; --info: #3498db; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f7f6; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
         header { background: var(--primary); color: white; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--accent); flex-shrink: 0; }
         .nav-bar { background: #2c3e50; display: flex; flex-shrink: 0; }
         .nav-btn { flex: 1; padding: 12px 5px; border: none; background: #2c3e50; color: #bdc3c7; cursor: pointer; font-weight: bold; font-size: 11px; text-transform: uppercase; border-bottom: 3px solid transparent; }
@@ -24,15 +24,11 @@
         .grid-prods { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 8px; }
         .card-p { border: 1px solid #eee; padding: 10px; text-align: center; border-radius: 8px; cursor: pointer; background: white; font-size: 11px; position: relative; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .badge-qtd { position: absolute; top: -5px; right: -5px; background: var(--primary); color: white; padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: bold; }
+        .btn-acao { background: var(--success); color: white; border: none; padding: 12px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; }
         .sessao-interna { padding: 20px; width: 100%; overflow-y: auto; display: block !important; }
         .tarja-add { background: #ebf5fb; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; border: 1px solid var(--info); }
-        .tarja-add div { flex: 1; min-width: 120px; }
-        label { display: block; font-size: 11px; font-weight: bold; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
         table { width: 100%; border-collapse: collapse; background: white; margin-top: 10px; }
-        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
-        th { background: #f8f9fa; font-size: 12px; }
-        .btn-acao { background: var(--success); color: white; border: none; padding: 12px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -46,22 +42,22 @@
     <button class="nav-btn" onclick="ver('financas', this)">💰 Caixa</button>
 </nav>
 
-<main>
+<main id="conteudo-principal">
     <div id="vendas" class="tela ativa">
         <aside class="col-mesas" id="lista-mesas"></aside>
         <section class="col-produtos">
             <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                <select id="sel-cliente-venda" style="flex: 2; border: 2px solid var(--info); font-weight: bold;"></select>
-                <input type="text" id="bipar-codigo" placeholder="Bipar Código..." style="flex: 1; border: 2px solid var(--primary);" onkeypress="if(event.key==='Enter') lancarPorCodigo(this.value)">
+                <select id="sel-cliente-venda" style="flex: 2; padding: 8px; border-radius: 5px;"></select>
+                <input type="text" id="bipar-codigo" placeholder="Bipar Código..." style="flex: 1; padding: 8px; border-radius: 5px;" onkeypress="if(event.key==='Enter') lancarPorCodigo(this.value)">
             </div>
             <div id="grid-produtos" class="grid-prods"></div>
         </section>
         <aside class="col-carrinho">
-            <h3 id="mesa-titulo" style="text-align:center; border-bottom:2px solid var(--primary); padding-bottom:5px;">Selecione uma Mesa</h3>
+            <h3 id="mesa-titulo" style="text-align:center; padding: 10px;">Mesa Livre</h3>
             <div id="c-itens" style="flex:1; overflow-y:auto; padding:5px;"></div>
-            <div style="border-top:2px solid #eee; padding-top:10px;">
-                <div style="display:flex; justify-content:space-between; font-size:18px; font-weight:bold; margin-bottom:5px;">Total: R$ <span id="c-total">0.00</span></div>
-                <select id="metodo-pagamento" style="margin-bottom:8px;"><option value="DINHEIRO">💵 DINHEIRO</option><option value="PIX">⚡ PIX</option><option value="CARTÃO">💳 CARTÃO</option><option value="PENDURA">📝 FIADO</option></select>
+            <div style="padding-top:10px; border-top: 2px solid #eee;">
+                <div style="display:flex; justify-content:space-between; font-size:18px; font-weight:bold;">Total: R$ <span id="c-total">0.00</span></div>
+                <select id="metodo-pagamento" style="width:100%; margin: 10px 0; padding: 8px;"><option value="DINHEIRO">💵 DINHEIRO</option><option value="PIX">⚡ PIX</option><option value="CARTÃO">💳 CARTÃO</option><option value="PENDURA">📝 FIADO</option></select>
                 <button class="btn-acao" onclick="fecharConta()">FINALIZAR CONTA</button>
             </div>
         </aside>
@@ -71,87 +67,57 @@
         <div class="sessao-interna">
             <h2>📦 Gestão de Estoque</h2>
             <div class="tarja-add">
-                <div><label>Cód. Barra (EAN)</label><input type="text" id="est-ean"></div>
-                <div><label>Produto</label><input type="text" id="est-nome"></div>
-                <div><label>Preço</label><input type="number" id="est-preco" step="0.01"></div>
-                <div><label>Qtd Inicial</label><input type="number" id="est-qtd"></div>
-                <button onclick="salvarNoEstoque()" style="background:var(--success); color:white; border:none; padding:12px 20px; border-radius:5px; font-weight:bold; cursor:pointer;">SALVAR</button>
+                <input type="text" id="est-ean" placeholder="Cód. Barra">
+                <input type="text" id="est-nome" placeholder="Produto">
+                <input type="number" id="est-preco" placeholder="Preço">
+                <input type="number" id="est-qtd" placeholder="Qtd">
+                <button onclick="salvarNoEstoque()" style="background:var(--success); color:white; padding:10px; border:none; border-radius:5px;">SALVAR</button>
             </div>
-            <table><thead><tr><th>Cód. Barra</th><th>Produto</th><th>Preço</th><th>Estoque</th><th>Ações</th></tr></thead><tbody id="lista-est-corpo"></tbody></table>
-        </div>
-    </div>
-
-    <div id="clientes" class="tela">
-        <div class="sessao-interna">
-            <h2>👥 Clientes</h2>
-            <div class="tarja-add">
-                <div><label>Nome</label><input type="text" id="cli-nome"></div>
-                <div><label>Fone</label><input type="text" id="cli-fone"></div>
-                <button onclick="addCliente()" style="background:var(--info); color:white; border:none; padding:12px 20px; border-radius:5px; font-weight:bold; cursor:pointer;">CADASTRAR</button>
-            </div>
-            <table><thead><tr><th>Nome</th><th>Contato</th><th>Ação</th></tr></thead><tbody id="lista-cli-corpo"></tbody></table>
-        </div>
-    </div>
-
-    <div id="financas" class="tela">
-        <div class="sessao-interna">
-            <h2>💰 Financeiro Detalhado</h2>
-            <div id="caixa-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:10px; margin-top:10px;"></div>
-            <h3 style="margin-top: 30px; border-bottom: 2px solid var(--primary);">📋 Histórico de Vendas</h3>
-            <table><thead><tr><th>Hora</th><th>Cliente</th><th>Valor</th><th>Pagamento</th></tr></thead><tbody id="historico-vendas-corpo"></tbody></table>
+            <table><thead><tr><th>EAN</th><th>Produto</th><th>Preço</th><th>Qtd</th><th>Ação</th></tr></thead><tbody id="lista-est-corpo"></tbody></table>
         </div>
     </div>
 </main>
 
 <script>
-    // INICIALIZAÇÃO DE DADOS
-    let db_estoque = JSON.parse(localStorage.getItem('boteco_estoque')) || [{ean:"789123456", nome:"Heineken LN", preco:16.0, qtd: 24}];
-    let db_clientes = JSON.parse(localStorage.getItem('boteco_clientes')) || [{nome: "Balcão", fone: "-"}];
+    // Se o sistema bugar, ele tenta usar dados padrão
+    const PADRAO_ESTOQUE = [{ean:"789", nome:"Heineken LN", preco:16.0, qtd: 24}];
+    const PADRAO_CLIENTES = [{nome: "Balcão", fone: "-"}];
+
+    let db_estoque = JSON.parse(localStorage.getItem('boteco_estoque')) || PADRAO_ESTOQUE;
+    let db_clientes = JSON.parse(localStorage.getItem('boteco_clientes')) || PADRAO_CLIENTES;
     let financeiro = JSON.parse(localStorage.getItem('boteco_financeiro')) || { DINHEIRO: 0, PIX: 0, CARTÃO: 0, PENDURA: 0 };
     let historicoVendas = JSON.parse(localStorage.getItem('boteco_historico')) || [];
-    
     let mesas = Array.from({length: 12}, (_, i) => ({ id: i + 1, consumo: {}, total: 0, status: 'livre' }));
     let mesaAtiva = null;
 
-    // NAVEGAÇÃO
-    function ver(id, el) {
-        document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(id).classList.add('ativa');
-        if(el) el.classList.add('active');
-        
-        if(id === 'estoque') renderEstoque();
-        if(id === 'financas') atualizarFinanceiro();
-        if(id === 'clientes') renderClientes();
-        if(id === 'vendas') { renderMesas(); renderProdutos(); renderSelects(); }
+    function saveAll() {
+        localStorage.setItem('boteco_estoque', JSON.stringify(db_estoque));
+        localStorage.setItem('boteco_clientes', JSON.stringify(db_clientes));
+        localStorage.setItem('boteco_financeiro', JSON.stringify(financeiro));
+        localStorage.setItem('boteco_historico', JSON.stringify(historicoVendas));
     }
 
-    // CARRINHO DETALHADO POR CLIENTE
-    function attCar() {
-        if (!mesaAtiva) {
-            document.getElementById('c-itens').innerHTML = "<p style='text-align:center; color:#999; margin-top:20px;'>Selecione uma mesa</p>";
-            document.getElementById('c-total').innerText = "0.00";
-            return;
-        }
-        const m = mesas.find(x => x.id === mesaAtiva);
-        let html = "";
-        for (let cliente in m.consumo) {
-            if (m.consumo[cliente].length > 0) {
-                let totalCli = m.consumo[cliente].reduce((acc, obj) => acc + obj.preco, 0);
-                html += `<div style="margin-bottom:10px; border:1px solid #ddd; border-radius:6px; background:#fff; overflow:hidden;">
-                    <div style="background:var(--info); color:white; padding:4px 8px; font-weight:bold; font-size:11px; display:flex; justify-content:space-between;">
-                        <span>👤 ${cliente}</span><span>R$ ${totalCli.toFixed(2)}</span>
-                    </div><div style="padding:5px;">`;
-                m.consumo[cliente].forEach(item => {
-                    html += `<div style="display:flex; justify-content:space-between; font-size:11px; padding:2px 0; border-bottom:1px dashed #eee;">
-                        <span>${item.nome}</span><span>R$ ${item.preco.toFixed(2)}</span>
-                    </div>`;
-                });
-                html += `</div></div>`;
-            }
-        }
-        document.getElementById('c-itens').innerHTML = html || "<p style='text-align:center; color:#999; margin-top:20px;'>Mesa vazia</p>";
-        document.getElementById('c-total').innerText = m.total.toFixed(2);
+    function ver(id, el) {
+        document.querySelectorAll('.tela').forEach(t => t.style.display = 'none');
+        document.getElementById(id).style.display = (id === 'vendas' ? 'flex' : 'block');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        if(el) el.classList.add('active');
+        if(id === 'vendas') { renderMesas(); renderProdutos(); renderSelects(); }
+        if(id === 'estoque') renderEstoque();
+    }
+
+    function renderMesas() {
+        const div = document.getElementById('lista-mesas');
+        if(!div) return;
+        div.innerHTML = mesas.map(m => `<div class="mesa-btn ${m.status} ${mesaAtiva === m.id ? 'selecionada' : ''}" onclick="selMesa(${m.id})">MESA ${m.id}<br><small>R$ ${m.total.toFixed(2)}</small></div>`).join('');
+    }
+
+    function selMesa(id) { mesaAtiva = id; document.getElementById('mesa-titulo').innerText = "Mesa " + id; renderMesas(); attCar(); }
+
+    function renderProdutos() {
+        const div = document.getElementById('grid-produtos');
+        if(!div) return;
+        div.innerHTML = db_estoque.map(p => `<div class="card-p" onclick="lancar('${p.ean}')"><span class="badge-qtd">${p.qtd}</span><b>${p.nome}</b><br><span style="color:var(--success)">R$ ${p.preco.toFixed(2)}</span></div>`).join('');
     }
 
     function lancar(ean) {
@@ -159,8 +125,6 @@
         if(!mesaAtiva || !cli) return alert("Selecione Mesa e Cliente!");
         const p = db_estoque.find(x => x.ean === ean);
         if(!p) return alert("Produto não cadastrado!");
-        if(p.qtd <= 0) return alert("Estoque esgotado!");
-        
         const m = mesas.find(x => x.id === mesaAtiva);
         if(!m.consumo[cli]) m.consumo[cli] = [];
         m.consumo[cli].push({...p});
@@ -169,90 +133,50 @@
         attCar(); renderMesas();
     }
 
-    function lancarPorCodigo(v) { lancar(v); document.getElementById('bipar-codigo').value = ''; }
-
-    function fecharConta() {
+    function attCar() {
+        const div = document.getElementById('c-itens');
+        if(!mesaAtiva || !div) return;
         const m = mesas.find(x => x.id === mesaAtiva);
-        if(!m || m.total === 0) return alert("Mesa sem consumo!");
-        const met = document.getElementById('metodo-pagamento').value;
-        const hora = new Date().toLocaleTimeString();
-
-        for(let cli in m.consumo) {
-            let totalCli = m.consumo[cli].reduce((acc, obj) => acc + obj.preco, 0);
-            if(totalCli > 0) {
-                historicoVendas.push({ hora, cliente: cli, valor: totalCli, metodo: met });
-                m.consumo[cli].forEach(item => {
-                    const pEst = db_estoque.find(prod => prod.ean === item.ean);
-                    if(pEst) pEst.qtd -= 1;
-                });
-            }
+        let html = "";
+        for (let cli in m.consumo) {
+            html += `<div style="background:#f9f9f9; margin-bottom:5px; padding:5px; border-radius:5px;"><b>${cli}</b><br>`;
+            m.consumo[cli].forEach(i => html += `<small>${i.nome} - R$ ${i.preco.toFixed(2)}</small><br>`);
+            html += `</div>`;
         }
-
-        financeiro[met] += m.total;
-        saveAll();
-        m.consumo = {}; m.total = 0; m.status = 'livre'; mesaAtiva = null;
-        document.getElementById('mesa-titulo').innerText = "Selecione uma Mesa";
-        renderMesas(); attCar(); renderProdutos();
-        alert("✅ Venda Finalizada!");
+        div.innerHTML = html || "Mesa vazia";
+        document.getElementById('c-total').innerText = m.total.toFixed(2);
     }
 
-    // PERSISTÊNCIA DE DADOS (Salva no Navegador)
-    function saveAll() {
-        localStorage.setItem('boteco_estoque', JSON.stringify(db_estoque));
-        localStorage.setItem('boteco_clientes', JSON.stringify(db_clientes));
-        localStorage.setItem('boteco_financeiro', JSON.stringify(financeiro));
-        localStorage.setItem('boteco_historico', JSON.stringify(historicoVendas));
+    function renderSelects() {
+        const sel = document.getElementById('sel-cliente-venda');
+        if(sel) sel.innerHTML = '<option value="">-- CLIENTE --</option>' + db_clientes.map(c => `<option value="${c.nome}">${c.nome}</option>`).join('');
+    }
+
+    function renderEstoque() {
+        const corpo = document.getElementById('lista-est-corpo');
+        if(corpo) corpo.innerHTML = db_estoque.map((p, i) => `<tr><td>${p.ean}</td><td>${p.nome}</td><td>${p.preco}</td><td>${p.qtd}</td><td><button onclick="db_estoque.splice(${i},1);saveAll();renderEstoque();">🗑️</button></td></tr>`).join('');
     }
 
     function salvarNoEstoque() {
         const ean = document.getElementById('est-ean').value;
-        const n = document.getElementById('est-nome').value;
-        const p = parseFloat(document.getElementById('est-preco').value);
-        const q = parseInt(document.getElementById('est-qtd').value) || 0;
-        if(!ean || !n || isNaN(p)) return alert("Dados incompletos!");
-        db_estoque.push({ean, nome: n, preco: p, qtd: q});
-        saveAll();
-        document.getElementById('est-ean').value=''; document.getElementById('est-nome').value=''; 
-        document.getElementById('est-preco').value=''; document.getElementById('est-qtd').value='';
-        renderEstoque();
+        const nome = document.getElementById('est-nome').value;
+        const preco = parseFloat(document.getElementById('est-preco').value);
+        const qtd = parseInt(document.getElementById('est-qtd').value);
+        if(ean && nome && preco) {
+            db_estoque.push({ean, nome, preco, qtd});
+            saveAll(); renderEstoque();
+        }
     }
 
-    // RENDERIZAÇÃO
-    function renderEstoque() {
-        document.getElementById('lista-est-corpo').innerHTML = db_estoque.map((p, i) => `<tr><td>${p.ean}</td><td><b>${p.nome}</b></td><td>R$ ${p.preco.toFixed(2)}</td><td>${p.qtd} un</td><td><button onclick="db_estoque.splice(${i},1);saveAll();renderEstoque();">🗑️</button></td></tr>`).join('');
-    }
-    function renderMesas() {
-        document.getElementById('lista-mesas').innerHTML = mesas.map(m => `<div class="mesa-btn ${m.status} ${mesaAtiva === m.id ? 'selecionada' : ''}" onclick="selMesa(${m.id})">MESA ${m.id}<br><small>R$ ${m.total.toFixed(2)}</small></div>`).join('');
-    }
-    function selMesa(id) { mesaAtiva = id; document.getElementById('mesa-titulo').innerText = "Mesa " + id; renderMesas(); attCar(); }
-    function renderProdutos() {
-        document.getElementById('grid-produtos').innerHTML = db_estoque.map(p => `<div class="card-p" onclick="lancar('${p.ean}')"><span class="badge-qtd">${p.qtd}</span><b>${p.nome}</b><br><span style="color:var(--success)">R$ ${p.preco.toFixed(2)}</span></div>`).join('');
-    }
-    function addCliente() {
-        const n = document.getElementById('cli-nome').value;
-        if(n) { db_clientes.push({nome: n, fone: document.getElementById('cli-fone').value}); saveAll(); document.getElementById('cli-nome').value=''; renderClientes(); renderSelects(); }
-    }
-    function renderClientes() {
-        document.getElementById('lista-cli-corpo').innerHTML = db_clientes.map((c, i) => `<tr><td><b>${c.nome}</b></td><td>${c.fone}</td><td><button onclick="db_clientes.splice(${i},1);saveAll();renderClientes();">❌</button></td></tr>`).join('');
-    }
-    function renderSelects() {
-        document.getElementById('sel-cliente-venda').innerHTML = '<option value="">-- QUEM VAI BEBER? --</option>' + db_clientes.map(c => `<option value="${c.nome}">${c.nome}</option>`).join('');
-    }
-    function atualizarFinanceiro() {
-        document.getElementById('caixa-grid').innerHTML = Object.keys(financeiro).map(t => `<div style="background:white; padding:15px; border-radius:8px; text-align:center; box-shadow:0 2px 5px rgba(0,0,0,0.05)"><small>${t}</small><br><b style="color:var(--success); font-size:18px;">R$ ${financeiro[t].toFixed(2)}</b></div>`).join('');
-        document.getElementById('historico-vendas-corpo').innerHTML = historicoVendas.map(v => `<tr><td>${v.hora}</td><td><b>${v.cliente}</b></td><td>R$ ${v.valor.toFixed(2)}</td><td><small>${v.metodo}</small></td></tr>`).reverse().join('');
-    }
-
-    // RELÓGIO E INICIALIZAÇÃO
-    setInterval(() => { 
+    // Relógio
+    setInterval(() => {
         const r = document.getElementById('relogio');
-        if(r) r.innerText = new Date().toLocaleTimeString(); 
+        if(r) r.innerText = new Date().toLocaleTimeString();
     }, 1000);
 
+    // Início forçado
     window.onload = () => { 
-        renderMesas(); 
-        renderProdutos(); 
-        renderSelects(); 
+        ver('vendas');
     };
 </script>
 </body>
